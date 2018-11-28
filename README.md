@@ -1,6 +1,8 @@
 Authors Haven - A Social platform for the creative at heart.
 =======
 
+[![Coverage Status](https://coveralls.io/repos/github/andela/helios-ah-backend/badge.svg?branch=develop)](https://coveralls.io/github/andela/helios-ah-backend?branch=develop)
+
 ## Vision
 Create a community of like minded authors to foster inspiration and innovation
 by leveraging the modern web.
