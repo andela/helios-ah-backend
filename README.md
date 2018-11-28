@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/andela/helios-ah-backend.svg?branch=master)](https://travis-ci.org/andela/helios-ah-backend)
+[![Build Status](https://travis-ci.org/andela/helios-ah-backend.svg?branch=develop)](https://travis-ci.org/andela/helios-ah-backend)
 
 Authors Haven - A Social platform for the creative at heart.
 =======
