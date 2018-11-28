@@ -4,7 +4,7 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
     "eslint": "./node_modules/eslint/bin/eslint.js './**/*.js'"
   },
   "author": "Andela Simulations Programme",
@@ -31,6 +31,9 @@
     "underscore": "^1.9.1"
   },
   "devDependencies": {
+    "chai": "4.2.0",
+    "chai-http": "4.2.0",
+    "mocha": "5.2.0",
     "eslint": "5.9.0",
     "eslint-config-airbnb": "17.1.0",
     "eslint-plugin-import": "2.14.0",
