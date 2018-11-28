@@ -4,7 +4,8 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
+    "eslint": "./node_modules/eslint/bin/eslint.js './**/*.js'",
     "heroku-postbuild": "npm run create-database-table"
   },
   "author": "Andela Simulations Programme",
@@ -29,5 +30,15 @@
     "request": "^2.87.0",
     "slug": "^0.9.1",
     "underscore": "^1.9.1"
+  },
+  "devDependencies": {
+    "chai": "4.2.0",
+    "chai-http": "4.2.0",
+    "mocha": "5.2.0",
+    "eslint": "5.9.0",
+    "eslint-config-airbnb": "17.1.0",
+    "eslint-plugin-import": "2.14.0",
+    "eslint-plugin-jsx-a11y": "6.1.2",
+    "eslint-plugin-react": "7.11.1"
   }
 }
