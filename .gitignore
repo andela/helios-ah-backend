@@ -36,3 +36,6 @@ node_modules
 
 # File containing user-defined environment variables.
 .env
+
+# Coveralls Token
+.coveralls.yml
