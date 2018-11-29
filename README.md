@@ -1,9 +1,10 @@
 [![Build Status](https://travis-ci.org/andela/helios-ah-backend.svg?branch=develop)](https://travis-ci.org/andela/helios-ah-backend)
+[![Coverage Status](https://coveralls.io/repos/github/andela/helios-ah-backend/badge.svg?branch=develop)](https://coveralls.io/github/andela/helios-ah-backend?branch=develop)
+[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 Authors Haven - A Social platform for the creative at heart.
 =======
 
-[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 ## Vision
 Create a community of like minded authors to foster inspiration and innovation
