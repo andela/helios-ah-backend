@@ -34,3 +34,8 @@ node_modules
 # Optional REPL history
 .node_repl_history
 
+# File containing user-defined environment variables.
+.env
+
+# Coveralls Token
+.coveralls.yml
