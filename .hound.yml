@@ -1,6 +1,6 @@
 eslint:
  enabled: true
- config: .eslintrc.json
+ config_file: .eslintrc
 
 markdown:
  enabled: true
