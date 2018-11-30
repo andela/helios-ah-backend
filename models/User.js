@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
-const uniqueValidator = require('mongoose-unique-validator');
-const crypto = require('crypto');
+
+import crypto from 'crypto';
+import uniqueValidator from 'mongoose-unique-validator';
+import mongoose from 'mongoose';
 
 const UserSchema = new mongoose.Schema(
   {
@@ -53,4 +54,6 @@ UserSchema.methods.toAuthJSON = () => (
   }
 );
 
-mongoose.model('User', UserSchema);
+const userModel = mongoose.model('User', UserSchema);
+
+export default userModel;

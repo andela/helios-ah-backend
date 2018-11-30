@@ -1,4 +1,7 @@
-const router = require('express').Router();
+
+import expressRouter from 'express';
+
+const router = expressRouter.Router();
 
 router.use('/', require('./users'));
 
@@ -15,4 +18,4 @@ router.use((err, req, res, next) => {
   return next(err);
 });
 
-module.exports = router;
+export default router;

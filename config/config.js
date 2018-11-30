@@ -19,3 +19,7 @@ if (process.env.NODE_ENV === 'test') {
 } else {
   dbConfiguration.database = process.env.DEVELOPMENT_DATABASE;
 }
+
+const dbConfig = dbConfiguration;
+
+export default dbConfig;
