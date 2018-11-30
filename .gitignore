@@ -39,3 +39,6 @@ node_modules
 
 # Coveralls Token
 .coveralls.yml
+
+# nyc output
+.nyc_output
