@@ -1,7 +1,9 @@
-const mongoose = require('mongoose');
-const router = require('express').Router();
-const passport = require('passport');
 
+import mongoose from 'mongoose';
+import expressRouter from 'express';
+import passport from 'passport';
+
+const router = expressRouter.Router();
 const User = mongoose.model('User');
 
 router.get('/user', (req, res, next) => {
@@ -84,4 +86,4 @@ router.post('/users', (req, res, next) => {
     .catch(next);
 });
 
-module.exports = router;
+export default router;

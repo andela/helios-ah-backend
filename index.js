@@ -1,9 +1,11 @@
-const express = require('express'),
-  bodyParser = require('body-parser'),
-  session = require('express-session'),
-  cors = require('cors'),
-  errorhandler = require('errorhandler'),
-  mongoose = require('mongoose');
+
+import express from 'express';
+import bodyParser from 'body-parser';
+import session from 'express-session';
+import cors from 'cors';
+import errorhandler from 'errorhandler';
+import mongoose from 'mongoose';
+import routes from './src/routes';
 
 const isProduction = process.env.NODE_ENV === 'production';
 
@@ -44,7 +46,7 @@ if (isProduction) {
 
 require('./models/User');
 
-app.use(require('./routes'));
+app.use(routes);
 
 // / catch 404 and forward to error handler
 app.use((req, res, next) => {
