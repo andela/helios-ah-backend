@@ -5,10 +5,10 @@ export default {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4
     },
-    fname: {
+    firstName: {
       type: Sequelize.STRING
     },
-    lname: {
+    lastName: {
       type: Sequelize.STRING
     },
     email: {

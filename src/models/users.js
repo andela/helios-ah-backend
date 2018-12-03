@@ -5,11 +5,11 @@ const UserModel = (sequelize, DataTypes) => {
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4
     },
-    fname: {
+    firstName: {
       type: DataTypes.STRING,
       allowNull: false
     },
-    lname: {
+    lastName: {
       type: DataTypes.STRING
     },
     email: {
