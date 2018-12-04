@@ -5,16 +5,18 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon ./src/app.js --exec babel-node",
-    "test": "export NODE_ENV=test&& nyc mocha --exit --require babel-register --require babel-polyfill ./test/index.js",
-    "coveralls": "nyc report --reporter=text-lcov | coveralls && nyc report --reporter=lcov",
+    "test": "npm run undo:migration && npm run migrate && export NODE_ENV=test&& nyc --reporter=html --reporter=text mocha --exit --require babel-register --require babel-polyfill ./test/index.js",
+    "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "eslint": "./node_modules/eslint/bin/eslint.js './**/*.js'",
     "heroku-postbuild": "npm run create-database-table",
-    "migrate": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate"
+    "nyc:report": "nyc report",
+    "migrate": "export NODE_ENV=test&& ./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate",
+    "undo:migration": "export NODE_ENV=test&& ./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate:undo:all"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
   "dependencies": {
-    "bcryptjs": "2.4.3",
+    "bcrypt": "3.0.2",
     "body-parser": "1.18.3",
     "cors": "2.8.4",
     "dotenv": "6.0.0",
@@ -59,3 +61,4 @@
     "sequelize-cli": "5.3.0"
   }
 }
+
