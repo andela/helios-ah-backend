@@ -1,9 +1,10 @@
-const UserModel = (sequelize, DataTypes) => {
+
+export default (sequelize, DataTypes) => {
   const Users = sequelize.define('Users', {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
     },
     firstName: {
       type: DataTypes.STRING,
@@ -91,4 +92,3 @@ const UserModel = (sequelize, DataTypes) => {
   };
   return Users;
 };
-export default UserModel;
