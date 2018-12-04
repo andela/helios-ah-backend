@@ -13,9 +13,11 @@ const routes = (app) => {
       message: 'Welcome to the Authors-Haven API'
     });
   });
-  app.post('/api/v1/auth/signup',
+  app.post(
+    '/api/v1/auth/signup',
     validateUserInputs.validateSignup,
-    UserController.userSignup);
+    UserController.userSignup
+  );
 };
 
 export default routes;

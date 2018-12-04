@@ -32,9 +32,8 @@ class CryptData {
   */
   static async decryptData(dataToDecrypt, dataBaseHash) {
     try {
-      const isPasswordCorrect = await bcrypt.compare(
-        dataToDecrypt, dataBaseHash
-      );
+      const isPasswordCorrect = await bcrypt
+        .compare(dataToDecrypt, dataBaseHash);
       return isPasswordCorrect;
     } catch (err) {
       return Error('An error occurred while comparing the data sent');
