@@ -1,1 +1,2 @@
-import './sampleTest';
+import './sample.test';
+import './users.test';

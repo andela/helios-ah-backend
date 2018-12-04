@@ -1,9 +1,10 @@
-const UserModel = (sequelize, DataTypes) => {
-  const Users = sequelize.define('Users', {
+
+export default (sequelize, DataTypes) => {
+  const User = sequelize.define('Users', {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
     },
     firstName: {
       type: DataTypes.STRING,
@@ -37,17 +38,10 @@ const UserModel = (sequelize, DataTypes) => {
       unique: true
     },
   });
-  Users.associate = (models) => {
-    Users.hasMany(models.Articles, {
-      foreignKey: 'userId',
-    });
-    Users.hasMany(models.Comments, {
-      foreignKey: 'userId'
-    });
-    Users.hasMany(models.VerificationToken, {
+  User.associate = (models) => {
+    User.hasMany(models.VerificationToken, {
       foreignKey: 'userId'
     });
   };
-  return Users;
+  return User;
 };
-export default UserModel;
