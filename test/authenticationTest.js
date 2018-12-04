@@ -19,8 +19,6 @@ describe('scambled token should be unscrambled and Validated', () => {
   it('it should unscramble token and validate', async() => {
     const token = await getToken(data);
     const user = await verifyToken(token);
-    console.log(user)
-    console.log(user.id)
     expect(user.id).to.be.equal(2);
     expect(user.role).to.be.equal(1);
     expect(user.userName).to.be.equal('helios');
