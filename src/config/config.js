@@ -7,6 +7,7 @@ const databaseConfig = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DEVELOPMENT_DATABASE,
+    logging: false,
     host: process.env.DB_HOST,
     dialect: 'postgres'
   },
@@ -14,6 +15,7 @@ const databaseConfig = {
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.TEST_DATABASE,
+    logging: false,
     host: process.env.DB_HOST,
     dialect: 'postgres'
   },
