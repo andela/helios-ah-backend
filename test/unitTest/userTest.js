@@ -3,6 +3,7 @@ import chai from 'chai';
 import models from '../../src/models'
 
 const { expect } = chai;
+const { Users } = models;
 
 const obj = {
   failedFirstName: {
@@ -66,7 +67,7 @@ const obj = {
 describe('Test user model', () => {
   it('should reject first name containing invalid characters', async () => {
     try {
-      expect(await models.Users.create(obj.failedFirstName)).to.equal('First name must contain only Alphabets');
+      expect(await Users.create(obj.failedFirstName)).to.equal('First name must contain only Alphabets');
     } catch (error) {
       expect(error.errors[0].message).to.equal('First name must contain only Alphabets');
     }
@@ -74,7 +75,7 @@ describe('Test user model', () => {
 
   it('should reject last name containing invalid characters', async () => {
     try {
-      expect(await models.Users.create(obj.failedLastName)).to.equal('Last name must contain only Alphabets');
+      expect(await Users.create(obj.failedLastName)).to.equal('Last name must contain only Alphabets');
     } catch (error) {
       expect(error.errors[0].message).to.equal('Last name must contain only Alphabets');
     }
@@ -82,7 +83,7 @@ describe('Test user model', () => {
 
   it('should reject email address', async () => {
     try {
-      expect(await models.Users.create(obj.failedEmail)).to.equal('Email must be a valid email ID');
+      expect(await Users.create(obj.failedEmail)).to.equal('Email must be a valid email ID');
     } catch (error) {
       expect(error.errors[0].message).to.equal('Email must be a valid email ID');
     }
@@ -90,7 +91,7 @@ describe('Test user model', () => {
 
   it('should reject password character less than 6', async () => {
     try {
-      expect(await models.Users.create(obj.failedPassword)).to.equal('Password must be more than 5 characters');
+      expect(await Users.create(obj.failedPassword)).to.equal('Password must be more than 5 characters');
     } catch (error) {
       expect(error.errors[0].message).to.equal('Password must be more than 5 characters');
     }
@@ -98,7 +99,7 @@ describe('Test user model', () => {
 
   it('should reject username containing invalid characters', async () => {
     try {
-      expect(await models.Users.create(obj.failedUsername)).to.equal('Username must contain only alphabet, numbers, and characters  and must begin with an alphabet');
+      expect(await Users.create(obj.failedUsername)).to.equal('Username must contain only alphabet, numbers, and characters  and must begin with an alphabet');
     } catch (error) {
       expect(error.errors[0].message).to.equal('Username must contain only alphabet, numbers, and characters  and must begin with an alphabet');
     }
@@ -106,7 +107,7 @@ describe('Test user model', () => {
 
   it('should save user with valid credentials', async () => {
     try {
-      expect(await models.Users.create(obj.pass)).to.be.an('object');
+      expect(await Users.create(obj.pass)).to.be.an('object');
     } catch (error) {
       expect(error.errors[0].message).to.equal(null);
     }
@@ -114,7 +115,7 @@ describe('Test user model', () => {
 
   it('should reject duplicate email', async () => {
     try {
-      expect(await models.Users.create(obj.failedDuplicateEmail)).to.be.an('object');
+      expect(await Users.create(obj.failedDuplicateEmail)).to.be.an('object');
     } catch (error) {
       expect(error.errors[0].message).to.equal('email must be unique');
     }
@@ -122,7 +123,7 @@ describe('Test user model', () => {
 
   it('should reject duplicate username', async () => {
     try {
-      expect(await models.Users.create(obj.failedDuplicateUser)).to.be.an('object');
+      expect(await Users.create(obj.failedDuplicateUser)).to.be.an('object');
     } catch (error) {
       expect(error.errors[0].message).to.equal('username must be unique');
     }
