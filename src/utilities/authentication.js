@@ -5,20 +5,11 @@ dotenv.config();
 
 /**
  * scrambles string data
- * @param {*} a - input string data
+ * @param {*} token - input string data
  * @returns {output} - scrambled data
  */
-function scramble(a) {
-  return a.split('').reverse().join('');
-}
-
-/**
- * Unscrambles string data
- * @param {*} a - input string of scrambled data
- * @returns {output} - unscrambled data
- */
-function unscramble(a) {
-  return a.split('').reverse().join('');
+function reverseToken(token) {
+  return token.split('').reverse().join('');
 }
 
 /**
@@ -35,7 +26,7 @@ async function getToken(data, time) {
   }, process.env.SECRET, {
     expiresIn: time || 86400 // expires in 1 day
   });
-  const output = scramble(token);
+  const output = reverseToken(token);
   return output;
 }
 
@@ -45,7 +36,7 @@ async function getToken(data, time) {
  * @returns {req} - populate the request with the decypted content
  */
 async function verifyToken(input) {
-  const token = unscramble(input);
+  const token = reverseToken(input);
   let output = {};
   try {
     await jwt.verify(token, process.env.SECRET, (err, decoded) => {
