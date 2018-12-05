@@ -1,3 +1,7 @@
 import UserController from './userController';
+import ArticleController from './articlesController';
 
-export default UserController;
+export {
+  ArticleController,
+  UserController,
+};

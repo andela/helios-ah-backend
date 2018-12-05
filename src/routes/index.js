@@ -1,6 +1,10 @@
 
-import UserController from '../controller';
-import { validateUserInputs } from '../utilities';
+import {
+  UserController,
+  ArticleController,
+} from '../controller';
+
+import { validateUserInputs, authentication } from '../utilities';
 
 /**
  * Handles request
@@ -17,6 +21,12 @@ const routes = (app) => {
     '/api/v1/auth/signup',
     validateUserInputs.validateSignup,
     UserController.userSignup
+  );
+  app.post(
+    '/api/v1/articles',
+    validateUserInputs.validateCreateArticle,
+    authentication.checkToken,
+    ArticleController.createArticle
   );
 };
 

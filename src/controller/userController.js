@@ -1,4 +1,4 @@
-import { cryptData } from '../utilities';
+import { cryptData, authentication } from '../utilities';
 import models from '../models';
 
 const { Users } = models;
@@ -12,10 +12,10 @@ class UserController {
   /**
   * Sign up a user
   * Route: POST: /auth/signup
-  * @param {object} req -Request object
+  * @param {object} req - Request object
   * @param {object} res - Response object
   * @return {res} res - Response object
-  * @memberof USerController
+  * @memberof UserController
  */
   static async userSignup(req, res) {
     const {
@@ -32,18 +32,18 @@ class UserController {
         bio,
       });
       if (userCreated) {
+        const tokenCreated = await authentication.getToken(userCreated);
         res.status(201).send({
           message: `User ${userCreated.username} created successfully`,
           id: userCreated.id,
           username: userCreated.username,
           email: userCreated.email,
-          token: 'Not yet implemented',
+          token: tokenCreated,
         });
       }
     } catch (error) {
       res.status(500).send({
         message: 'Internal server error',
-        error: error.message,
       });
     }
   }
