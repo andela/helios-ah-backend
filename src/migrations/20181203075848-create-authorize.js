@@ -1,5 +1,5 @@
 export default {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Authorizes', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('userTokens', {
     id: {
       primaryKey: true,
       type: Sequelize.UUID,
@@ -31,5 +31,5 @@ export default {
       type: Sequelize.DATE
     }
   }),
-  down: queryInterface => queryInterface.dropTable('Authorizes')
+  down: queryInterface => queryInterface.dropTable('userTokens')
 };

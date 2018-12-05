@@ -5,6 +5,7 @@ import {
 } from '../controller';
 
 import { validateUserInputs, authentication } from '../utilities';
+import userMiddleware from '../middlewares/User';
 
 /**
  * Handles request
@@ -27,6 +28,16 @@ const routes = (app) => {
     validateUserInputs.validateCreateArticle,
     authentication.checkToken,
     ArticleController.createArticle
+  );
+  app.post(
+    '/api/v1/user/requests/password/reset',
+    userMiddleware.getUserByMail,
+    UserController.userRequestPasswordReset
+  );
+  app.put(
+    '/api/v1/change/password/:token',
+    userMiddleware.getUserByMail,
+    UserController.resetPassword
   );
 };
 

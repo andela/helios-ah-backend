@@ -61,8 +61,8 @@ export default (sequelize, DataTypes) => {
         is: {
           args: /^[A-Za-z]+[A-Za-z0-9 _.,!?;"']+$/i,
           msg: 'Bio must contain only valid '
-              + 'characters and must begin with '
-              + 'an alphabet'
+            + 'characters and must begin with '
+            + 'an alphabet'
         }
       }
     },
@@ -79,14 +79,14 @@ export default (sequelize, DataTypes) => {
         is: {
           args: /^[A-Za-z]+[A-Za-z0-9_]+$/i,
           msg: 'Username must contain only alphabet, '
-              + 'numbers, and characters  and must begin '
-              + 'with an alphabet'
+            + 'numbers, and characters  and must begin '
+            + 'with an alphabet'
         }
       }
     },
   });
   Users.associate = (models) => {
-    Users.hasMany(models.VerificationToken, {
+    Users.hasMany(models.userTokens, {
       foreignKey: 'userId',
     });
     Users.hasMany(models.Article, {
