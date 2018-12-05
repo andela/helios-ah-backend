@@ -15,7 +15,6 @@ describe('Integration tests for the user controller', () => {
       chai.request(app).post('/api/v1/auth/signup/%')
         .send(userDetails)
         .end((err, res) => {
-          console.log('res.body is ==> ', res.error.message);
           expect(res.status).to.deep.equal(400);
           expect(res.error).to.have.property('message');
           done();

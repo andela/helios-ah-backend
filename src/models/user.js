@@ -87,7 +87,11 @@ export default (sequelize, DataTypes) => {
   });
   Users.associate = (models) => {
     Users.hasMany(models.VerificationToken, {
-      foreignKey: 'userId'
+      foreignKey: 'userId',
+    });
+    Users.hasMany(models.Article, {
+      foreignKey: 'userId',
+      as: 'articles',
     });
   };
   return Users;

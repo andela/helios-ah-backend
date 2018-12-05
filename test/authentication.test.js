@@ -1,5 +1,5 @@
 import chai from 'chai';
-import { getToken, verifyToken } from '../src/utilities/authentication'
+import { authentication } from '../src/utilities';
 const { expect } = chai;
 
 let data = {
@@ -10,15 +10,15 @@ let data = {
 
 describe('valid token should be generated', () => {
   it('it should return a Scrambled token', async() => {
-    const token = await getToken(data);
+    const token = await authentication.getToken(data);
     expect(token).to.be.a('String');
   });
 });
 
-describe('scambled token should be unscrambled and Validated', () => {
+describe('scrambled token should be unscrambled and Validated', () => {
   it('it should unscramble token and validate', async() => {
-    const token = await getToken(data);
-    const user = await verifyToken(token);
+    const token = await authentication.getToken(data);
+    const user = await authentication.verifyToken(token);
     expect(user.id).to.be.equal(2);
     expect(user.role).to.be.equal(1);
     expect(user.userName).to.be.equal('helios');
