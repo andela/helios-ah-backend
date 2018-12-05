@@ -4,5 +4,8 @@ import helperMethods from './helpers';
 import authentication from './authentication';
 
 export {
-  cryptData, validateUserInputs, helperMethods, authentication
+  cryptData,
+  validateUserInputs,
+  helperMethods,
+  authentication
 };
