@@ -28,6 +28,11 @@ const routes = (app) => {
     authentication.checkToken,
     ArticleController.createArticle
   );
+  // app.put(
+  //   '/api/v1/users/role',
+  //   validateUserInputs.validateSignup,
+  //   RoleController.userSignup
+  // );
 };
 
 export default routes;

@@ -4,14 +4,16 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon ./src/app.js --exec babel-node",
-    "test": "npm run undo:migration && npm run migrate && export NODE_ENV=test&& nyc --reporter=html --reporter=text mocha --exit --require babel-register --require babel-polyfill ./test/index.js",
+    "start": "npm run undo:seeder && npm run seeder && nodemon ./src/app.js --exec babel-node",
+    "test": "npm run undo:migration && npm run migrate && export NODE_ENV=test && npm run undo:seeder && npm run seeder && nyc --reporter=html --reporter=text mocha --exit --require babel-register --require babel-polyfill ./test/index.js",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "eslint": "./node_modules/eslint/bin/eslint.js './**/*.js'",
     "heroku-postbuild": "npm run create-database-table",
     "nyc:report": "nyc report",
     "migrate": "export NODE_ENV=test&& ./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate",
-    "undo:migration": "export NODE_ENV=test&& ./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate:undo:all"
+    "undo:migration": "export NODE_ENV=test&& ./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate:undo:all",
+    "undo:seeder": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:seed:undo:all",
+    "seeder": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:seed:all"
   },
   "author": "Andela Simulations Programme",
   "license": "MIT",
