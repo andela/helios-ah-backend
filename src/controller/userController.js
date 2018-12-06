@@ -1,7 +1,8 @@
 import { cryptData, authentication } from '../utilities';
 import models from '../models';
 
-const { Users } = models;
+const { Users, sequelize } = models;
+const { Op } = sequelize.Sequelize;
 
 /**
  * Class representing the user controller
@@ -44,6 +45,77 @@ class UserController {
     } catch (error) {
       res.status(500).send({
         message: 'Internal server error',
+      });
+    }
+  }
+
+  /**
+  * List Authors
+  * Route: GET: /authors
+  * Route: GET: /authors/:search
+  * @param {object} req -Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof USerController
+ */
+  static async getAuthors(req, res) {
+    try {
+      let authors;
+      if (req.params.search) {
+        authors = await Users.findAll({
+          attributes: [
+            'id',
+            'firstName',
+            'lastName',
+            'email',
+            'image',
+            'bio',
+            'username'
+          ],
+          where: {
+            [Op.or]: [
+              {
+                username: {
+                  [Op.like]: `%${req.params.search}%`
+                }
+              },
+              {
+                firstName: {
+                  [Op.like]: `%${req.params.search}%`
+                }
+              },
+              {
+                lastName: {
+                  [Op.like]: `%${req.params.search}%`
+                }
+              },
+            ],
+          }
+        });
+      } else {
+        authors = await Users.findAll({
+          attributes: [
+            'id',
+            'firstName',
+            'lastName',
+            'email',
+            'image',
+            'bio',
+            'username'
+          ],
+          where: {
+            isVerified: true,
+          }
+        });
+      }
+      res.status(200).json({
+        message: 'successfully',
+        authors,
+      });
+    } catch (error) {
+      res.status(500).json({
+        message: 'Internal server error',
+        error: error.message,
       });
     }
   }

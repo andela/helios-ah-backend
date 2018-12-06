@@ -1,6 +1,6 @@
 
 import chai from 'chai';
-import models from '../../src/models'
+import models from '../../src/models';
 
 const { expect } = chai;
 const { Users } = models;
@@ -39,7 +39,7 @@ const obj = {
     lastName: 'doe',
     email: 'example@gmail.com',
     password: '123456',
-    username: '46134'
+    username: '46134?%$&>'
   },
   pass: {
     firstName: 'john',
@@ -67,17 +67,17 @@ const obj = {
 describe('Test user model', () => {
   it('should reject first name containing invalid characters', async () => {
     try {
-      expect(await Users.create(obj.failedFirstName)).to.equal('First name must contain only Alphabets');
+      expect(await Users.create(obj.failedFirstName)).to.equal('First name must contain only Alphabets and \'');
     } catch (error) {
-      expect(error.errors[0].message).to.equal('First name must contain only Alphabets');
+      expect(error.errors[0].message).to.equal('First name must contain only Alphabets and \'');
     }
   });
 
   it('should reject last name containing invalid characters', async () => {
     try {
-      expect(await Users.create(obj.failedLastName)).to.equal('Last name must contain only Alphabets');
+      expect(await Users.create(obj.failedLastName)).to.equal('Last name must contain only Alphabets and \'');
     } catch (error) {
-      expect(error.errors[0].message).to.equal('Last name must contain only Alphabets');
+      expect(error.errors[0].message).to.equal('Last name must contain only Alphabets and \'');
     }
   });
 

@@ -1,9 +1,17 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import faker from 'faker';
 import app from '../src/app';
+import models from '../src/models';
+import Authenticate from '../src/middlewares/Authorization';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 
 chai.use(chaiHttp);
+chai.use(sinonChai);
+
 const { expect } = chai;
+const { Users } = models;
 
 describe('Integration tests for the user controller', () => {
   describe('Test general error handling and welcome message', () => {
@@ -84,6 +92,62 @@ describe('Integration tests for the user controller', () => {
         expect(res.body.message).to.equal('Invalid request. All fields are required');
         done();
       });
+    });
+  });
+  describe('Test to get Users', () => {
+    before(async () => {
+      for (let index = 0; index < 10; index++) {
+        let user = {
+          firstName: faker.name.firstName(),
+          lastName: faker.name.lastName(),
+          email: faker.internet.email(),
+          password: '123456',
+          bio: faker.lorem.paragraph(),
+          username: faker.internet.userName(),
+          isVerified: true,
+        }
+        try {
+         await Users.create(user);
+        } catch (error) {
+          throw error;
+        }
+      }
+    });
+    it('should get all users', async () => {
+      const response = await chai.request(app).get('/api/v1/authors');
+      expect(response.status).to.be.equals(200);
+      expect(response.body.message).to.be.equals('successfully');
+      expect(response.body.authors).to.be.an('array');
+    });
+    it('should get all users where search matches like username, firstname, lastname', async () => {
+      const response = await chai.request(app).get('/api/v1/authors/john');
+      expect(response.status).to.be.equals(200);
+      expect(response.body.message).to.be.equals('successfully');
+      expect(response.body.authors).to.be.an('array');
+    });
+    it('should reject unauthorize user', async () => {
+      const request = {
+        decoded: {
+          id: 1
+        },
+        body: {
+          userId: 2
+        }
+      }
+
+      const response = {
+        status () {},
+        send (args) { return args; }
+      }
+
+      const next = sinon.stub();
+      sinon.stub(response, 'status').returnsThis();
+      
+      const result = await Authenticate.hasWriteAccess(request, response, next);
+      
+      expect(response.status).to.be.calledOnce;
+      expect(response.status).to.be.calledWith(401);
+      expect(result).to.have.property('message', 'You don\'t have access to edit this file');
     });
   });
 });

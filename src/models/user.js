@@ -10,10 +10,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [3, 15],
+        len: [3, 25],
         is: {
-          args: /^[a-z]+$/i,
-          msg: 'First name must contain only Alphabets'
+          args: /^[a-z']+$/i,
+          msg: 'First name must contain only Alphabets and \''
         }
       }
     },
@@ -21,10 +21,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
-        len: [3, 15],
+        len: [3, 25],
         is: {
-          args: /^[a-z]+$/i,
-          msg: 'Last name must contain only Alphabets'
+          args: /^[a-z']+$/i,
+          msg: 'Last name must contain only Alphabets and \''
         }
       }
     },
@@ -59,7 +59,7 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.TEXT,
       validate: {
         is: {
-          args: /^[A-Za-z]+[A-Za-z0-9 _.,!?;"']+$/i,
+          args: /^[A-Z]+[A-Z0-9 _\.\-,!?;"']+$/i,
           msg: 'Bio must contain only valid '
               + 'characters and must begin with '
               + 'an alphabet'
@@ -75,9 +75,9 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       unique: true,
       validate: {
-        len: [3, 15],
+        len: [3, 40],
         is: {
-          args: /^[A-Za-z]+[A-Za-z0-9_]+$/i,
+          args: /^[A-Za-z0-9]+(?:[\. _-][A-Za-z0-9]+)*$/i,
           msg: 'Username must contain only alphabet, '
               + 'numbers, and characters  and must begin '
               + 'with an alphabet'

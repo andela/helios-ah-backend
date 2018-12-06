@@ -4,7 +4,8 @@ import {
   ArticleController,
 } from '../controller';
 
-import { validateUserInputs, authentication } from '../utilities';
+import { validateUserInputs } from '../utilities';
+import Authorization from '../middlewares/Authorization';
 
 /**
  * Handles request
@@ -25,8 +26,16 @@ const routes = (app) => {
   app.post(
     '/api/v1/articles',
     validateUserInputs.validateCreateArticle,
-    authentication.checkToken,
+    Authorization.checkToken,
     ArticleController.createArticle
+  );
+  app.get(
+    '/api/v1/authors',
+    UserController.getAuthors
+  );
+  app.get(
+    '/api/v1/authors/:search',
+    UserController.getAuthors
   );
 };
 
