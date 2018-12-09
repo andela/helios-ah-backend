@@ -85,7 +85,7 @@ export default (sequelize, DataTypes) => {
     },
   });
   Users.associate = (models) => {
-    Users.hasMany(models.VerificationToken, {
+    Users.hasMany(models.Authorize, {
       foreignKey: 'userId',
     });
     Users.hasMany(models.Article, {

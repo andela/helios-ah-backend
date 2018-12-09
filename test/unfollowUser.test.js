@@ -178,7 +178,6 @@ describe('DELETE /api/v1/profiles/:userId/follow', () => {
         expect(res4.status).to.equal(200);
         expect(res4.body).to.have.property('message');
         expect(res4.body.message).to.equal('You have unfollowed this user');
-
       } catch (err) {
         throw err;
       }
