@@ -55,7 +55,9 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
           expect(res.body).to.have.property('token');
 
           decodedUserToken = jwt.decode(userToken.split('').reverse().join(''));
-          decodedFollowerToken = jwt.decode(followerToken.split('').reverse().join(''));
+          decodedFollowerToken = jwt.decode(
+            followerToken.split('').reverse().join('')
+          );
 
           const res3 = await chai.request(app)
             .get(`/api/v1/profiles/${decodedUserToken.id}/follow`)
@@ -65,14 +67,18 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
           expect(res3.body).to.have.property('message');
           expect(res3.body.message).to.equal('You are now following this user');
 
-          const res4 = await followersUtil.queryForExistingFollowing(true, decodedUserToken.id, decodedFollowerToken.id);
+          const res4 = await followersUtil
+            .queryForExistingFollowing(
+              true, decodedUserToken.id, decodedFollowerToken.id
+            );
 
           expect(res4).to.have.property('dataValues');
           expect(res4.dataValues).to.have.property('isActive');
           expect(res4.dataValues.isActive).to.equal(true);
 
           expect(res4.dataValues).to.have.property('followerId');
-          expect(res4.dataValues.followerId).to.equal(`${decodedFollowerToken.id}`);
+          expect(res4.dataValues.followerId)
+            .to.equal(`${decodedFollowerToken.id}`);
 
           expect(res4.dataValues).to.have.property('userId');
           expect(res4.dataValues.userId).to.equal(`${decodedUserToken.id}`);
@@ -100,7 +106,9 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
         expect(res.body).to.have.property('token');
 
         decodedUserToken = jwt.decode(userToken.split('').reverse().join(''));
-        decodedFollowerToken = jwt.decode(followerToken.split('').reverse().join(''));
+        decodedFollowerToken = jwt.decode(
+          followerToken.split('').reverse().join('')
+        );
 
         const res3 = await chai.request(app)
           .get(`/api/v1/profiles/${decodedUserToken.id}/follow`)
@@ -110,13 +118,17 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
         expect(res3.body).to.have.property('message');
         expect(res3.body.message).to.equal('You are now following this user');
 
-        const res4 = await followersUtil.queryForUpdatingPreviousFollowing(false, decodedUserToken.id, decodedFollowerToken.id);
+        const res4 = await followersUtil
+          .queryForUpdatingPreviousFollowing(
+            false, decodedUserToken.id, decodedFollowerToken.id
+          );
         expect(res4[1][0]).to.have.property('dataValues');
         expect(res4[1][0].dataValues).to.have.property('isActive');
         expect(res4[1][0].dataValues.isActive).to.equal(false);
 
         expect(res4[1][0].dataValues).to.have.property('followerId');
-        expect(res4[1][0].dataValues.followerId).to.equal(`${decodedFollowerToken.id}`);
+        expect(res4[1][0].dataValues.followerId)
+          .to.equal(`${decodedFollowerToken.id}`);
 
         expect(res4[1][0].dataValues).to.have.property('userId');
         expect(res4[1][0].dataValues.userId).to.equal(`${decodedUserToken.id}`);
