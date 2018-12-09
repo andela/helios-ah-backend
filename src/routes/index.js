@@ -2,9 +2,12 @@
 import {
   UserController,
   ArticleController,
+
 } from '../controller';
 
-import { validateUserInputs, authentication } from '../utilities';
+import {
+  validateUserInputs, authentication, findDatabaseField, follower
+} from '../utilities';
 
 /**
  * Handles request
@@ -27,6 +30,26 @@ const routes = (app) => {
     validateUserInputs.validateCreateArticle,
     authentication.checkToken,
     ArticleController.createArticle
+  );
+  app.get(
+    '/api/v1/profiles/:id/follow',
+    validateUserInputs.uuidV4Validator,
+    authentication.checkToken,
+    findDatabaseField.UserInToken,
+    findDatabaseField.UserInParams,
+    follower.checkForSelfFollow,
+    follower.checkForExistingFollowing,
+    follower.updatePreviousFollowing,
+    UserController.followUser
+  );
+  app.delete(
+    '/api/v1/profiles/:id/follow',
+    validateUserInputs.uuidV4Validator,
+    authentication.checkToken,
+    findDatabaseField.UserInToken,
+    findDatabaseField.UserInParams,
+    follower.checkForSelfUnfollow,
+    UserController.unfollowUser
   );
 };
 

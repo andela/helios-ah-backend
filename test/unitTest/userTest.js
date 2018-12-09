@@ -4,7 +4,6 @@ import models from '../../src/models'
 
 const { expect } = chai;
 const { Users } = models;
-
 const obj = {
   failedFirstName: {
     firstName: 'john15',
@@ -62,7 +61,7 @@ const obj = {
     password: '123456',
     username: 'john134'
   },
-}
+};
 
 describe('Test user model', () => {
   it('should reject first name containing invalid characters', async () => {

@@ -1,18 +1,22 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/app';
+import truncate from '../src/utilities/truncate';
 
 chai.use(chaiHttp);
 const { expect } = chai;
 
 describe('Integration tests for the user controller', () => {
+  beforeEach(async () => {
+    await truncate();
+  });
   describe('Test general error handling and welcome message', () => {
     it('should send an error when there is an unforseen error', (done) => {
       const userDetails = {
         username: 'Thomas?',
         password: 'tomnjerry',
       };
-      chai.request(app).post('/api/v1/auth/signup/%')
+      chai.request(app).post('/api/v1/auth/signup/')
         .send(userDetails)
         .end((err, res) => {
           expect(res.status).to.deep.equal(400);

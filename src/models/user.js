@@ -1,4 +1,3 @@
-
 export default (sequelize, DataTypes) => {
   const Users = sequelize.define('Users', {
     id: {
@@ -92,6 +91,20 @@ export default (sequelize, DataTypes) => {
     Users.hasMany(models.Article, {
       foreignKey: 'userId',
       as: 'articles',
+    });
+    Users.belongsToMany(models.Users, {
+      as: 'Follow',
+      through: {
+        model: 'Follower',
+      },
+      foreignKey: 'userId',
+    });
+    Users.belongsToMany(models.Users, {
+      as: 'Following',
+      through: {
+        model: 'Follower'
+      },
+      foreignKey: 'followerId'
     });
   };
   return Users;
