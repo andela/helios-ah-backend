@@ -1,5 +1,5 @@
 const VerificationModel = (sequelize, DataTypes) => {
-  const Authorize = sequelize.define('VerificationToken', {
+  const Authorize = sequelize.define('Authorize', {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
