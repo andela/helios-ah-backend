@@ -102,8 +102,8 @@ class UserController {
       });
     } catch (error) {
       return res.status(500).send({
-        message: 'Internal Server Error',
-        error
+        status: 'error',
+        error: 'Internal Server Error'
       });
     }
   }
@@ -139,11 +139,11 @@ class UserController {
             password:
               encryptedPassword || req.foundUser.password
           };
-          const newPassword = await req.foundUser.update(updatePassword);
+          await req.foundUser.update(updatePassword);
           tokenFromDB.update({ isExpired: true });
           return res.status(200).send({
+            status: 'success',
             message: 'Password successfully changed',
-            newPassword
           });
         }
       }
