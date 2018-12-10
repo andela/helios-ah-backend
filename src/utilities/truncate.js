@@ -14,11 +14,9 @@ import models from '../models';
    *
    * @returns {JSON} Returns a JSON object
    */
-const truncate = async () => Promise.all(
-  map(Object.keys(models), (key) => {
-    if (['sequelize', 'Sequelize'].includes(key)) return null;
-    return models[key].destroy({ where: {}, force: true });
-  })
-);
+const truncate = async () => Promise.all(map(Object.keys(models), (key) => {
+  if (['sequelize', 'Sequelize'].includes(key)) return null;
+  return models[key].destroy({ where: {}, force: true });
+}));
 
 export default truncate;

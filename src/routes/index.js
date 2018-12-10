@@ -2,11 +2,13 @@
 import {
   UserController,
   ArticleController,
-
 } from '../controller';
 
 import {
-  validateUserInputs, authentication, findDatabaseField, follower
+  validateUserInputs,
+  authentication,
+  findDatabaseField,
+  follower
 } from '../utilities';
 
 /**

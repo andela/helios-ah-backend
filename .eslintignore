@@ -3,5 +3,5 @@
 /docs/**
 /jsdoc/**
 /templates/**
-/test/**
+# /test/**
 !.eslintrc

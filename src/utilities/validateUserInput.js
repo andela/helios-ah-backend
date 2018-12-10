@@ -81,9 +81,9 @@ class Validate {
   static async uuidV4Validator(req, res, next) {
     const { id } = req.params;
 
-    const uuidV4Regex = new RegExp(
-      /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i
-    );
+    const uuidV4Regex = new RegExp(['^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-',
+      '[89AB][0-9A-F]{3}-[0-9A-F]{12}$'].join(''), 'i');
+
     const result = await uuidV4Regex.test(id);
 
     if (result) {
