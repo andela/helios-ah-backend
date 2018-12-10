@@ -33,10 +33,6 @@ const routes = (app) => {
     '/api/v1/authors',
     UserController.getAuthors
   );
-  app.get(
-    '/api/v1/authors/:search',
-    UserController.getAuthors
-  );
 };
 
 export default routes;

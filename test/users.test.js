@@ -6,6 +6,7 @@ import models from '../src/models';
 import Authenticate from '../src/middlewares/Authorization';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { truncate } from 'fs';
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -103,7 +104,7 @@ describe('Integration tests for the user controller', () => {
           email: faker.internet.email(),
           password: '123456',
           bio: faker.lorem.paragraph(),
-          username: faker.internet.userName(),
+          username: faker.name.firstName(),
           isVerified: true,
         }
         try {
@@ -116,13 +117,13 @@ describe('Integration tests for the user controller', () => {
     it('should get all users', async () => {
       const response = await chai.request(app).get('/api/v1/authors');
       expect(response.status).to.be.equals(200);
-      expect(response.body.message).to.be.equals('successfully');
+      expect(response.body.success).to.be.equals(true);
       expect(response.body.authors).to.be.an('array');
     });
     it('should get all users where search matches like username, firstname, lastname', async () => {
-      const response = await chai.request(app).get('/api/v1/authors/john');
+      const response = await chai.request(app).get('/api/v1/authors/?search=john');
       expect(response.status).to.be.equals(200);
-      expect(response.body.message).to.be.equals('successfully');
+      expect(response.body.success).to.be.equals(true);
       expect(response.body.authors).to.be.an('array');
     });
     it('should reject unauthorize user', async () => {

@@ -61,7 +61,7 @@ class UserController {
   static async getAuthors(req, res) {
     try {
       let authors;
-      if (req.params.search) {
+      if (req.query.search) {
         authors = await Users.findAll({
           attributes: [
             'id',
@@ -76,17 +76,17 @@ class UserController {
             [Op.or]: [
               {
                 username: {
-                  [Op.like]: `%${req.params.search}%`
+                  [Op.like]: `%${req.query.search}%`
                 }
               },
               {
                 firstName: {
-                  [Op.like]: `%${req.params.search}%`
+                  [Op.like]: `%${req.query.search}%`
                 }
               },
               {
                 lastName: {
-                  [Op.like]: `%${req.params.search}%`
+                  [Op.like]: `%${req.query.search}%`
                 }
               },
             ],
@@ -109,13 +109,13 @@ class UserController {
         });
       }
       res.status(200).json({
-        message: 'successfully',
+        success: true,
         authors,
       });
     } catch (error) {
       res.status(500).json({
+        success: false,
         message: 'Internal server error',
-        error: error.message,
       });
     }
   }
