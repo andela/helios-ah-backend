@@ -1,4 +1,6 @@
-// reference https://medium.com/riipen-engineering/testing-with-sequelize-cc51dafdfcf4
+/** reference
+ * https://medium.com/riipen-engineering/testing-with-sequelize-cc51dafdfcf4
+ *  */
 
 import map from 'lodash/map';
 import models from '../models';

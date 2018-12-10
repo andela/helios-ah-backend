@@ -103,7 +103,8 @@ class Followers {
     Followers.queryForExistingFollowing(false, userId, followerId);
 
     if (isPreviousFollowing) {
-      await Followers.queryForUpdatingPreviousFollowing(true, userId, followerId);
+      await Followers
+        .queryForUpdatingPreviousFollowing(true, userId, followerId);
       res.status(200).json({
         message: 'You are now following this user'
       });

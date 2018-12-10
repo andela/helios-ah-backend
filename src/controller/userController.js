@@ -94,7 +94,8 @@ class UserController {
     followersUtil.queryForExistingFollowing(true, userId, followerId);
 
     if (isExistingFollowing) {
-      await followersUtil.queryForUpdatingPreviousFollowing(false, userId, followerId);
+      await followersUtil
+        .queryForUpdatingPreviousFollowing(false, userId, followerId);
       res.status(200).json({
         message: 'You have unfollowed this user'
       });

@@ -37,65 +37,73 @@ describe('Integration tests for the article controller', () => {
       expect(response.body.articleCreated).to.have.property('body');
       expect(response.body.articleCreated.body).to.equal(articleDetails.body);
       expect(response.body.articleCreated).to.have.property('description');
-      expect(response.body.articleCreated.description).to.equal(articleDetails.description);
+      expect(response.body.articleCreated.description)
+        .to.equal(articleDetails.description);
       expect(response.body.articleCreated).to.have.property('image');
       expect(response.body.articleCreated.image).to.equal(articleDetails.image);
       expect(response.body.articleCreated.isDraft).to.equal(true);
     });
-    it('should send an error message when image field is not a URL', async () => {
-      const articleDetails = {
-        title: 'The brow fox',
-        body: 'so i saw a dog',
-        description: 'narrative',
-        image: 'someimageuplodersitecom',
-      };
-      const response = await chai.request(app).post('/api/v1/articles')
-        .set('x-access-token', myToken).send(articleDetails);
-      expect(response.status).to.equal(400);
-      expect(response.body).to.have.property('message');
-      expect(response.body.message).to.equal('Please use an image URL.');
-    });
-    it('should send an error message when required field is missing', async () => {
-      const articleDetails = {
-        title: 'The brow fox',
-        description: 'narrative',
-        image: 'https://someimage.uplodersite.com',
-      };
-      const response = await chai.request(app).post('/api/v1/articles')
-        .set('x-access-token', myToken).send(articleDetails);
-      expect(response).to.have.status(400);
-      expect(response.body).to.have.property('message');
-      expect(response.body.message).to.deep.equal('Invalid request. All fields are required');
-    });
-    it('should send an error message when title field is too long', async () => {
-      const articleDetails = {
-        title: `Thebrowfoxwertyhgfdrghnbfrtyhjnbgfthjmnbghjmnbghjmnbghjmnbghjnbg
+    it('should send an error message when image field is not a URL',
+      async () => {
+        const articleDetails = {
+          title: 'The brow fox',
+          body: 'so i saw a dog',
+          description: 'narrative',
+          image: 'someimageuplodersitecom',
+        };
+        const response = await chai.request(app).post('/api/v1/articles')
+          .set('x-access-token', myToken).send(articleDetails);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.equal('Please use an image URL.');
+      });
+    it('should send an error message when required field is missing',
+      async () => {
+        const articleDetails = {
+          title: 'The brow fox',
+          description: 'narrative',
+          image: 'https://someimage.uplodersite.com',
+        };
+        const response = await chai.request(app).post('/api/v1/articles')
+          .set('x-access-token', myToken).send(articleDetails);
+        expect(response).to.have.status(400);
+        expect(response.body).to.have.property('message');
+        expect(response.body.message)
+          .to.deep.equal('Invalid request. All fields are required');
+      });
+    it('should send an error message when title field is too long',
+      async () => {
+        const articleDetails = {
+          title: `Thebrowfoxwertyhgfdrghnbfrtyhjnbgfthjmnbghjmnbghjmnbg
                 asdfghjnbvcdfghnbvfrtyuioiuytuioiuhghjkiuytyuiughjkghjh`,
-        body: 'so i saw a dog',
-        description: 'narrative',
-        image: 'https://someimage.uplodersite.com',
-      };
-      const response = await chai.request(app).post('/api/v1/articles')
-        .set('x-access-token', myToken).send(articleDetails);
-      expect(response.status).to.equal(400);
-      expect(response.body).to.have.property('message');
-      expect(response.body.message).to.equal('Title should not exceed 80 characters');
-    });
-    it('should send an error message when description field is too long', async () => {
-      const articleDetails = {
-        description: `Thebrowfoxwertyhgfdrghnbfrtyhjnbgfthjmnbghjmnbghjmnbghjmnbghjnbg
+          body: 'so i saw a dog',
+          description: 'narrative',
+          image: 'https://someimage.uplodersite.com',
+        };
+        const response = await chai.request(app).post('/api/v1/articles')
+          .set('x-access-token', myToken).send(articleDetails);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message');
+        expect(response.body.message)
+          .to.equal('Title should not exceed 80 characters');
+      });
+    it('should send an error message when description field is too long',
+      async () => {
+        const articleDetails = {
+          description: `Thebrowfoxwertyhgfdrghnbfrtyhjnbgfthjmnbghjmnbghjmnbg
         asdfghjnbvcdfghnbvfghjnbfghjnbghjmnbghjkmnbghjkmnghjkm,nhjm,nhjm,nhjm
         sdfghjkjhgfdfghjkjhgfghjkjhgghjkmnghjmnbfghjnbghjmnghjmnhjmnbghjnhjnj
         ertyujuytfbhnjkjhgbnm,kjhgnmkuhjkuhjkliuhmliuhnmkmnbvdfghjkiuyfrtyukn`,
-        body: 'so i saw a dog',
-        title: 'narrative',
-        image: 'https://someimage.uplodersite.com',
-      };
-      const response = await chai.request(app).post('/api/v1/articles')
-        .set('x-access-token', myToken).send(articleDetails);
-      expect(response.status).to.equal(400);
-      expect(response.body).to.have.property('message');
-      expect(response.body.message).to.equal('Description field should not exceed 200 character');
-    });
+          body: 'so i saw a dog',
+          title: 'narrative',
+          image: 'https://someimage.uplodersite.com',
+        };
+        const response = await chai.request(app).post('/api/v1/articles')
+          .set('x-access-token', myToken).send(articleDetails);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message');
+        expect(response.body.message)
+          .to.equal('Description field should not exceed 200 character');
+      });
   });
 });
