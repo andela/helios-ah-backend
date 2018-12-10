@@ -67,12 +67,14 @@ class UserController {
       });
       if (userUpdated[0] === 1) {
         res.status(200).send({
-          message: 'User role was updated successfully'
+          message: 'User role was updated successfully',
+          success: true
         });
       }
     } catch (error) {
       res.status(500).send({
-        message: 'Internal server error'
+        message: 'Internal server error',
+        success: false
       });
     }
   }

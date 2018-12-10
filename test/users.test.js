@@ -131,6 +131,8 @@ describe('Tests for roles', () => {
       expect(res.status).to.deep.equal(200);
       expect(res.body).to.have.property('message');
       expect(res.body.message).to.equal('User role was updated successfully');
+      expect(res.body).to.have.property('success');
+      expect(res.body.success).to.equal(true);
     });
   });
 });
