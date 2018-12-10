@@ -1,6 +1,6 @@
 export default {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('ChildComments',
-    {
+  up: (queryInterface, Sequelize) => queryInterface
+    .createTable('ChildComments', {
       id: {
         primaryKey: true,
         type: Sequelize.UUID,
