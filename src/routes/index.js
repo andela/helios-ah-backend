@@ -2,6 +2,7 @@
 import {
   UserController,
   ArticleController,
+  CommentController
 } from '../controller';
 
 import { validateUserInputs, authentication } from '../utilities';
@@ -27,6 +28,20 @@ const routes = (app) => {
     validateUserInputs.validateCreateArticle,
     authentication.checkToken,
     ArticleController.createArticle
+  );
+
+  app.post(
+    '/api/v1/articles/:articleId/comments',
+    validateUserInputs.validateCreateComment,
+    authentication.checkToken,
+    CommentController.createComment
+  );
+
+  app.post(
+    '/api/v1/comments/:commentId/childcomments',
+    validateUserInputs.validateCreateComment,
+    authentication.checkToken,
+    CommentController.createChildComment
   );
 };
 

@@ -28,7 +28,7 @@ class Authentication {
     const token = await jwt.sign({
       id: data.id,
       role: data.role,
-      userName: data.userName
+      username: data.username
     }, process.env.SECRET, {
       expiresIn: time || 86400 // expires in 1 day
     });
@@ -50,7 +50,7 @@ class Authentication {
         output = {
           id: decoded.id,
           role: decoded.role,
-          userName: decoded.userName,
+          username: decoded.username,
         };
       });
       return output;
@@ -83,7 +83,7 @@ class Authentication {
       });
     } else {
       try {
-        const tokenVerified = Authentication.verifyToken(token);
+        const tokenVerified = await Authentication.verifyToken(token);
         req.decoded = tokenVerified;
         next();
       } catch (error) {
