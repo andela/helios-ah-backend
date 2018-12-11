@@ -28,6 +28,13 @@ const routes = (app) => {
     authentication.checkToken,
     ArticleController.createArticle
   );
+  app.put(
+    '/api/v1/users/role/:userId',
+    authentication.checkToken,
+    validateUserInputs.validateUserRoleAuth,
+    validateUserInputs.validateUserRoleBody,
+    UserController.userRole
+  );
 };
 
 export default routes;

@@ -83,7 +83,7 @@ class Authentication {
       });
     } else {
       try {
-        const tokenVerified = Authentication.verifyToken(token);
+        const tokenVerified = await Authentication.verifyToken(token);
         req.decoded = tokenVerified;
         next();
       } catch (error) {
