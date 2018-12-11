@@ -1,3 +1,4 @@
+import crypter from '../utilities/cryptData';
 
 export default (sequelize, DataTypes) => {
   const Users = sequelize.define('Users', {
@@ -13,7 +14,7 @@ export default (sequelize, DataTypes) => {
         len: [3, 25],
         is: {
           args: /^[a-z']+$/i,
-          msg: 'First name must contain only Alphabets and'
+          msg: 'First name must contain only Alphabets'
         }
       }
     },
@@ -24,9 +25,9 @@ export default (sequelize, DataTypes) => {
         len: [3, 25],
         is: {
           args: /^[a-z']+$/i,
-          msg: 'Last name must contain only Alphabets and'
+          msg: 'Last name must contain only Alphabets'
         }
-      }
+      },
     },
     email: {
       type: DataTypes.STRING,
@@ -80,14 +81,19 @@ export default (sequelize, DataTypes) => {
         }
       }
     },
-    roleId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 1
+  },
+  {
+    hooks: {
+      beforeUpdate: async (user) => {
+        user.password = await crypter.encryptData(user.password);
+      },
+      beforeCreate: async (user) => {
+        user.password = await crypter.encryptData(user.password);
+      }
     }
   });
   Users.associate = (models) => {
-    Users.hasMany(models.VerificationToken, {
+    Users.hasMany(models.Authorize, {
       foreignKey: 'userId',
     });
     Users.hasMany(models.Article, {
