@@ -30,6 +30,10 @@ const articleModel = (sequelize, DataTypes) => {
         }
       }
     },
+    readTime: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     image: {
       type: DataTypes.STRING,
       validate: {

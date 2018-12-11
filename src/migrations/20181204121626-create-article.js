@@ -18,6 +18,10 @@ export default {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    readTime: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
     image: {
       type: Sequelize.STRING,
     },
