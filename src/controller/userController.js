@@ -35,6 +35,7 @@ class UserController {
       if (userCreated) {
         const tokenCreated = await authentication.getToken(userCreated);
         res.status(201).send({
+          success: true,
           message: `User ${userCreated.username} created successfully`,
           id: userCreated.id,
           username: userCreated.username,
@@ -44,6 +45,7 @@ class UserController {
       }
     } catch (error) {
       res.status(500).send({
+        success: false,
         message: 'Internal server error',
       });
     }
@@ -70,6 +72,7 @@ class UserController {
       });
       if (createFollower) {
         res.status(200).json({
+          success: true,
           message: 'You are now following this user'
         });
       }
@@ -98,10 +101,12 @@ class UserController {
       await followersUtil
         .queryForUpdatingPreviousFollowing(false, userId, followerId);
       res.status(200).json({
+        success: true,
         message: 'You have unfollowed this user'
       });
     } else {
       res.status(400).json({
+        success: false,
         message: 'You do not follow this user'
       });
     }

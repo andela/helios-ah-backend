@@ -79,6 +79,7 @@ class Followers {
 
     if (isExistingFollowing) {
       res.status(409).json({
+        success: false,
         message: 'You are already following this user'
       });
     } else {
@@ -106,6 +107,7 @@ class Followers {
       await Followers
         .queryForUpdatingPreviousFollowing(true, userId, followerId);
       res.status(200).json({
+        success: true,
         message: 'You are now following this user'
       });
     } else {
@@ -128,6 +130,7 @@ class Followers {
 
     if (userId === followerId) {
       res.status(400).json({
+        success: false,
         message: 'You cannot follow yourself'
       });
     } else {
@@ -150,6 +153,7 @@ class Followers {
 
     if (userId === followerId) {
       res.status(400).json({
+        success: false,
         message: 'You cannot follow or unfollow yourself'
       });
     } else {
