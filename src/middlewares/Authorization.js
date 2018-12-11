@@ -15,7 +15,7 @@ class Authorization {
   static async hasWriteAccess(req, res, next) {
     if ((req.decoded.id !== req.body.userId) || !req.body.userId) {
       return res.status(401).send({
-        code: 401,
+        success: false,
         message: 'You don\'t have access to edit this file',
       });
     }
@@ -38,17 +38,17 @@ class Authorization {
     || req.headers['x-access-token'];
     if (!token) {
       res.status(401).send({
-        code: 401,
+        success: false,
         message: 'User not authorized',
       });
     } else {
       try {
-        const tokenVerified = Auth.verifyToken(token);
+        const tokenVerified = await Auth.verifyToken(token);
         req.decoded = tokenVerified;
         next();
       } catch (error) {
         res.status(401).send({
-          code: 401,
+          success: false,
           message: 'Authentication failed',
           error,
         });

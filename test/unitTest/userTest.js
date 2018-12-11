@@ -67,17 +67,17 @@ const obj = {
 describe('Test user model', () => {
   it('should reject first name containing invalid characters', async () => {
     try {
-      expect(await Users.create(obj.failedFirstName)).to.equal('First name must contain only Alphabets and \'');
+      expect(await Users.create(obj.failedFirstName)).to.equal('First name must contain only Alphabets and');
     } catch (error) {
-      expect(error.errors[0].message).to.equal('First name must contain only Alphabets and \'');
+      expect(error.errors[0].message).to.equal('First name must contain only Alphabets and');
     }
   });
 
   it('should reject last name containing invalid characters', async () => {
     try {
-      expect(await Users.create(obj.failedLastName)).to.equal('Last name must contain only Alphabets and \'');
+      expect(await Users.create(obj.failedLastName)).to.equal('Last name must contain only Alphabets and');
     } catch (error) {
-      expect(error.errors[0].message).to.equal('Last name must contain only Alphabets and \'');
+      expect(error.errors[0].message).to.equal('Last name must contain only Alphabets and');
     }
   });
 

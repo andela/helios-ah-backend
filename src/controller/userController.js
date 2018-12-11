@@ -59,55 +59,46 @@ class UserController {
   * @memberof USerController
  */
   static async getAuthors(req, res) {
+    let authors;
+    const options = {
+      attributes: [
+        'id',
+        'firstName',
+        'lastName',
+        'email',
+        'image',
+        'bio',
+        'username'
+      ],
+      where: {
+        isVerified: true,
+      },
+    };
     try {
-      let authors;
       if (req.query.search) {
-        authors = await Users.findAll({
-          attributes: [
-            'id',
-            'firstName',
-            'lastName',
-            'email',
-            'image',
-            'bio',
-            'username'
+        options.where = {
+          [Op.or]: [
+            {
+              username: {
+                [Op.like]: `%${req.query.search}%`
+              }
+            },
+            {
+              firstName: {
+                [Op.like]: `%${req.query.search}%`
+              }
+            },
+            {
+              lastName: {
+                [Op.like]: `%${req.query.search}%`
+              }
+            },
           ],
-          where: {
-            [Op.or]: [
-              {
-                username: {
-                  [Op.like]: `%${req.query.search}%`
-                }
-              },
-              {
-                firstName: {
-                  [Op.like]: `%${req.query.search}%`
-                }
-              },
-              {
-                lastName: {
-                  [Op.like]: `%${req.query.search}%`
-                }
-              },
-            ],
-          }
-        });
-      } else {
-        authors = await Users.findAll({
-          attributes: [
-            'id',
-            'firstName',
-            'lastName',
-            'email',
-            'image',
-            'bio',
-            'username'
-          ],
-          where: {
-            isVerified: true,
-          }
-        });
+          isVerified: true,
+        };
       }
+      authors = await Users.findAll(options);
+
       res.status(200).json({
         success: true,
         authors,
@@ -116,6 +107,37 @@ class UserController {
       res.status(500).json({
         success: false,
         message: 'Internal server error',
+      });
+    }
+  }
+
+  /**
+   * Updates user role
+   * Route: PUT: users/role/:userId
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @return {res} res - Response object
+   * @memberof UserController
+   */
+  static async userRole(req, res) {
+    try {
+      const userUpdated = await Users.update({
+        roleId: req.body.roleId,
+      }, {
+        where: {
+          id: req.params.userId
+        }
+      });
+      if (userUpdated[0] === 1) {
+        res.status(200).send({
+          message: 'User role was updated successfully',
+          success: true
+        });
+      }
+    } catch (error) {
+      res.status(500).send({
+        message: 'Internal server error',
+        success: false
       });
     }
   }

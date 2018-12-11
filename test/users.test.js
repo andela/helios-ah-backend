@@ -6,7 +6,9 @@ import models from '../src/models';
 import Authenticate from '../src/middlewares/Authorization';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { truncate } from 'fs';
+import { authentication } from '../src/utilities';
+
+let dataUserId;
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -74,6 +76,7 @@ describe('Integration tests for the user controller', () => {
         expect(res.body.id).to.not.equal(null);
         expect(res.body).to.have.property('token');
         expect(res.body.token).to.not.equal(null);
+        dataUserId = res.body.id;
         done();
       });
     });
@@ -96,7 +99,11 @@ describe('Integration tests for the user controller', () => {
     });
   });
   describe('Test to get Users', () => {
+    let token;
     before(async () => {
+      token = await authentication.getToken({
+        role: 2
+      });
       for (let index = 0; index < 10; index++) {
         let user = {
           firstName: faker.name.firstName(),
@@ -115,13 +122,15 @@ describe('Integration tests for the user controller', () => {
       }
     });
     it('should get all users', async () => {
-      const response = await chai.request(app).get('/api/v1/authors');
+      const response = await chai.request(app).get('/api/v1/authors')
+      .set('x-access-token', token);
       expect(response.status).to.be.equals(200);
       expect(response.body.success).to.be.equals(true);
       expect(response.body.authors).to.be.an('array');
     });
     it('should get all users where search matches like username, firstname, lastname', async () => {
-      const response = await chai.request(app).get('/api/v1/authors/?search=john');
+      const response = await chai.request(app).get('/api/v1/authors/?search=john')
+      .set('x-access-token', token);
       expect(response.status).to.be.equals(200);
       expect(response.body.success).to.be.equals(true);
       expect(response.body.authors).to.be.an('array');
@@ -149,6 +158,51 @@ describe('Integration tests for the user controller', () => {
       expect(response.status).to.be.calledOnce;
       expect(response.status).to.be.calledWith(401);
       expect(result).to.have.property('message', 'You don\'t have access to edit this file');
+    });
+  });
+});
+
+describe('Tests for roles', () => {
+  let validAdminToken, invalidAdminToken, newRole, invalidRole;
+  before(async () => {
+    validAdminToken = await authentication.getToken({
+      role: 2
+    });
+    invalidAdminToken = await authentication.getToken({
+      role: 1
+    });
+    newRole = {
+      roleId: 2
+    };
+    invalidRole = {
+      roleId: 'invalid role'
+    }
+  });
+  describe('Validation for role update', () => {
+    it('should return an error for an invalid token', async () => {
+      const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
+        .set('x-access-token', invalidAdminToken).send(newRole);
+      expect(res.status).to.deep.equal(401);
+      expect(res.body).to.have.property('message');
+      expect(res.body.message).to.equal('Invalid token. Only Admins. can update roles');
+    });
+    it('should return an error for an invalid or empty role', async () => {
+      const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
+        .set('x-access-token', validAdminToken).send(invalidRole);
+      expect(res.status).to.deep.equal(400);
+      expect(res.body).to.have.property('message');
+      expect(res.body.message).to.equal('Invalid role passed');
+    });
+  });
+  describe('Integration test for roles controller', () => {
+    it('should update user role', async () => {
+      const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
+        .set('x-access-token', validAdminToken).send(newRole);
+      expect(res.status).to.deep.equal(200);
+      expect(res.body).to.have.property('message');
+      expect(res.body.message).to.equal('User role was updated successfully');
+      expect(res.body).to.have.property('success');
+      expect(res.body.success).to.equal(true);
     });
   });
 });

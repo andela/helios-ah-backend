@@ -25,13 +25,21 @@ const routes = (app) => {
   );
   app.post(
     '/api/v1/articles',
-    validateUserInputs.validateCreateArticle,
     Authorization.checkToken,
+    validateUserInputs.validateCreateArticle,
     ArticleController.createArticle
   );
   app.get(
     '/api/v1/authors',
+    Authorization.checkToken,
     UserController.getAuthors
+  );
+  app.put(
+    '/api/v1/users/role/:userId',
+    Authorization.checkToken,
+    validateUserInputs.validateUserRoleAuth,
+    validateUserInputs.validateUserRoleBody,
+    UserController.userRole
   );
 };
 
