@@ -116,18 +116,21 @@ describe('Tests for roles', () => {
     };
     invalidRole = {
       roleId: 'invalid role'
-    }
+    };
   });
   describe('Validation for role update', () => {
     it('should return an error for an invalid token', async () => {
-      const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
+      const res = await chai.request(app)
+        .put(`/api/v1/users/role/${dataUserId}`)
         .set('x-access-token', invalidAdminToken).send(newRole);
       expect(res.status).to.deep.equal(401);
       expect(res.body).to.have.property('message');
-      expect(res.body.message).to.equal('Invalid token. Only Admins. can update roles');
+      expect(res.body.message)
+        .to.equal('Invalid token. Only Admins. can update roles');
     });
     it('should return an error for an invalid or empty role', async () => {
-      const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
+      const res = await chai.request(app)
+        .put(`/api/v1/users/role/${dataUserId}`)
         .set('x-access-token', validAdminToken).send(invalidRole);
       expect(res.status).to.deep.equal(400);
       expect(res.body).to.have.property('message');
@@ -151,13 +154,15 @@ describe('Tests for roles', () => {
         userToken = await res.body.token;
         expect(res.status).to.equal(201);
         expect(res.body).to.have.property('token');
-  
+
         decodedUserToken = jwt.decode(userToken.split('').reverse().join(''));
-        const res2 = await chai.request(app).put(`/api/v1/users/role/${decodedUserToken.id}`)
-        .set('x-access-token', validAdminToken).send(newRole);
+        const res2 = await chai.request(app)
+          .put(`/api/v1/users/role/${decodedUserToken.id}`)
+          .set('x-access-token', validAdminToken).send(newRole);
         expect(res2.status).to.deep.equal(200);
         expect(res2.body).to.have.property('message');
-        expect(res2.body.message).to.equal('User role was updated successfully');
+        expect(res2.body.message)
+          .to.equal('User role was updated successfully');
         expect(res2.body).to.have.property('success');
         expect(res2.body.success).to.equal(true);
       } catch (err) {
