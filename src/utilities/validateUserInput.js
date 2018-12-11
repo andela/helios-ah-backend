@@ -39,9 +39,9 @@ class Validate {
   static validateSignup(req, res, next) {
     req.body = trimValues(req.body);
     const {
-      username, password, email, bio, firstName, lastName,
+      username, password, email, firstName, lastName,
     } = req.body;
-    if (username && password && email && bio && firstName && lastName) {
+    if (username && password && email && firstName && lastName) {
       next();
     } else {
       allFieldsRequired(res);
