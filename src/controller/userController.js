@@ -1,11 +1,10 @@
-import { cryptData, authentication } from '../utilities';
+import { authentication } from '../utilities';
 import models from '../models';
 import SendEmail from '../utilities/sendEmail';
 import Authentication from '../utilities/authentication';
 
 const { Users } = models;
-const { userTokens } = models;
-let resetLink;
+let resetLink, token;
 
 /**
  * Class representing the user controller
@@ -26,10 +25,9 @@ class UserController {
       username, password, email, firstName, lastName, bio
     } = req.body;
     try {
-      const encryptedPassword = await cryptData.encryptData(password);
       const userCreated = await Users.create({
         username,
-        password: encryptedPassword,
+        password,
         email,
         firstName,
         lastName,
@@ -54,13 +52,13 @@ class UserController {
 
   /**
    * User request password reset
-   * Route: POST: /api/v1/user/request-password-reset
+   * Route: POST: /api/v1/user/requests/password/reset
    * @param {object} req - Request Object
    * @param {object} res - Response Objec
    * @returns {res} res - Response Object
    * @memberof UserController
    */
-  static async userRequestPasswordReset(req, res) {
+  static async requestResetPassword(req, res) {
     let resetLinkURL;
     if (process.env.NODE_ENV !== 'production') {
       resetLinkURL = process.env.LOCAL_BASE_URL;
@@ -68,7 +66,6 @@ class UserController {
       resetLinkURL = process.env.BASE_URL;
     }
 
-    const { email } = req.body;
     try {
       const { foundUser } = req;
       const payload = {
@@ -76,19 +73,15 @@ class UserController {
         username: foundUser.username,
         role: 1
       };
-      const token = await Authentication.getToken(payload, 900000);
+      token = await Authentication.getToken(payload, 900000);
       if (foundUser) {
-        const tokenCreated = await userTokens.create({
-          token,
-          userId: foundUser.id
-        });
-        resetLink = `${resetLinkURL}${tokenCreated.token}`;
+        resetLink = `${resetLinkURL}/change/password?token=${token}`;
         const details = {
           emailBody: `
             Hi ${foundUser.firstName}, click ${resetLink} to reset password
           `,
           subject: 'Request to reset password',
-          email
+          email: req.body.email
         };
         await SendEmail.emailSender(details);
         return res.status(200).send({
@@ -110,7 +103,7 @@ class UserController {
 
   /**
    * User reset password
-   * Route: PUT: '/api/v1/user/reset-password
+   * Route: PUT: '/api/v1/change/password
    * @param {object} req - Request Object
    * @param {object} res - Response Object
    * @returns {res} res - Response Object
@@ -118,44 +111,67 @@ class UserController {
    */
   static async resetPassword(req, res) {
     if (req.foundUser) {
-      const tokenFromLink = req.params.token;
-      const tokenFromDB = await userTokens.findOne({
-        where: {
-          token: tokenFromLink
-        }
-      });
-      if (tokenFromDB) {
-        if (Date.now() - Date.parse(tokenFromDB.createdAt) > 900000) {
-          await tokenFromDB.update({ isExpired: true });
-          return res.status(401).send({
-            status: 'error',
-            error: 'The link has expired'
+      const payload = await Authentication.verifyToken(req.query.token);
+      if (payload) {
+        const user = await Users.findByPk(payload.id);
+        if (!req.body.password) {
+          return res.status(400).send({
+            success: 'false',
+            error: 'password field is required'
           });
         }
-        if (!tokenFromDB.isExpired) {
-          const
-            encryptedPassword = await cryptData.encryptData(req.body.password);
-          const updatePassword = {
-            password:
-              encryptedPassword || req.foundUser.password
-          };
-          await req.foundUser.update(updatePassword);
-          tokenFromDB.update({ isExpired: true });
-          return res.status(200).send({
-            status: 'success',
-            message: 'Password successfully changed',
-          });
-        }
+        await user.update({
+          password: req.body.password
+        });
+        return res.status(200).send({
+          success: true,
+          message: 'password reset successful'
+        });
       }
       return res.status(401).send({
-        status: 'error',
-        error: 'Unauthorized access to reset password, invalid token'
+        success: false,
+        error: 'invalid token'
       });
     }
     return res.status(404).send({
       status: 'error',
       error: 'email not found'
     });
+  }
+
+  /**
+   * Updates user role
+   * Route: PUT: users/role/:userId
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @return {res} res - Response object
+   * @memberof UserController
+   */
+  static async userRole(req, res) {
+    try {
+      const userUpdated = await Users.update(
+        {
+          roleId: req.body.roleId,
+        },
+        {
+          where:
+          {
+            id: req.params.userId
+          }
+        }
+      );
+      if (userUpdated[0] === 1) {
+        res.status(200).send({
+          message: 'User role was updated successfully',
+          success: true
+        });
+      }
+    } catch (error) {
+      res.status(500).send({
+        message: 'Internal server error',
+        success: false
+      });
+    }
   }
 }
 

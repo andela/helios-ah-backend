@@ -25,13 +25,17 @@ class Authentication {
    * @returns {output} - returns a jwt token
    */
   static async getToken(data, time) {
-    const token = await jwt.sign({
-      id: data.id,
-      role: data.role,
-      userName: data.userName
-    }, process.env.SECRET, {
-      expiresIn: time || 86400 // expires in 1 day
-    });
+    const token = await jwt.sign(
+      {
+        id: data.id,
+        role: data.role,
+        username: data.username
+      },
+      process.env.SECRET,
+      {
+        expiresIn: time || 86400 // expires in 1 day
+      }
+    );
     const output = reverseToken(token);
     return output;
   }
@@ -43,23 +47,18 @@ class Authentication {
    */
   static async verifyToken(input) {
     const token = reverseToken(input);
-    let output = {};
+    let data;
     try {
       await jwt.verify(token, process.env.SECRET, (err, decoded) => {
-        // update req with the decrypted token
-        output = {
-          id: decoded.id,
-          role: decoded.role,
-          userName: decoded.userName,
-        };
+        if (err) {
+          data = false;
+        }
+        data = decoded;
       });
-      return output;
     } catch (err) {
-      output = {
-        Error: 'Failed to authenticate token'
-      };
-      return output;
+      data = false;
     }
+    return data;
   }
 
   /**
@@ -75,7 +74,7 @@ class Authentication {
    */
   static async checkToken(req, res, next) {
     const token = req.body.token || req.query.token
-    || req.headers['x-access-token'];
+      || req.headers['x-access-token'];
     if (!token) {
       res.status(401).send({
         code: 401,
@@ -83,7 +82,7 @@ class Authentication {
       });
     } else {
       try {
-        const tokenVerified = Authentication.verifyToken(token);
+        const tokenVerified = await Authentication.verifyToken(token);
         req.decoded = tokenVerified;
         next();
       } catch (error) {

@@ -32,12 +32,20 @@ const routes = (app) => {
   app.post(
     '/api/v1/user/requests/password/reset',
     userMiddleware.getUserByMail,
-    UserController.userRequestPasswordReset
+    UserController.requestResetPassword
   );
   app.put(
-    '/api/v1/change/password/:token',
+    '/api/v1/change/password',
     userMiddleware.getUserByMail,
+    authentication.checkToken,
     UserController.resetPassword
+  );
+  app.put(
+    '/api/v1/users/role/:userId',
+    authentication.checkToken,
+    validateUserInputs.validateUserRoleAuth,
+    validateUserInputs.validateUserRoleBody,
+    UserController.userRole
   );
 };
 

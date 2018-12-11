@@ -1,6 +1,9 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/app';
+import { authentication } from '../src/utilities';
+
+let dataUserId;
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -65,6 +68,7 @@ describe('Integration tests for the user controller', () => {
         expect(res.body.id).to.not.equal(null);
         expect(res.body).to.have.property('token');
         expect(res.body.token).to.not.equal(null);
+        dataUserId = res.body.id;
         done();
       });
     });
@@ -84,6 +88,51 @@ describe('Integration tests for the user controller', () => {
         expect(res.body.message).to.equal('Invalid request. All fields are required');
         done();
       });
+    });
+  });
+});
+
+describe('Tests for roles', () => {
+  let validAdminToken, invalidAdminToken, newRole, invalidRole;
+  before(async () => {
+    validAdminToken = await authentication.getToken({
+      role: 2
+    });
+    invalidAdminToken = await authentication.getToken({
+      role: 1
+    });
+    newRole = {
+      roleId: 2
+    };
+    invalidRole = {
+      roleId: 'invalid role'
+    }
+  });
+  describe('Validation for role update', () => {
+    it('should return an error for an invalid token', async () => {
+      const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
+        .set('x-access-token', invalidAdminToken).send(newRole);
+      expect(res.status).to.deep.equal(401);
+      expect(res.body).to.have.property('message');
+      expect(res.body.message).to.equal('Invalid token. Only Admins. can update roles');
+    });
+    it('should return an error for an invalid or empty role', async () => {
+      const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
+        .set('x-access-token', validAdminToken).send(invalidRole);
+      expect(res.status).to.deep.equal(400);
+      expect(res.body).to.have.property('message');
+      expect(res.body.message).to.equal('Invalid role passed');
+    });
+  });
+  describe('Integration test for roles controller', () => {
+    it('should update user role', async () => {
+      const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
+        .set('x-access-token', validAdminToken).send(newRole);
+      expect(res.status).to.deep.equal(200);
+      expect(res.body).to.have.property('message');
+      expect(res.body.message).to.equal('User role was updated successfully');
+      expect(res.body).to.have.property('success');
+      expect(res.body.success).to.equal(true);
     });
   });
 });

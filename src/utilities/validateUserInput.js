@@ -68,6 +68,46 @@ class Validate {
       allFieldsRequired(res);
     }
   }
+
+  /**
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - Response object when request body is invalid
+   * @memberof Validate
+   */
+  static validateUserRoleBody(req, res, next) {
+    const { roleId } = req.body;
+    if (roleId && roleId >= 1 && roleId <= 3) {
+      next();
+    } else {
+      res.status(400).send({
+        message: 'Invalid role passed',
+      });
+    }
+  }
+
+  /**
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - Response object when authentication fail
+   * @memberof Validate
+   */
+  static validateUserRoleAuth(req, res, next) {
+    const roleId = req.decoded.role;
+    if (roleId && (roleId === 2 || roleId === 3)) {
+      next();
+    } else {
+      res.status(401).send({
+        message: 'Invalid token. Only Admins. can update roles',
+      });
+    }
+  }
 }
 
 export default Validate;
