@@ -35,6 +35,11 @@ export default {
       allowNull: false,
       unique: true
     },
+    roleId: {
+      type: Sequelize.INTEGER,
+      allowNull: false,
+      defaultValue: 1
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

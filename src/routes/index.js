@@ -53,6 +53,13 @@ const routes = (app) => {
     follower.checkForSelfUnfollow,
     UserController.unfollowUser
   );
+  app.put(
+    '/api/v1/users/role/:userId',
+    authentication.checkToken,
+    validateUserInputs.validateUserRoleAuth,
+    validateUserInputs.validateUserRoleBody,
+    UserController.userRole
+  );
 };
 
 export default routes;

@@ -233,6 +233,22 @@ Authentication required, returns the User
 
 Accepted fields: `email`, `username`, `password`, `image`, `bio`
 
+### Update User Role
+
+`PUT /api/v1/users/role/:userId`
+
+Example request body:
+
+```source-json
+{
+  "roleId": 1
+}
+```
+
+Authentication required, only an Admin
+
+Accepted field: `roleId`
+
 ### Get Profile
 
 `GET /api/profiles/:username`

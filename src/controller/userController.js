@@ -49,6 +49,7 @@ class UserController {
     }
   }
 
+
   /**
   * @description function to allow a user follow another
   *
@@ -102,6 +103,37 @@ class UserController {
     } else {
       res.status(400).json({
         message: 'You do not follow this user'
+      });
+    }
+  }
+
+  /**
+  * Updates user role
+   * Route: PUT: users/role/:userId
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @return {res} res - Response object
+   * @memberof UserController
+   */
+  static async userRole(req, res) {
+    try {
+      const userUpdated = await Users.update({
+        roleId: req.body.roleId,
+      }, {
+        where: {
+          id: req.params.userId
+        }
+      });
+      if (userUpdated[0] === 1) {
+        res.status(200).send({
+          message: 'User role was updated successfully',
+          success: true
+        });
+      }
+    } catch (error) {
+      res.status(500).send({
+        message: 'Internal server error',
+        success: false
       });
     }
   }

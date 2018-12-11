@@ -83,6 +83,11 @@ export default (sequelize, DataTypes) => {
         }
       }
     },
+    roleId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      defaultValue: 1
+    }
   });
   Users.associate = (models) => {
     Users.hasMany(models.Authorize, {
@@ -105,6 +110,9 @@ export default (sequelize, DataTypes) => {
         model: 'Follower'
       },
       foreignKey: 'followerId'
+    });
+    Users.belongsTo(models.roles, {
+      foreignKey: 'roleId'
     });
   };
   return Users;
