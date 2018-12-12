@@ -34,9 +34,8 @@ class UserController {
       });
       if (userCreated) {
         const tokenCreated = await
-        Authentication.getToken(
-          userCreated.dataValues, process.env.reg_token_expiry
-        );
+        Authentication
+          .getToken(userCreated.dataValues, process.env.reg_token_expiry);
         const waitingToAuthorize = await Authorize.create({
           token: tokenCreated,
           userId: userCreated.id,
