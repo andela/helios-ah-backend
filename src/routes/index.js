@@ -6,6 +6,7 @@ import {
 } from '../controller';
 
 import { validateUserInputs, authentication } from '../utilities';
+import userMiddleware from '../middlewares/User';
 
 /**
  * Handles request
@@ -40,6 +41,17 @@ const routes = (app) => {
     validateUserInputs.validateCreateComment,
     authentication.checkToken,
     CommentController.createChildComment
+  );
+  app.post(
+    '/api/v1/user/requests/password/reset',
+    userMiddleware.getUserByMail,
+    UserController.requestResetPassword
+  );
+  app.put(
+    '/api/v1/change/password',
+    userMiddleware.getUserByMail,
+    authentication.checkToken,
+    UserController.resetPassword
   );
   app.put(
     '/api/v1/users/role/:userId',
