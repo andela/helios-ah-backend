@@ -45,6 +45,41 @@ class ArticleController {
       });
     }
   }
+
+  /**
+  * Get Article
+  * Route: GET: /articles
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof ArticlesController
+ */
+  static async getArticles(req, res) {
+    const options = {
+      attributes: [
+        'id',
+        'title',
+        'body',
+        'description',
+        'image',
+      ],
+      where: {
+        isDraft: false,
+      },
+    };
+    try {
+      const articles = await Article.findAll(options);
+      res.status(200).json({
+        success: true,
+        articles,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: 'Internal server error'
+      });
+    }
+  }
 }
 
 export default ArticleController;

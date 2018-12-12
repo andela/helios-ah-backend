@@ -29,6 +29,11 @@ const routes = (app) => {
     authentication.checkToken,
     ArticleController.createArticle
   );
+  app.get(
+    '/api/v1/articles',
+    authentication.checkToken,
+    ArticleController.getArticles
+  );
   app.post(
     '/api/v1/user/requests/password/reset',
     userMiddleware.getUserByMail,

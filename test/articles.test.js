@@ -98,5 +98,14 @@ describe('Integration tests for the article controller', () => {
         expect(response.body).to.have.property('message');
         expect(response.body.message).to.equal('Description field should not exceed 200 character');
     });
+
+    it('should get all articles', async () => {
+      const response = await chai.request(app).get('/api/v1/articles')
+      .set('x-access-token', myToken);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('articles');
+        expect(response.body.articles).to.be.an('array');
+        expect(response.body.success).to.equal(true);
+    });
   });
 });
