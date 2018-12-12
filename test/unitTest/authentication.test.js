@@ -1,5 +1,5 @@
 import chai from 'chai';
-import { authentication } from '../src/utilities';
+import { authentication } from '../../src/utilities';
 const { expect } = chai;
 
 let data = {

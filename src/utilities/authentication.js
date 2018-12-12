@@ -83,13 +83,20 @@ class Authentication {
     } else {
       try {
         const tokenVerified = await Authentication.verifyToken(token);
-        req.decoded = tokenVerified;
-        next();
+        if (tokenVerified) {
+          req.decoded = tokenVerified;
+          next();
+        }
+        if (!tokenVerified) {
+          res.status(401).send({
+            code: 401,
+            message: 'Authentication failed',
+          });
+        }
       } catch (error) {
         res.status(401).send({
           code: 401,
           message: 'Authentication failed',
-          error,
         });
       }
     }

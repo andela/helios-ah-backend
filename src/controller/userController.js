@@ -1,9 +1,8 @@
-import { authentication } from '../utilities';
 import models from '../models';
 import SendEmail from '../utilities/sendEmail';
 import Authentication from '../utilities/authentication';
 
-const { Users } = models;
+const { Users, Authorize } = models;
 let resetLink, token;
 
 /**
@@ -34,19 +33,78 @@ class UserController {
         bio,
       });
       if (userCreated) {
-        const tokenCreated = await authentication.getToken(userCreated);
-        res.status(201).send({
-          message: `User ${userCreated.username} created successfully`,
-          id: userCreated.id,
-          username: userCreated.username,
-          email: userCreated.email,
+        const tokenCreated = await
+        Authentication.getToken(
+          userCreated.dataValues, process.env.reg_token_expiry
+        );
+        const waitingToAuthorize = await Authorize.create({
+          token: tokenCreated,
+          userId: userCreated.id,
+        });
+        if (waitingToAuthorize) {
+          const isEmailSent = await SendEmail.verifyEmail(email, tokenCreated);
+          if (isEmailSent) {
+            return res.status(200).send({
+              success: true,
+              message: `An email has been sent to your email address.
+                Please check your email to complete your registration`,
+            });
+          }
+          return res.status(500).send({
+            success: false,
+            message:
+              'Your registration could not be completed. Please try again',
+          });
+        }
+      }
+    } catch (error) {
+      if (error.errors) {
+        return res.status(400).send({
+          success: false,
+          message: error.errors[0].message,
+        });
+      }
+      return res.status(500).send({
+        success: false,
+        message: 'Internal server error',
+        myError: error.message,
+        error,
+      });
+    }
+  }
+
+  /**
+  * Complete user registration
+  * Route: GET: /auth/complete_reg/
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof UserController
+ */
+  static async completeRegistration(req, res) {
+    const verifiedToken = await Authentication.verifyToken(req.query.token);
+    if (!verifiedToken) {
+      return res.status(400).send({
+        success: false,
+        message: 'Could not complete your registration. Please re-register.'
+      });
+    }
+    const foundUser = await Users.findByPk(verifiedToken.id);
+    if (foundUser) {
+      const userUpdated = await foundUser.update({
+        isVerified: true || foundUser.isVerified,
+      });
+      if (userUpdated) {
+        const tokenCreated = await Authentication.getToken(userUpdated);
+        return res.status(201).send({
+          success: true,
+          message: `User ${userUpdated.username} created successfully`,
+          id: userUpdated.id,
+          username: userUpdated.username,
+          email: userUpdated.email,
           token: tokenCreated,
         });
       }
-    } catch (error) {
-      res.status(500).send({
-        message: 'Internal server error',
-      });
     }
   }
 
@@ -161,7 +219,7 @@ class UserController {
         }
       );
       if (userUpdated[0] === 1) {
-        res.status(200).send({
+        return res.status(200).send({
           message: 'User role was updated successfully',
           success: true
         });
@@ -169,7 +227,7 @@ class UserController {
     } catch (error) {
       res.status(500).send({
         message: 'Internal server error',
-        success: false
+        success: false,
       });
     }
   }

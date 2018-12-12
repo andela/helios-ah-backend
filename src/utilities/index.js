@@ -1,11 +1,11 @@
 import validateUserInputs from './validateUserInput';
 import cryptData from './cryptData';
-import helperMethods from './helpers';
 import authentication from './authentication';
+import sendEmail from './sendEmail';
 
 export {
   cryptData,
   validateUserInputs,
-  helperMethods,
-  authentication
+  authentication,
+  sendEmail,
 };

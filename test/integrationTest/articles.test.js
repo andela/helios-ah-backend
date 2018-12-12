@@ -1,14 +1,14 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import app from '../src/app';
-import { helperMethods } from '../src/utilities';
+import app from '../../src/app';
+import { authentication } from '../../src/utilities';
 
 chai.use(chaiHttp);
 const { expect } = chai;
 
 describe('Integration tests for the article controller', () => {
   let myToken;
-  before('Create users before running tests', async () => {
+  before('Create token to validate routes', async () => {
     const userDetails = {
       username: 'JaneDoe',
       password: 'password',
@@ -17,9 +17,7 @@ describe('Integration tests for the article controller', () => {
       lastName: 'Doe',
       bio: 'Fun to be with. Cool and calm',
     }
-    const response = await chai.request(app).post('/api/v1/auth/signup')
-      .send(userDetails);
-      myToken = response.body.token;
+    myToken = await authentication.getToken(userDetails);
   });
   describe('Tests for creating an article', () => {
     it('should create an article', async () => {

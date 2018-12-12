@@ -1,5 +1,5 @@
 import chai from 'chai';
-import SendEmail from '../src/utilities/sendEmail';
+import SendEmail from '../../src/utilities/sendEmail';
 
 const { expect } = chai;
 

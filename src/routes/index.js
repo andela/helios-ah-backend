@@ -18,6 +18,10 @@ const routes = (app) => {
       message: 'Welcome to the Authors-Haven API'
     });
   });
+  app.get(
+    '/api/v1/auth/complete_reg/',
+    UserController.completeRegistration
+  );
   app.post(
     '/api/v1/auth/signup',
     validateUserInputs.validateSignup,
@@ -25,8 +29,8 @@ const routes = (app) => {
   );
   app.post(
     '/api/v1/articles',
-    validateUserInputs.validateCreateArticle,
     authentication.checkToken,
+    validateUserInputs.validateCreateArticle,
     ArticleController.createArticle
   );
   app.post(
@@ -36,8 +40,8 @@ const routes = (app) => {
   );
   app.put(
     '/api/v1/change/password',
-    userMiddleware.getUserByMail,
     authentication.checkToken,
+    userMiddleware.getUserByMail,
     UserController.resetPassword
   );
   app.put(
