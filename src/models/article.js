@@ -48,6 +48,10 @@ const articleModel = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       onDelete: 'CASCADE',
     });
+    Article.belongsToMany(models.tags, {
+      foreignKey: 'articleId',
+      through: 'ArticleTag',
+    });
   };
   return Article;
 };
