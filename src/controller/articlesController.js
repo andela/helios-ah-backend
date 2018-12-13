@@ -120,11 +120,19 @@ class ArticleController {
         'description',
         'image',
       ],
-      where: {
-        isDraft: false,
-        userId: req.decoded.id,
-      },
     };
+
+    if (req.originalUrl === '/api/v1/articles/user') {
+      options.where = {
+        isDraft: false,
+        userId: 'req.decoded.id',
+      };
+    } else {
+      options.where = {
+        isDraft: false,
+      };
+    }
+
     try {
       const articles = await Article.findAll(options);
       res.status(200).json({

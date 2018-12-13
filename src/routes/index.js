@@ -32,8 +32,14 @@ const routes = (app) => {
   );
   app.get(
     '/api/v1/articles',
-    authentication.checkToken,
+    Authorization.checkToken,
     ArticleController.getArticles
+  );
+  app.get(
+    '/api/v1/articles/user',
+    Authorization.checkToken,
+    ArticleController.getArticles
+  );
   app.put(
     '/api/v1/articles/:articleId',
     validateUserInputs.validateCreateArticle,
