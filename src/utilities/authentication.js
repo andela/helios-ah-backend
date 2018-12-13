@@ -60,40 +60,6 @@ class Authentication {
     }
     return data;
   }
-
-  /**
-   *
-   * @param {object} req - Request object
-   * @param {object} res - Response object
-   * @param {callback} next - The callback that passes the request
-   * to the next handler
-   * @returns {callback} next - The callback that passes the request
-   * to the next handler
-   * @returns {object} res - Response object containing an error due
-   * to unauthorized access
-   */
-  static async checkToken(req, res, next) {
-    const token = req.body.token || req.query.token
-      || req.headers['x-access-token'];
-    if (!token) {
-      res.status(401).send({
-        code: 401,
-        message: 'User not authorized',
-      });
-    } else {
-      try {
-        const tokenVerified = await Authentication.verifyToken(token);
-        req.decoded = tokenVerified;
-        next();
-      } catch (error) {
-        res.status(401).send({
-          code: 401,
-          message: 'Authentication failed',
-          error,
-        });
-      }
-    }
-  }
 }
 
 export default Authentication;
