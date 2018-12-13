@@ -1,5 +1,5 @@
 export default {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('ArticleTag', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('articleTag', {
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE
@@ -12,10 +12,10 @@ export default {
       type: Sequelize.UUID,
       primaryKey: true
     },
-    TagId: {
+    tagId: {
       type: Sequelize.UUID,
       primaryKey: true
     }
   }),
-  down: queryInterface => queryInterface.dropTable('ArticleTag')
+  down: queryInterface => queryInterface.dropTable('articleTag')
 };

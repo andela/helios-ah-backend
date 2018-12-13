@@ -30,6 +30,11 @@ const routes = (app) => {
     ArticleController.createArticle
   );
   app.post(
+    '/api/v1/articles/tag',
+    // authentication.checkToken,
+    ArticleController.createTag
+  );
+  app.post(
     '/api/v1/user/requests/password/reset',
     userMiddleware.getUserByMail,
     UserController.requestResetPassword

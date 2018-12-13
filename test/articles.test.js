@@ -100,3 +100,22 @@ describe('Integration tests for the article controller', () => {
     });
   });
 });
+
+describe('Tests for middleware to verify that an '
+  + 'article belongs to a particular user', () => {
+  let inputDetails = {};
+  before('create users and article', async () => {
+    const userDetails = {
+      username: 'jideajayi',
+      password: 'password',
+      email: 'jideajayi@gmail.com',
+      firstName: 'Jide',
+      lastName: 'Ajayi',
+      bio: 'Fun to be with. Cool and calm',
+      isVerified: true,
+    }
+    const response = await chai.request(app).post('/api/v1/auth/signup')
+      .send(userDetails);
+      console.log(response);
+  });
+});

@@ -1,13 +1,15 @@
 export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('tags', {
     id: {
-      allowNull: false,
+      type: Sequelize.UUID,
       primaryKey: true,
-      type: Sequelize.UUID
+      defaultValue: Sequelize.UUIDV4,
+      allowNull: false
     },
     tagName: {
       type: Sequelize.STRING,
-      allowNull: false
+      allowNull: false,
+      unique: true
     },
     createdAt: {
       allowNull: false,

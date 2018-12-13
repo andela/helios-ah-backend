@@ -1,6 +1,6 @@
 import models from '../models';
 
-const { Article } = models;
+const { Article, tag } = models;
 
 /**
  * Class representing the Article controller
@@ -42,6 +42,33 @@ class ArticleController {
       return res.status(500).json({
         message: 'Internal server error',
         error,
+      });
+    }
+  }
+
+  /**
+  * Create a Tag for an Article
+  * Route: POST: /articles/tag
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof ArticlesController
+ */
+  static async createTag(req, res) {
+    const { articleId, tagName } = req.body;
+    try {
+      const createTag = await tag.create({ tagName });
+      const setArticleTag = await createTag.setTexts([articleId]);
+      if (setArticleTag) {
+        res.status(201).json({
+          message: 'Tag was created successfully',
+          success: true,
+        });
+      }
+    } catch (error) {
+      res.status(400).json({
+        message: error.errors[0].message,
+        success: false,
       });
     }
   }
