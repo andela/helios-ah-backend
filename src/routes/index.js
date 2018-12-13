@@ -30,6 +30,17 @@ const routes = (app) => {
     validateUserInputs.validateCreateArticle,
     ArticleController.createArticle
   );
+  app.put(
+    '/api/v1/articles/:articleId',
+    validateUserInputs.validateCreateArticle,
+    Authorization.checkToken,
+    ArticleController.updateArticle
+  );
+  app.get(
+    '/api/v1/articles',
+    Authorization.checkToken,
+    ArticleController.getArticles,
+  );
   app.get(
     '/api/v1/authors',
     Authorization.checkToken,
