@@ -1,6 +1,6 @@
 import models from '../models';
 
-const { Article } = models;
+const { Article, Bookmark } = models;
 
 /**
  * Class representing the Article controller
@@ -14,7 +14,7 @@ class ArticleController {
   * @param {object} req - Request object
   * @param {object} res - Response object
   * @return {res} res - Response object
-  * @memberof ArticlesController
+  * @memberof ArticleController
  */
   static async createArticle(req, res) {
     const {
@@ -43,6 +43,34 @@ class ArticleController {
         message: 'Internal server error',
         error,
       });
+    }
+  }
+
+  /**
+  * @description Bookmark an Article
+  *
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  *
+  * @return {object} database response
+  * @memberof ArticleController
+ */
+  static async bookmarkArticle(req, res) {
+    const name = req.body.name || req.article.dataValues.title;
+    const userId = req.decoded.id;
+    const { articleId } = req.params;
+
+    try {
+      const createBookmark = await Bookmark.create({
+        name, userId, articleId
+      });
+      if (createBookmark) {
+        res.status(201).json({
+          message: 'Article successfully bookmarked',
+        });
+      }
+    } catch (error) {
+      res.status(500).json({ error });
     }
   }
 }

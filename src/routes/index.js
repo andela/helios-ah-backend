@@ -6,7 +6,9 @@ import {
 
 import { validateUserInputs, authentication } from '../utilities';
 import userMiddleware from '../middlewares/User';
-
+import checkArticleExists from '../middlewares/checkArticleExists';
+import checkBookmarkExists from '../middlewares/checkBookmarkExists';
+import findDatabaseField from '../middlewares/FindDatabaseField';
 /**
  * Handles request
  * @param {object} app - An instance of the express module
@@ -47,6 +49,22 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
   );
+  app.post(
+    '/api/v1/articles/:articleId/bookmark',
+    authentication.checkToken,
+    findDatabaseField.UserInToken,
+    validateUserInputs.uuidV4Validator,
+    checkArticleExists,
+    checkBookmarkExists,
+    ArticleController.bookmarkArticle
+  );
+  // app.delete(
+  //   '/api/v1/articles/:articleId/bookmark',
+  //   authentication.checkToken,
+  //   findDatabaseField.UserInToken,
+  //   validateUserInputs.uuidV4Validator,
+  //   ArticleController.removeBookmark
+  // );
 };
 
 export default routes;

@@ -115,6 +115,11 @@ export default (sequelize, DataTypes) => {
     Users.belongsTo(models.roles, {
       foreignKey: 'roleId'
     });
+    Users.belongsToMany(models.Article, {
+      as: 'reader',
+      through: 'Bookmark',
+      foreignKey: 'userId'
+    });
   };
   return Users;
 };
