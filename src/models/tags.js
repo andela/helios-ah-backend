@@ -16,7 +16,7 @@ export default (sequelize, DataTypes) => {
   tags.associate = (models) => {
     tags.belongsToMany(models.Article, {
       foreignKey: 'articleId',
-      through: 'ArticleTag',
+      through: 'articleTag',
     });
   };
   return tags;
