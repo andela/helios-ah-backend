@@ -25,7 +25,7 @@ const allFieldsRequired = (res) => {
 /** class representing an handler's validation
  * @class Validate
  * @description Validation for user inputs in all requests
-*/
+ */
 class Validate {
   /**
    *
@@ -39,7 +39,11 @@ class Validate {
   static validateSignup(req, res, next) {
     req.body = trimValues(req.body);
     const {
-      username, password, email, firstName, lastName,
+      username,
+      password,
+      email,
+      firstName,
+      lastName,
     } = req.body;
     if (username && password && email && firstName && lastName) {
       next();
@@ -60,7 +64,10 @@ class Validate {
   static validateCreateArticle(req, res, next) {
     req.body = trimValues(req.body);
     const {
-      title, body, description, image,
+      title,
+      body,
+      description,
+      image,
     } = req.body;
     if (title && body && description && image) {
       next();
@@ -79,7 +86,9 @@ class Validate {
    * @memberof Validate
    */
   static validateUserRoleBody(req, res, next) {
-    const { roleId } = req.body;
+    const {
+      roleId
+    } = req.body;
     if (roleId && roleId >= 1 && roleId <= 3) {
       next();
     } else {
@@ -107,6 +116,25 @@ class Validate {
         message: 'Invalid token. Only Admins. can update roles',
       });
     }
+  }
+
+  /**
+   * Validate ratings Input
+   * @param {integer} req - request
+   * @param {object} res - Response object
+   *  @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} - server responce
+   */
+  static validateRating(req, res, next) {
+    const { rating } = req.body;
+    if ((rating > 5) || (rating < 1)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Bad request, Rating should be within the range of 1 to 5',
+      });
+    }
+    next();
   }
 }
 

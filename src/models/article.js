@@ -1,4 +1,3 @@
-
 const articleModel = (sequelize, DataTypes) => {
   const Article = sequelize.define('Article', {
     id: {
@@ -47,6 +46,10 @@ const articleModel = (sequelize, DataTypes) => {
     Article.belongsTo(models.Users, {
       foreignKey: 'userId',
       onDelete: 'CASCADE',
+    });
+    Article.hasMany(models.Feedback, {
+      foreignKey: 'userId',
+      as: 'feedback'
     });
   };
   return Article;

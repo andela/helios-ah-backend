@@ -34,6 +34,15 @@ export default {
         as: 'articles',
       }
     },
+    feedback: {
+      type: Sequelize.UUID,
+      onDelete: 'CASCADE',
+      reference: {
+        model: 'Feedback',
+        key: 'articleId',
+        as: 'Feedback',
+      }
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

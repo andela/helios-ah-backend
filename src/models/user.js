@@ -2,8 +2,7 @@ import crypter from '../utilities/cryptData';
 
 export default (sequelize, DataTypes) => {
   const Users = sequelize.define(
-    'Users',
-    {
+    'Users', {
       id: {
         type: DataTypes.UUID,
         primaryKey: true,
@@ -63,9 +62,9 @@ export default (sequelize, DataTypes) => {
         validate: {
           is: {
             args: /^[A-Za-z]+[A-Za-z0-9 _.,!?;"']+$/i,
-            msg: 'Bio must contain only valid '
-              + 'characters and must begin with '
-              + 'an alphabet'
+            msg: 'Bio must contain only valid ' +
+              'characters and must begin with ' +
+              'an alphabet'
           }
         }
       },
@@ -86,14 +85,13 @@ export default (sequelize, DataTypes) => {
           len: [3, 15],
           is: {
             args: /^[A-Za-z]+[A-Za-z0-9_]+$/i,
-            msg: 'Username must contain only alphabet, '
-              + 'numbers, and characters  and must begin '
-              + 'with an alphabet'
+            msg: 'Username must contain only alphabet, ' +
+              'numbers, and characters  and must begin ' +
+              'with an alphabet'
           }
         }
       },
-    },
-    {
+    }, {
       hooks: {
         beforeUpdate: async (user) => {
           user.password = await crypter.encryptData(user.password);
@@ -114,6 +112,10 @@ export default (sequelize, DataTypes) => {
     });
     Users.belongsTo(models.roles, {
       foreignKey: 'roleId'
+    });
+    Users.hasMany(models.Feedback, {
+      foreignKey: 'userId',
+      as: 'feedback'
     });
   };
   return Users;

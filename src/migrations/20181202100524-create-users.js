@@ -40,6 +40,15 @@ export default {
       allowNull: false,
       defaultValue: 1
     },
+    feedback: {
+      type: Sequelize.UUID,
+      onDelete: 'CASCADE',
+      reference: {
+        model: 'Feedback',
+        key: 'userId',
+        as: 'Feedback',
+      }
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

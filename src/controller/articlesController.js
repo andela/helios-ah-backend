@@ -18,7 +18,7 @@ class ArticleController {
  */
   static async createArticle(req, res) {
     const {
-      title, body, description, image
+      title, body, description, image,
     } = req.body;
     try {
       const articleCreated = await Article.create({

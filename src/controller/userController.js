@@ -112,7 +112,7 @@ class UserController {
   static async resetPassword(req, res) {
     if (req.foundUser) {
       const payload = await Authentication.verifyToken(req.query.token);
-      if (payload) {
+      if (payload.success) {
         const user = await Users.findByPk(payload.id);
         if (!req.body.password) {
           return res.status(400).send({

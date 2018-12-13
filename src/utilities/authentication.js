@@ -25,17 +25,14 @@ class Authentication {
    * @returns {output} - returns a jwt token
    */
   static async getToken(data, time) {
-    const token = await jwt.sign(
-      {
-        id: data.id,
-        role: data.role,
-        username: data.username
-      },
-      process.env.SECRET,
-      {
-        expiresIn: time || 86400 // expires in 1 day
-      }
-    );
+    const token = await jwt.sign({
+      id: data.id,
+      role: data.role,
+      username: data.username
+    },
+    process.env.SECRET, {
+      expiresIn: time || 86400 // expires in 1 day
+    });
     const output = reverseToken(token);
     return output;
   }
@@ -45,20 +42,39 @@ class Authentication {
    * @param {*} input - token input
    * @returns {req} - populate the request with the decrypted content
    */
-  static async verifyToken(input) {
+  static verifyToken(input) {
     const token = reverseToken(input);
-    let data;
-    try {
-      await jwt.verify(token, process.env.SECRET, (err, decoded) => {
-        if (err) {
-          data = false;
-        }
-        data = decoded;
-      });
-    } catch (err) {
-      data = false;
+    let output = {};
+    if (!token) {
+      output = {
+        error: 'No token supplied',
+        success: false
+      };
+      return output;
     }
-    return data;
+    try {
+      jwt.verify(token, process.env.SECRET, (err, decoded) => {
+        // update req with the decrypted token
+        if (err) {
+          output = {
+            error: 'Failed to authenticate token',
+            success: false
+          };
+        }
+        output = {
+          id: decoded.id,
+          role: decoded.role,
+          username: decoded.username,
+        };
+      });
+    } catch (error) {
+      output = {
+        error: 'Invalid Token',
+        success: false
+      };
+      return output;
+    }
+    return output;
   }
 
   /**
