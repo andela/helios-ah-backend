@@ -55,13 +55,13 @@ const routes = (app) => {
   app.post(
     '/api/v1/articles/:articleId/comments',
     validateUserInputs.validateCreateComment,
-    authentication.checkToken,
+    Authorization.checkToken,
     CommentController.createComment
   );
   app.post(
     '/api/v1/comments/:commentId/childcomments',
     validateUserInputs.validateCreateComment,
-    authentication.checkToken,
+    Authorization.checkToken,
     CommentController.createChildComment
   );
   app.post(

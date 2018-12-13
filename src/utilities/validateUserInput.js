@@ -14,11 +14,13 @@ const trimValues = (objectWithValuesToTrim) => {
 /**
  * Defines the failed message returned when required fields are missing.
  * @param {object} res - Response object
+ * @param {string} message - specific error message
  * @returns {res} - Response object
  */
-const allFieldsRequired = (res) => {
+const allFieldsRequired = (res, message) => {
   res.status(400).send({
-    message: 'Invalid request. All fields are required',
+    success: false,
+    message: message || 'Invalid request. All fields are required',
   });
 };
 
@@ -81,12 +83,12 @@ class Validate {
   static validateCreateComment(req, res, next) {
     req.body = trimValues(req.body);
     const {
-      body
+      commentText
     } = req.body;
-    if (body) {
+    if (commentText) {
       next();
     } else {
-      allFieldsRequired(res);
+      allFieldsRequired(res, 'commentText field is required');
     }
   }
 

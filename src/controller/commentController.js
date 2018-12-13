@@ -19,7 +19,7 @@ class CommentController {
   static async createComment(req, res) {
     try {
       const commentCreated = await Comments.create({
-        body: req.body.body,
+        commentText: req.body.commentText,
         articleId: req.params.articleId,
         userId: req.decoded.id
       });
@@ -34,12 +34,6 @@ class CommentController {
         return res.status(400).json({
           success: false,
           message: error.errors[0].message
-        });
-      }
-      if (error.parent.routine === 'string_to_uuid') {
-        return res.status(400).json({
-          success: false,
-          message: ':articleId is not a invalid uuid type'
         });
       }
       return res.status(500).json({
@@ -60,7 +54,7 @@ class CommentController {
   static async createChildComment(req, res) {
     try {
       const childCommentCreated = await ChildComments.create({
-        body: req.body.body,
+        commentText: req.body.commentText,
         commentId: req.params.commentId,
         userId: req.decoded.id
       });
@@ -75,12 +69,6 @@ class CommentController {
         return res.status(400).json({
           success: false,
           message: error.errors[0].message
-        });
-      }
-      if (error.parent.routine === 'string_to_uuid') {
-        return res.status(400).json({
-          success: false,
-          message: ':commentId is not a invalid uuid type'
         });
       }
       return res.status(500).json({

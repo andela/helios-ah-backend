@@ -6,7 +6,7 @@ export default {
         type: Sequelize.UUID,
         defaultValue: Sequelize.UUIDV4
       },
-      body: {
+      commentText: {
         type: Sequelize.STRING
       },
       createdAt: {
