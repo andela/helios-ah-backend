@@ -3,7 +3,8 @@ import models from '../models';
 import SendEmail from '../utilities/sendEmail';
 import Authentication from '../utilities/authentication';
 
-const { Users } = models;
+const { Users, sequelize } = models;
+const { Op } = sequelize.Sequelize;
 let resetLink, token;
 
 /**
@@ -45,6 +46,68 @@ class UserController {
       }
     } catch (error) {
       res.status(500).send({
+        message: 'Internal server error',
+      });
+    }
+  }
+
+  /**
+  * List Authors
+  * Route: GET: /authors
+  * Route: GET: /authors/:search
+  * @param {object} req -Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof USerController
+ */
+  static async getAuthors(req, res) {
+    let authors;
+    const options = {
+      attributes: [
+        'id',
+        'firstName',
+        'lastName',
+        'email',
+        'image',
+        'bio',
+        'username'
+      ],
+      where: {
+        isVerified: true,
+      },
+    };
+    try {
+      if (req.query.search) {
+        options.where = {
+          [Op.or]: [
+            {
+              username: {
+                [Op.like]: `%${req.query.search}%`
+              }
+            },
+            {
+              firstName: {
+                [Op.like]: `%${req.query.search}%`
+              }
+            },
+            {
+              lastName: {
+                [Op.like]: `%${req.query.search}%`
+              }
+            },
+          ],
+          isVerified: true,
+        };
+      }
+      authors = await Users.findAll(options);
+
+      res.status(200).json({
+        success: true,
+        authors,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
         message: 'Internal server error',
       });
     }
