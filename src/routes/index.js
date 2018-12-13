@@ -34,9 +34,30 @@ const routes = (app) => {
   );
   app.post(
     '/api/v1/articles',
+    Authorization.checkToken,
+    validateUserInputs.validateCreateArticle,
+    ArticleController.createArticle
+  );
+  app.get(
+    '/api/v1/articles',
+    Authorization.checkToken,
+    ArticleController.getArticles
+  );
+  app.get(
+    '/api/v1/articles/user',
+    Authorization.checkToken,
+    ArticleController.getArticles
+  );
+  app.put(
+    '/api/v1/articles/:articleId',
     validateUserInputs.validateCreateArticle,
     Authorization.checkToken,
-    ArticleController.createArticle
+    ArticleController.updateArticle
+  );
+  app.get(
+    '/api/v1/authors',
+    Authorization.checkToken,
+    UserController.getAuthors
   );
   app.post(
     '/api/v1/user/requests/password/reset',

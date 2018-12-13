@@ -12,9 +12,9 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          len: [3, 15],
+          len: [3, 25],
           is: {
-            args: /^[a-z]+$/i,
+            args: /^[a-z']+$/i,
             msg: 'First name must contain only Alphabets'
           }
         }
@@ -23,12 +23,12 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-          len: [3, 15],
+          len: [3, 25],
           is: {
-            args: /^[a-z]+$/i,
+            args: /^[a-z']+$/i,
             msg: 'Last name must contain only Alphabets'
           }
-        }
+        },
       },
       email: {
         type: DataTypes.STRING,
@@ -60,11 +60,9 @@ export default (sequelize, DataTypes) => {
       bio: {
         type: DataTypes.TEXT,
         validate: {
-          is: {
-            args: /^[A-Za-z]+[A-Za-z0-9 _.,!?;"']+$/i,
-            msg: 'Bio must contain only valid ' +
-              'characters and must begin with ' +
-              'an alphabet'
+          notEmpty: {
+            args: true,
+            msg: 'Bio must not be empty'
           }
         }
       },
@@ -72,22 +70,15 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false
       },
-      roleId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        defaultValue: 1
-      },
       username: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
         validate: {
-          len: [3, 15],
-          is: {
-            args: /^[A-Za-z]+[A-Za-z0-9_]+$/i,
-            msg: 'Username must contain only alphabet, ' +
-              'numbers, and characters  and must begin ' +
-              'with an alphabet'
+          len: [3, 20],
+          isAlphanumeric: {
+            args: true,
+            msg: 'Username must contain only alphanumeric',
           }
         }
       },
@@ -100,7 +91,7 @@ export default (sequelize, DataTypes) => {
           user.password = await crypter.encryptData(user.password);
         }
       }
-    },
+    }
   );
   Users.associate = (models) => {
     Users.hasMany(models.Authorize, {

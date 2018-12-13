@@ -6,6 +6,23 @@ import Auth from '../utilities/authentication';
  */
 class Authorization {
   /**
+   * check if user is authourized
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * @returns {null} - returns object
+   */
+  static async hasWriteAccess(req, res, next) {
+    if ((req.decoded.id !== req.body.userId) || !req.body.userId) {
+      return res.status(401).send({
+        success: false,
+        message: 'You don\'t have access to edit this file',
+      });
+    }
+    return next();
+  }
+
+  /**
    *
    * @param {object} req - Request object
    * @param {object} res - Response object
@@ -27,7 +44,6 @@ class Authorization {
     } else {
       try {
         const tokenVerified = await Auth.verifyToken(token);
-        console.log(tokenVerified);
         req.decoded = tokenVerified;
         next();
       } catch (error) {
