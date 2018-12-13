@@ -47,6 +47,7 @@ class UserController {
     } catch (error) {
       res.status(500).send({
         message: 'Internal server error',
+        err: error
       });
     }
   }
