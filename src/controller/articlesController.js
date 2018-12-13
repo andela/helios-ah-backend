@@ -68,12 +68,14 @@ class ArticleController {
       },
       returning: true,
     };
+    const isDraft = req.body.isDraft || 'true';
     try {
       const articleUpdated = await Article.update({
         title,
         body,
         description,
         image,
+        isDraft,
       }, options);
       if (articleUpdated[0] === 1) {
         res.status(200).json({
@@ -124,7 +126,6 @@ class ArticleController {
 
     if (req.originalUrl === '/api/v1/articles/user') {
       options.where = {
-        isDraft: false,
         userId: 'req.decoded.id',
       };
     } else {

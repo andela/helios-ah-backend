@@ -8,7 +8,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { authentication } from '../src/utilities';
 
-let dataUserId;
+let dataUserId; 
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
