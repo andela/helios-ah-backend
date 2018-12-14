@@ -103,9 +103,11 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
   );
-  app.get('/api/v1/articles',
+  app.get(
+    '/api/v1/articles',
     Authorization.checkToken,
-    ArticleController.getArticles);
+    ArticleController.getArticles,
+  );
 };
 
 export default routes;
