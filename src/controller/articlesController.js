@@ -1,4 +1,5 @@
 import models from '../models';
+import Error from '../utilities/Error';
 
 const { Article } = models;
 
@@ -36,17 +37,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      if (error.errors) {
-        return res.status(400).json({
-          success: false,
-          message: error.errors[0].message
-        });
-      }
-      return res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-        error,
-      });
+      Error.sendError(res, error);
     }
   }
 
@@ -88,18 +79,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      if (error.errors) {
-        res.status(400).json({
-          success: false,
-          message: error.errors[0].message
-        });
-      } else {
-        res.status(500).json({
-          success: false,
-          message: 'Internal server error',
-          error,
-        });
-      }
+      Error.sendError(res, error);
     }
   }
 
@@ -112,6 +92,11 @@ class ArticleController {
   * @memberof ArticlesController
  */
   static async getArticles(req, res) {
+    const peginate = {
+      page: parseInt(req.query.page, 10) || 1,
+      limit: parseInt(req.query.limit, 10) || 100,
+    };
+    const offset = (peginate.page * peginate.limit) - peginate.limit;
     const options = {
       attributes: [
         'id',
@@ -120,6 +105,8 @@ class ArticleController {
         'description',
         'image',
       ],
+      limit: peginate.limit,
+      offset,
     };
 
     if (req.originalUrl === '/api/v1/articles/user') {
@@ -141,7 +128,7 @@ class ArticleController {
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Internal server error'
+        message: 'Internal server error',
       });
     }
   }
