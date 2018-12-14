@@ -115,7 +115,7 @@ describe('Test user model', () => {
         .to.equal(
           'Username must contain only alphanumeric'
         );
-      }
+    }
   });
 
   it('should save user with valid credentials', async () => {
