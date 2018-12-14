@@ -81,7 +81,8 @@ describe('Integration tests for the user controller', () => {
     });
   });
   describe('Tests for user roles', () => {
-    let validAdminToken, invalidAdminToken, newRole, invalidRole, dataUserId;
+    let validAdminToken, invalidAdminToken, newRole, invalidRole;
+    const dataUserId = 'dccd8ee7-bc98-4a8e-a832-ca116c5fff0a';
     before(async () => {
       validAdminToken = await Authentication.getToken({
         role: 2
