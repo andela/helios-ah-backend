@@ -1,20 +1,12 @@
-<<<<<<< HEAD
-import { cryptData, authentication } from '../utilities';
-import followersUtil from '../utilities/followers';
-=======
 import { authentication } from '../utilities';
->>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
+import followersUtil from '../utilities/followers';
 import models from '../models';
 import SendEmail from '../utilities/sendEmail';
 import Authentication from '../utilities/authentication';
 
-<<<<<<< HEAD
-const { Users, Follower } = models;
-=======
-const { Users, sequelize } = models;
+const { Users, sequelize, Follower } = models;
 const { Op } = sequelize.Sequelize;
 let resetLink, token;
->>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
 
 /**
  * Class representing the user controller
@@ -124,9 +116,7 @@ class UserController {
   }
 
   /**
-<<<<<<< HEAD
   * Updates user role
-=======
   * List Authors
   * Route: GET: /authors
   * Route: GET: /authors/:search
@@ -279,7 +269,6 @@ class UserController {
 
   /**
    * Updates user role
->>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
    * Route: PUT: users/role/:userId
    * @param {object} req - Request object
    * @param {object} res - Response object

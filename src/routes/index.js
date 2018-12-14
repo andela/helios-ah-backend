@@ -5,18 +5,13 @@ import {
   CommentController
 } from '../controller';
 
-<<<<<<< HEAD
 import {
   validateUserInputs,
-  authentication,
   findDatabaseField,
   follower
 } from '../utilities';
-=======
-import { validateUserInputs } from '../utilities';
 import Authorization from '../middlewares/Authorization';
 import userMiddleware from '../middlewares/User';
->>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
 
 /**
  * Handles request
@@ -41,10 +36,9 @@ const routes = (app) => {
     ArticleController.createArticle
   );
   app.get(
-<<<<<<< HEAD
     '/api/v1/profiles/:id/follow',
     validateUserInputs.uuidV4Validator,
-    authentication.checkToken,
+    Authorization.checkToken,
     findDatabaseField.UserInToken,
     findDatabaseField.UserInParams,
     follower.checkForSelfFollow,
@@ -55,13 +49,11 @@ const routes = (app) => {
   app.delete(
     '/api/v1/profiles/:id/follow',
     validateUserInputs.uuidV4Validator,
-    authentication.checkToken,
+    Authorization.checkToken,
     findDatabaseField.UserInToken,
     findDatabaseField.UserInParams,
     follower.checkForSelfUnfollow,
-    UserController.unfollowUser
-=======
-    '/api/v1/articles',
+    UserController.unfollowUser,
     Authorization.checkToken,
     ArticleController.getArticles
   );
@@ -103,7 +95,6 @@ const routes = (app) => {
     userMiddleware.getUserByMail,
     Authorization.checkToken,
     UserController.resetPassword
->>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
   );
   app.put(
     '/api/v1/users/role/:userId',
@@ -112,6 +103,9 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
   );
+  app.get('/api/v1/articles',
+    Authorization.checkToken,
+    ArticleController.getArticles);
 };
 
 export default routes;

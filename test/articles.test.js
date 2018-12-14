@@ -1,11 +1,8 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/app';
-<<<<<<< HEAD
-=======
 import models from '../src/models'
 import { helperMethods } from '../src/utilities';
->>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -108,15 +105,9 @@ describe('Integration tests for the article controller', () => {
           .set('x-access-token', myToken).send(articleDetails);
         expect(response.status).to.equal(400);
         expect(response.body).to.have.property('message');
-<<<<<<< HEAD
         expect(response.body.message)
           .to.equal('Description field should not exceed 200 character');
       });
-  });
-=======
-        expect(response.body.message).to.equal('Description field should not exceed 200 character');
-    });
-
     it('should get all articles', async () => {
       const response = await chai.request(app).get('/api/v1/articles')
       .set('x-access-token', myToken);
@@ -155,5 +146,4 @@ describe('Integration tests for the article controller', () => {
         expect(response.body.success).to.equal(false);
     });
   })
->>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
 });

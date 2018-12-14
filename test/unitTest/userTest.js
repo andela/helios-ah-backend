@@ -113,8 +113,7 @@ describe('Test user model', () => {
     } catch (error) {
       expect(error.errors[0].message)
         .to.equal(
-          'Username must contain only alphabet, numbers, and characters  and '
-          + 'must begin with an alphabet'
+          'Username must contain only alphanumeric'
         );
       }
   });

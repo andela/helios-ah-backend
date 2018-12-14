@@ -1,8 +1,5 @@
-<<<<<<< HEAD
-=======
 import crypter from '../utilities/cryptData';
 
->>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
 export default (sequelize, DataTypes) => {
   const Users = sequelize.define(
     'Users', {
@@ -104,7 +101,6 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'articles',
     });
-<<<<<<< HEAD
     Users.belongsToMany(models.Users, {
       as: 'Follow',
       through: {
@@ -118,7 +114,7 @@ export default (sequelize, DataTypes) => {
         model: 'Follower'
       },
       foreignKey: 'followerId'
-=======
+    });
     Users.hasMany(models.Comments, {
       foreignKey: 'userId',
       as: 'comments'
@@ -126,7 +122,6 @@ export default (sequelize, DataTypes) => {
     Users.hasMany(models.ChildComments, {
       foreignKey: 'userId',
       as: 'childComments'
->>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
     });
     Users.belongsTo(models.roles, {
       foreignKey: 'roleId'

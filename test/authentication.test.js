@@ -6,7 +6,7 @@ const { expect } = chai;
 const data = {
   id: 2,
   role: 1,
-  userName: 'helios'
+  username: 'helios'
 };
 
 describe('valid token should be generated', () => {
