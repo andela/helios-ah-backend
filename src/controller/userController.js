@@ -48,21 +48,20 @@ class UserController {
           const isEmailSent = await
           UserController.createTokenAndSendEmail(userExist);
           if (isEmailSent) {
-            return helperMethods.requestSuccessful(
-              res, 'You had started the registration process earlier. '
-                + 'An email has been sent to your email address. '
-                + 'Please check your email to complete your registration.'
-            );
+            return helperMethods
+              .requestSuccessful(res, 'You had started the registration '
+              + 'process earlier. '
+              + 'An email has been sent to your email address. '
+              + 'Please check your email to complete your registration.');
           }
-          return helperMethods.serverError(
-            res, 'Your registration could not be completed. Please try again'
-          );
+          return helperMethods
+            .serverError(res, 'Your registration could not be completed.'
+            + ' Please try again');
         }
         if (userExist.isVerified === true) {
-          helperMethods.requestSuccessful(
-            res, 'You are a registered user on this platform.'
-            + ' Please proceed to login'
-          );
+          return helperMethods
+            .requestSuccessful(res, 'You are a registered user on '
+            + 'this platform. Please proceed to login');
         }
       }
       const userCreated = await Users.create({
@@ -77,14 +76,14 @@ class UserController {
         const isEmailSent = await
         UserController.createTokenAndSendEmail(userCreated);
         if (isEmailSent) {
-          return helperMethods.requestSuccessful(
-            res, 'An email has been sent to your email address.'
-            + 'Please check your email to complete your registration'
-          );
+          return helperMethods
+            .requestSuccessful(res, 'An email has been sent to your '
+            + 'email address. Please check your email to complete '
+            + 'your registration');
         }
-        return helperMethods.serverError(
-          res, 'Your registration could not be completed. Please try again'
-        );
+        return helperMethods
+          .serverError(res, 'Your registration could not be completed.'
+          + 'Please try again');
       }
     } catch (error) {
       if (error.errors) {
