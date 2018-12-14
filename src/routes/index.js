@@ -5,7 +5,11 @@ import {
   CommentController
 } from '../controller';
 
-import { validateUserInputs } from '../utilities';
+import {
+  validateUserInputs,
+  findDatabaseField,
+  follower
+} from '../utilities';
 import Authorization from '../middlewares/Authorization';
 import userMiddleware from '../middlewares/User';
 
@@ -32,7 +36,24 @@ const routes = (app) => {
     ArticleController.createArticle
   );
   app.get(
-    '/api/v1/articles',
+    '/api/v1/profiles/:id/follow',
+    validateUserInputs.uuidV4Validator,
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    findDatabaseField.UserInParams,
+    follower.checkForSelfFollow,
+    follower.checkForExistingFollowing,
+    follower.updatePreviousFollowing,
+    UserController.followUser
+  );
+  app.delete(
+    '/api/v1/profiles/:id/follow',
+    validateUserInputs.uuidV4Validator,
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    findDatabaseField.UserInParams,
+    follower.checkForSelfUnfollow,
+    UserController.unfollowUser,
     Authorization.checkToken,
     ArticleController.getArticles
   );
@@ -81,6 +102,11 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleAuth,
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
+  );
+  app.get(
+    '/api/v1/articles',
+    Authorization.checkToken,
+    ArticleController.getArticles,
   );
 };
 

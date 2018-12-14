@@ -38,21 +38,20 @@ class Authorization {
     || req.headers['x-access-token'];
     if (!token) {
       res.status(401).send({
-        success: false,
+        code: 401,
         message: 'User not authorized',
       });
     } else {
-      try {
-        const tokenVerified = await Auth.verifyToken(token);
+      const tokenVerified = await Auth.verifyToken(token);
+
+      if (tokenVerified.success) {
         req.decoded = tokenVerified;
-        next();
-      } catch (error) {
-        res.status(401).send({
-          success: false,
-          message: 'Authentication failed',
-          error,
-        });
+        return next();
       }
+      res.status(401).send({
+        code: 401,
+        message: 'Authentication failed',
+      });
     }
   }
 }

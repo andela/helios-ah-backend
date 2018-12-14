@@ -45,20 +45,26 @@ class Authentication {
    * @param {*} input - token input
    * @returns {req} - populate the request with the decrypted content
    */
-  static async verifyToken(input) {
+  static verifyToken(input) {
     const token = reverseToken(input);
-    let data;
-    try {
-      await jwt.verify(token, process.env.SECRET, (err, decoded) => {
-        if (err) {
-          data = false;
-        }
-        data = decoded;
-      });
-    } catch (err) {
-      data = false;
-    }
-    return data;
+    let output = {};
+    return jwt.verify(token, process.env.SECRET, (err, decoded) => {
+    // update req with the decrypted token
+      if (err) {
+        output = {
+          Error: 'Failed to authenticate token',
+          success: false
+        };
+      } else {
+        output = {
+          success: true,
+          id: decoded.id,
+          role: decoded.role,
+          username: decoded.username,
+        };
+      }
+      return output;
+    });
   }
 }
 
