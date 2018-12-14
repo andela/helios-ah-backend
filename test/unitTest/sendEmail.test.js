@@ -1,15 +1,16 @@
 import chai from 'chai';
 import SendEmail from '../../src/utilities/sendEmail';
+import sendGrid from '@sendgrid/mail';
+import sinon from 'sinon';
 
 const { expect } = chai;
 
 describe('Utility to send emails', () => {
   it('should send verification email after registration', async () => {
-    try {
-      expect(await SendEmail.verifyEmail('jideajayi11@gmail.com')).to.equal(true);
-    } catch (error) {
-      expect(error).to.equal(null);
-    }
+    const stubEmailSender = sinon.stub(SendEmail, 'emailSender').returns(true);
+    const response = await SendEmail.verifyEmail('jideajayi11@gmail.com');
+    expect(response).to.equal(true);
+    stubEmailSender.restore();
   });
   it('should send email when passed the email details', async () => {
     const details = {
@@ -18,10 +19,17 @@ describe('Utility to send emails', () => {
       emailBody: '<p>This email is being received</p>'
       + '<p>to test the utility that sends mail.'
     };
-    try {
-      expect(await SendEmail.emailSender(details)).to.equal(true);
-    } catch (error) {
-      expect(error).to.equal(null);
-    }
+    const stubSendMethod = sinon.stub(sendGrid, 'send').returns(true);
+    const response = await SendEmail.emailSender(details);
+    expect(response).to.equal(true);
+    stubSendMethod.restore();
+
+  });
+  it('should send a mail to the user on completing registration', async () => {
+    const stubSendMethod = sinon.stub(SendEmail, 'emailSender').returns(true);
+    const response = await 
+    SendEmail.confirmRegistrationComplete('jideajayi11@gmail.com');
+    expect(response).to.equal(true);
+    stubSendMethod.restore();
   });
 });

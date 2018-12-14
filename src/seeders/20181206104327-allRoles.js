@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   up: queryInterface => queryInterface.bulkInsert('roles', [
     {
       id: 1,

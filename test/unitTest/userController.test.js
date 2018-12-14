@@ -1,7 +1,7 @@
 import sinon from 'sinon';
 import chai from 'chai';
 import { UserController } from '../../src/controller';
-import { authentication, cryptData } from '../../src/utilities';
+import { Authentication, sendEmail } from '../../src/utilities';
 import models from '../../src/models';
 
 const { Users } = models;
@@ -43,6 +43,7 @@ const foundUser = {
     };
   }
 }
+
 describe('Unit test for user controller', () => {
   describe('Test all methods of the class are available', () => {
     it('userSignup should be a method', () => {
@@ -66,7 +67,7 @@ describe('Unit test for user controller', () => {
   });
   describe('Test complete a user\'s registration', () => {
     it('should send error message when token is invalid', async () => {
-      const spyVerifyToken = sinon.spy(authentication, 'verifyToken');
+      const spyVerifyToken = sinon.spy(Authentication, 'verifyToken');
       const response = await UserController.completeRegistration(req, res);
       expect(spyVerifyToken.called).to.equal(true);
       expect(response.success).to.equal(false);
@@ -76,10 +77,12 @@ describe('Unit test for user controller', () => {
       spyVerifyToken.restore();
     });
     it('should send a success message when registration is complete', async() => {
-      const stubVerifyToken = sinon.stub(authentication, 'verifyToken').returns(true);
+      const stubVerifyToken = sinon.stub(Authentication, 'verifyToken').returns(true);
       const stubFindByPk = sinon.stub(Users, 'findByPk').returns(foundUser);
-      const stubGetToken = sinon.stub(authentication, 'getToken')
+      const stubGetToken = sinon.stub(Authentication, 'getToken')
       .returns('myRandomStringToken');
+      const stubSendEmail = sinon.stub(sendEmail, 'confirmRegistrationComplete')
+      .returns(true);
       const response = await UserController.completeRegistration(req, res);
       expect(response.success).to.equal(true);
       expect(response.message).to.equal('User myUserName created successfully');
@@ -90,17 +93,18 @@ describe('Unit test for user controller', () => {
       stubVerifyToken.restore();
       stubFindByPk.restore();
       stubGetToken.restore();
+      stubSendEmail.restore();
     });
   });
   describe('Test internal server error of signup method', () => {
     it('should send internal server error ', async () => {
-      const stubEncryptData = sinon.stub(cryptData, 'encryptData').throws({
-        error: { message: 'An error occurred during hashing password'}
+      const stubFindOneMethod = sinon.stub(Users, 'findOne').throws({
+        'error': 'some random error',
       });
       const response =  await UserController.userSignup(req, res);
       expect(response.success).to.equal(false);
       expect(response.message).to.equal('Internal server error');
-      stubEncryptData.restore();
+      stubFindOneMethod.restore();
     });
   });
   describe('Test for updating a user\'s role', () => {

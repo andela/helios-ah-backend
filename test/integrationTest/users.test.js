@@ -1,7 +1,9 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
+import sinon from 'sinon';
 import app from '../../src/app';
-import { authentication } from '../../src/utilities';
+import { UserController } from '../../src/controller';
+import { Authentication } from '../../src/utilities';
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -50,12 +52,18 @@ describe('Integration tests for the user controller', () => {
         lastName: 'Doe',
         bio: 'Fun to be with. Cool and calm',
         }
+      const stubCreateTokenAndSendEmail = sinon.stub(
+        UserController, 'createTokenAndSendEmail').returns(true);
       const response = await chai.request(app).post('/api/v1/auth/signup')
       .send(userDetails);
       expect(response.status).to.equal(200);
       expect(response.body).to.have.property('message');
+      expect(response.body.message).to.equal(
+        'An email has been sent to your email address.'
+        + 'Please check your email to complete your registration');
       expect(response.body).to.have.property('success');
       expect(response.body.success).to.be.equal(true);
+      stubCreateTokenAndSendEmail.restore();
     });
     it('should return an error when any user details is not given', async () =>{
       const userDetails = {
@@ -75,10 +83,10 @@ describe('Integration tests for the user controller', () => {
   describe('Tests for user roles', () => {
     let validAdminToken, invalidAdminToken, newRole, invalidRole, dataUserId;
     before(async () => {
-      validAdminToken = await authentication.getToken({
+      validAdminToken = await Authentication.getToken({
         role: 2
       });
-      invalidAdminToken = await authentication.getToken({
+      invalidAdminToken = await Authentication.getToken({
         role: 1
       });
       newRole = {

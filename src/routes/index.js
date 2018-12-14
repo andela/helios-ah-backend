@@ -4,7 +4,8 @@ import {
   ArticleController,
 } from '../controller';
 
-import { validateUserInputs, authentication } from '../utilities';
+import { validateUserInputs } from '../utilities';
+import Authorization from '../middlewares/Authorization';
 import userMiddleware from '../middlewares/User';
 
 /**
@@ -29,9 +30,30 @@ const routes = (app) => {
   );
   app.post(
     '/api/v1/articles',
-    authentication.checkToken,
+    Authorization.checkToken,
     validateUserInputs.validateCreateArticle,
     ArticleController.createArticle
+  );
+  app.get(
+    '/api/v1/articles',
+    Authorization.checkToken,
+    ArticleController.getArticles
+  );
+  app.get(
+    '/api/v1/articles/user',
+    Authorization.checkToken,
+    ArticleController.getArticles
+  );
+  app.put(
+    '/api/v1/articles/:articleId',
+    validateUserInputs.validateCreateArticle,
+    Authorization.checkToken,
+    ArticleController.updateArticle
+  );
+  app.get(
+    '/api/v1/authors',
+    Authorization.checkToken,
+    UserController.getAuthors
   );
   app.post(
     '/api/v1/user/requests/password/reset',
@@ -40,13 +62,13 @@ const routes = (app) => {
   );
   app.put(
     '/api/v1/change/password',
-    authentication.checkToken,
+    Authorization.checkToken,
     userMiddleware.getUserByMail,
     UserController.resetPassword
   );
   app.put(
     '/api/v1/users/role/:userId',
-    authentication.checkToken,
+    Authorization.checkToken,
     validateUserInputs.validateUserRoleAuth,
     validateUserInputs.validateUserRoleBody,
     UserController.userRole

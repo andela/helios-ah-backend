@@ -2,6 +2,7 @@ import sendGrid from '@sendgrid/mail';
 import dotenv from 'dotenv';
 
 dotenv.config();
+
 /**
  * @description utility to send mails
  */
@@ -28,11 +29,31 @@ class SendEmail {
   }
 
   /**
+   * This function sends an email on verification of email address
+   * @param {string} email - email address to send the message to
+   * @param {string} token - Token generated during signup
+   * @returns {boolean} sends a verification email to user
+   * after registration
+  */
+  static confirmRegistrationComplete(email) {
+    const details = {
+      email,
+      subject: 'Registration Complete - Authors Haven',
+      emailBody: `<p>Your registration has been completed<p>
+      <p>Thank you for registering with Authors Haven.</p>
+       <p> >>>
+       <a href=http://localhost:4001/api/v1/>
+       Go to your profile </a> <<< </p>`
+    };
+    return SendEmail.emailSender(details);
+  }
+
+  /**
    *
    * @param {object} details - Object containing info for sending email
    * @returns {boolean} sends email to users
    */
-  static emailSender(details) {
+  static async emailSender(details) {
     sendGrid.setApiKey(process.env.SENDGRID_API_KEY);
     const msg = {
       from: process.env.mail_master,
@@ -40,8 +61,13 @@ class SendEmail {
       subject: details.subject,
       to: details.email
     };
-    if (sendGrid.send(msg)) {
-      return true;
+    try {
+      const isEmailSent = await sendGrid.send(msg);
+      if (isEmailSent) {
+        return true;
+      }
+    } catch (error) {
+      return false;
     }
   }
 }

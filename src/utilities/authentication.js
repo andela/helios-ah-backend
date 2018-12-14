@@ -5,7 +5,7 @@ dotenv.config();
 
 /**
  * scrambles string data
- * @param {*} token - input string data
+ * @param {string} token - input string data
  * @returns {output} - scrambled data
  */
 function reverseToken(token) {
@@ -42,7 +42,7 @@ class Authentication {
 
   /**
    * verify a token validity
-   * @param {*} input - token input
+   * @param {string} input - token input
    * @returns {req} - populate the request with the decrypted content
    */
   static async verifyToken(input) {
@@ -59,47 +59,6 @@ class Authentication {
       data = false;
     }
     return data;
-  }
-
-  /**
-   *
-   * @param {object} req - Request object
-   * @param {object} res - Response object
-   * @param {callback} next - The callback that passes the request
-   * to the next handler
-   * @returns {callback} next - The callback that passes the request
-   * to the next handler
-   * @returns {object} res - Response object containing an error due
-   * to unauthorized access
-   */
-  static async checkToken(req, res, next) {
-    const token = req.body.token || req.query.token
-      || req.headers['x-access-token'];
-    if (!token) {
-      res.status(401).send({
-        code: 401,
-        message: 'User not authorized',
-      });
-    } else {
-      try {
-        const tokenVerified = await Authentication.verifyToken(token);
-        if (tokenVerified) {
-          req.decoded = tokenVerified;
-          next();
-        }
-        if (!tokenVerified) {
-          res.status(401).send({
-            code: 401,
-            message: 'Authentication failed',
-          });
-        }
-      } catch (error) {
-        res.status(401).send({
-          code: 401,
-          message: 'Authentication failed',
-        });
-      }
-    }
   }
 }
 

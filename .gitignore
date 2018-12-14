@@ -45,3 +45,12 @@ node_modules
 
 # development ENV file
 .env
+
+# editor package.back-up.json
+.idea
+
+.vscode
+package.back-up.json
+
+# vscode user and workspace settings
+.vscode
