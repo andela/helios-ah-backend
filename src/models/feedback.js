@@ -18,9 +18,13 @@ const feedbackModel = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       defaultValue: null,
       validate: {
-        len: {
-          args: [1, 5],
-          msg: 'Ratings  must be greater than 0 but less than 6'
+        max: {
+          args: 5,
+          msg: 'Ratings  must be less than 6'
+        },
+        min: {
+          args: 1,
+          msg: 'Ratings  must be greater than 0'
         }
       }
     }

@@ -34,7 +34,7 @@ const checkArticleExists = async (req, res, next) => {
   } catch (error) {
     res.status(400).json({
       success: false,
-      message: 'Error, Invalid UUID(ArticleID)'
+      message: 'Error, Internal Server Error or Invalid UUID(ArticleID)'
     });
   }
 };

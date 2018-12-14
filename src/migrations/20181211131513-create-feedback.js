@@ -7,10 +7,12 @@ export default {
       type: Sequelize.INTEGER
     },
     isLiked: {
-      type: Sequelize.BOOLEAN
+      type: Sequelize.BOOLEAN,
+      defaultValue: false
     },
     rating: {
-      type: Sequelize.INTEGER
+      type: Sequelize.INTEGER,
+      defaultValue: null
     },
     userId: {
       type: Sequelize.UUID,

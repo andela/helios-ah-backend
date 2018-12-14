@@ -37,7 +37,7 @@ class ValidateArticle {
     } catch (err) {
       res.status(500).json({
         Success: false,
-        error: `Error: ${err}`
+        message: 'Internal Server Error'
       });
     }
     next();

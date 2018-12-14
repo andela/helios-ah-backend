@@ -44,8 +44,7 @@ class ArticleController {
       }
       return res.status(500).json({
         success: false,
-        message: 'Internal server error',
-        error,
+        message: 'Internal server error'
       });
     }
   }
