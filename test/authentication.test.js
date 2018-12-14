@@ -22,7 +22,7 @@ describe('scrambled token should be unscrambled and Validated', () => {
     const user = await authentication.verifyToken(token);
     expect(user.id).to.be.equal(2);
     expect(user.role).to.be.equal(1);
-    expect(user.userName).to.be.equal('helios');
+    expect(user.username).to.be.equal('helios');
     expect(user).to.be.a('object');
   });
 });

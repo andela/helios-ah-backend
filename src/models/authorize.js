@@ -1,5 +1,9 @@
 const VerificationModel = (sequelize, DataTypes) => {
+<<<<<<< HEAD
   const Authorize = sequelize.define('Authorize', {
+=======
+  const userTokens = sequelize.define('Authorize', {
+>>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
@@ -13,12 +17,12 @@ const VerificationModel = (sequelize, DataTypes) => {
       defaultValue: false
     }
   });
-  Authorize.associate = (models) => {
-    Authorize.belongsTo(models.Users, {
+  userTokens.associate = (models) => {
+    userTokens.belongsTo(models.Users, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
   };
-  return Authorize;
+  return userTokens;
 };
 export default VerificationModel;

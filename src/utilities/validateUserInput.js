@@ -14,11 +14,13 @@ const trimValues = (objectWithValuesToTrim) => {
 /**
  * Defines the failed message returned when required fields are missing.
  * @param {object} res - Response object
+ * @param {string} message - specific error message
  * @returns {res} - Response object
  */
-const allFieldsRequired = (res) => {
+const allFieldsRequired = (res, message) => {
   res.status(400).send({
-    message: 'Invalid request. All fields are required',
+    success: false,
+    message: message || 'Invalid request. All fields are required',
   });
 };
 
@@ -39,9 +41,9 @@ class Validate {
   static validateSignup(req, res, next) {
     req.body = trimValues(req.body);
     const {
-      username, password, email, bio, firstName, lastName,
+      username, password, email, firstName, lastName,
     } = req.body;
-    if (username && password && email && bio && firstName && lastName) {
+    if (username && password && email && firstName && lastName) {
       next();
     } else {
       allFieldsRequired(res);
@@ -94,6 +96,27 @@ class Validate {
 
   /**
    *  *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - Response object when query is invalid
+   * @memberof Validate
+   */
+  static validateCreateComment(req, res, next) {
+    req.body = trimValues(req.body);
+    const {
+      commentText
+    } = req.body;
+    if (commentText) {
+      next();
+    } else {
+      allFieldsRequired(res, 'commentText field is required');
+    }
+  }
+
+  /**
+   *
    * @param {object} req - Request object
    * @param {object} res - Response object
    * @param {callback} next - The callback that passes the request

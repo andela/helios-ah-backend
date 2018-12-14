@@ -2,14 +2,21 @@
 import {
   UserController,
   ArticleController,
+  CommentController
 } from '../controller';
 
+<<<<<<< HEAD
 import {
   validateUserInputs,
   authentication,
   findDatabaseField,
   follower
 } from '../utilities';
+=======
+import { validateUserInputs } from '../utilities';
+import Authorization from '../middlewares/Authorization';
+import userMiddleware from '../middlewares/User';
+>>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
 
 /**
  * Handles request
@@ -29,11 +36,12 @@ const routes = (app) => {
   );
   app.post(
     '/api/v1/articles',
+    Authorization.checkToken,
     validateUserInputs.validateCreateArticle,
-    authentication.checkToken,
     ArticleController.createArticle
   );
   app.get(
+<<<<<<< HEAD
     '/api/v1/profiles/:id/follow',
     validateUserInputs.uuidV4Validator,
     authentication.checkToken,
@@ -52,10 +60,54 @@ const routes = (app) => {
     findDatabaseField.UserInParams,
     follower.checkForSelfUnfollow,
     UserController.unfollowUser
+=======
+    '/api/v1/articles',
+    Authorization.checkToken,
+    ArticleController.getArticles
+  );
+  app.get(
+    '/api/v1/articles/user',
+    Authorization.checkToken,
+    ArticleController.getArticles
+  );
+  app.put(
+    '/api/v1/articles/:articleId',
+    validateUserInputs.validateCreateArticle,
+    Authorization.checkToken,
+    ArticleController.updateArticle
+  );
+  app.get(
+    '/api/v1/authors',
+    Authorization.checkToken,
+    UserController.getAuthors
+  );
+  app.post(
+    '/api/v1/articles/:articleId/comments',
+    validateUserInputs.validateCreateComment,
+    Authorization.checkToken,
+    CommentController.createComment
+  );
+  app.post(
+    '/api/v1/comments/:commentId/childcomments',
+    validateUserInputs.validateCreateComment,
+    Authorization.checkToken,
+    CommentController.createChildComment
+  );
+  app.post(
+    '/api/v1/user/requests/password/reset',
+    userMiddleware.getUserByMail,
+    UserController.requestResetPassword
+  );
+  app.put(
+    '/api/v1/change/password',
+    userMiddleware.getUserByMail,
+    Authorization.checkToken,
+    UserController.resetPassword
+>>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
   );
   app.put(
     '/api/v1/users/role/:userId',
-    authentication.checkToken,
+    Authorization.checkToken,
     validateUserInputs.validateUserRoleAuth,
     validateUserInputs.validateUserRoleBody,
     UserController.userRole

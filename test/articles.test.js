@@ -1,12 +1,18 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/app';
+<<<<<<< HEAD
+=======
+import models from '../src/models'
+import { helperMethods } from '../src/utilities';
+>>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
 
 chai.use(chaiHttp);
 const { expect } = chai;
+const { Article } = models;
+let myToken;
 
 describe('Integration tests for the article controller', () => {
-  let myToken;
   before('Create users before running tests', async () => {
     const userDetails = {
       username: 'JaneDoe',
@@ -102,8 +108,52 @@ describe('Integration tests for the article controller', () => {
           .set('x-access-token', myToken).send(articleDetails);
         expect(response.status).to.equal(400);
         expect(response.body).to.have.property('message');
+<<<<<<< HEAD
         expect(response.body.message)
           .to.equal('Description field should not exceed 200 character');
       });
   });
+=======
+        expect(response.body.message).to.equal('Description field should not exceed 200 character');
+    });
+
+    it('should get all articles', async () => {
+      const response = await chai.request(app).get('/api/v1/articles')
+      .set('x-access-token', myToken);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('articles');
+        expect(response.body.articles).to.be.an('array');
+        expect(response.body.success).to.equal(true);
+    });
+  });
+  describe('Test update article', () => {
+    let id;
+    const articleDetails = {
+      title: 'The brow fox',
+      body: 'so i saw a dog',
+      description: 'narrative',
+      image: 'https://someimage.uplodersite.com',
+    };
+    before('create article before updating article', async () => {
+      const attributes = [ 'userId', 'id']
+      const user = await Article.findAll({ attributes });
+      id = user[0].dataValues.id;
+    })
+    it('should update an article with the articles Id', async () => {
+      const response = await chai.request(app).put(`/api/v1/articles/${id}`)
+      .set('x-access-token', myToken).send(articleDetails);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('articleUpdated');
+        expect(response.body.success).to.equal(true);
+    });
+    it('should reject update on article with wrong article Id', async () => {
+      const response = await chai.request(app).put('/api/v1/articles/773be5c1-1aa5-40d4-bee9-6c47ea903741')
+      .set('x-access-token', myToken).send(articleDetails);
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.equal('Provide a valid article Id');
+        expect(response.body.success).to.equal(false);
+    });
+  })
+>>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
 });

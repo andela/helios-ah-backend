@@ -38,7 +38,7 @@ const obj = {
     lastName: 'doe',
     email: 'example@gmail.com',
     password: '123456',
-    username: '46134'
+    username: '_abc'
   },
   pass: {
     firstName: 'john',
@@ -116,7 +116,7 @@ describe('Test user model', () => {
           'Username must contain only alphabet, numbers, and characters  and '
           + 'must begin with an alphabet'
         );
-    }
+      }
   });
 
   it('should save user with valid credentials', async () => {

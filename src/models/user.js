@@ -1,94 +1,101 @@
+<<<<<<< HEAD
+=======
+import crypter from '../utilities/cryptData';
+
+>>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
 export default (sequelize, DataTypes) => {
-  const Users = sequelize.define('Users', {
-    id: {
-      type: DataTypes.UUID,
-      primaryKey: true,
-      defaultValue: DataTypes.UUIDV4,
-    },
-    firstName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        len: [3, 15],
-        is: {
-          args: /^[a-z]+$/i,
-          msg: 'First name must contain only Alphabets'
+  const Users = sequelize.define(
+    'Users', {
+      id: {
+        type: DataTypes.UUID,
+        primaryKey: true,
+        defaultValue: DataTypes.UUIDV4,
+      },
+      firstName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          len: [3, 25],
+          is: {
+            args: /^[a-z']+$/i,
+            msg: 'First name must contain only Alphabets'
+          }
+        }
+      },
+      lastName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          len: [3, 25],
+          is: {
+            args: /^[a-z']+$/i,
+            msg: 'Last name must contain only Alphabets'
+          }
+        },
+      },
+      email: {
+        type: DataTypes.STRING,
+        unique: true,
+        allowNull: false,
+        validate: {
+          isEmail: {
+            args: true,
+            msg: 'Email must be a valid email ID'
+          }
+        }
+      },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+          len: {
+            args: [6, 150],
+            msg: 'Password must be more than 5 characters'
+          }
+        }
+      },
+      image: {
+        type: DataTypes.STRING,
+        validate: {
+          isUrl: true
+        }
+      },
+      bio: {
+        type: DataTypes.TEXT,
+        validate: {
+          notEmpty: {
+            args: true,
+            msg: 'Bio must not be empty'
+          }
+        }
+      },
+      isVerified: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: false
+      },
+      username: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: {
+          len: [3, 20],
+          isAlphanumeric: {
+            args: true,
+            msg: 'Username must contain only alphanumeric',
+          }
+        }
+      },
+    }, {
+      hooks: {
+        beforeUpdate: async (user) => {
+          user.password = await crypter.encryptData(user.password);
+        },
+        beforeCreate: async (user) => {
+          user.password = await crypter.encryptData(user.password);
         }
       }
-    },
-    lastName: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        len: [3, 15],
-        is: {
-          args: /^[a-z]+$/i,
-          msg: 'Last name must contain only Alphabets'
-        }
-      }
-    },
-    email: {
-      type: DataTypes.STRING,
-      unique: true,
-      allowNull: false,
-      validate: {
-        isEmail: {
-          args: true,
-          msg: 'Email must be a valid email ID'
-        }
-      }
-    },
-    password: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      validate: {
-        len: {
-          args: [6, 150],
-          msg: 'Password must be more than 5 characters'
-        }
-      }
-    },
-    image: {
-      type: DataTypes.STRING,
-      validate: {
-        isUrl: true
-      }
-    },
-    bio: {
-      type: DataTypes.TEXT,
-      validate: {
-        is: {
-          args: /^[A-Za-z]+[A-Za-z0-9 _.,!?;"']+$/i,
-          msg: 'Bio must contain only valid '
-              + 'characters and must begin with '
-              + 'an alphabet'
-        }
-      }
-    },
-    isVerified: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false
-    },
-    username: {
-      type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
-      validate: {
-        len: [3, 15],
-        is: {
-          args: /^[A-Za-z]+[A-Za-z0-9_]+$/i,
-          msg: 'Username must contain only alphabet, '
-              + 'numbers, and characters  and must begin '
-              + 'with an alphabet'
-        }
-      }
-    },
-    roleId: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      defaultValue: 1
     }
-  });
+  );
   Users.associate = (models) => {
     Users.hasMany(models.Authorize, {
       foreignKey: 'userId',
@@ -97,6 +104,7 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'articles',
     });
+<<<<<<< HEAD
     Users.belongsToMany(models.Users, {
       as: 'Follow',
       through: {
@@ -110,6 +118,15 @@ export default (sequelize, DataTypes) => {
         model: 'Follower'
       },
       foreignKey: 'followerId'
+=======
+    Users.hasMany(models.Comments, {
+      foreignKey: 'userId',
+      as: 'comments'
+    });
+    Users.hasMany(models.ChildComments, {
+      foreignKey: 'userId',
+      as: 'childComments'
+>>>>>>> 554da7bcbe3332bad5b6cde7b9fe3091168a1ec3
     });
     Users.belongsTo(models.roles, {
       foreignKey: 'roleId'
