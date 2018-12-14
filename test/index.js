@@ -4,5 +4,6 @@ import './users.test';
 import './authentication.test'
 import './sendEmail.test';
 import './articles.test';
+import './comments.test';
 import './requestPassword.test';
 import './resetPassword.test';
