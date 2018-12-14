@@ -366,19 +366,32 @@ Authentication required
 
 ### Add Comments to an Article
 
-`POST /api/articles/:slug/comments`
+`POST /api/v1/articles/:articleId/comments`
 
 Example request body:
 
 ```source-json
 {
-  "comment": {
-    "body": "His name was my name too."
-  }
+    "body": "You article is awesome"
 }
 ```
 
-Authentication required, returns the created Comment
+Authentication required, returns the created Comment <br>
+Required field: `body`
+
+### Add Comments to another comment
+
+`POST /api/v1/comments/:commentId/childcomments`
+
+Example request body:
+
+```source-json
+{
+    "body": "Thank you for your honest feedback on my article"
+}
+```
+
+Authentication required, returns the created childComment <br>
 Required field: `body`
 
 ### Get Comments from an Article

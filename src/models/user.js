@@ -101,6 +101,14 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'articles',
     });
+    Users.hasMany(models.Comments, {
+      foreignKey: 'userId',
+      as: 'comments'
+    });
+    Users.hasMany(models.ChildComments, {
+      foreignKey: 'userId',
+      as: 'childComments'
+    });
     Users.belongsTo(models.roles, {
       foreignKey: 'roleId'
     });

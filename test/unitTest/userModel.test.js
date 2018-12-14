@@ -46,7 +46,7 @@ const obj = {
     lastName: 'doe',
     email: 'chris@gmail.com',
     password: '123456',
-    username: 'john13tt45'
+    username: 'manajohn13tt45'
   },
   failedDuplicateEmail: {
     firstName: 'john',
