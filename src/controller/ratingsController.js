@@ -1,8 +1,5 @@
 import models from '../models';
-import {
-  checkFeedbackExist
-} from '../utilities';
-
+import { checkFeedbackExist } from '../utilities';
 
 const {
   Feedback,

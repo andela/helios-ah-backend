@@ -25,14 +25,16 @@ class Authentication {
    * @returns {output} - returns a jwt token
    */
   static async getToken(data, time) {
-    const token = await jwt.sign({
-      id: data.id,
-      role: data.role,
-      username: data.username
-    },
-    process.env.SECRET, {
-      expiresIn: time || 86400 // expires in 1 day
-    });
+    const token = await jwt.sign(
+      {
+        id: data.id,
+        role: data.role,
+        username: data.username
+      },
+      process.env.SECRET, {
+        expiresIn: time || 86400 // expires in 1 day
+      }
+    );
     const output = reverseToken(token);
     return output;
   }

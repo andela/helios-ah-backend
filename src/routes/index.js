@@ -5,9 +5,7 @@ import {
   RatingsController
 } from '../controller';
 
-import {
-  validateUserInputs,
-} from '../utilities';
+import { validateUserInputs } from '../utilities';
 
 import {
   userMiddleware,
