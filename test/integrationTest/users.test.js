@@ -60,7 +60,7 @@ describe('Integration tests for the user controller', () => {
       expect(response.body).to.have.property('message');
       expect(response.body.message).to.equal(
         'An email has been sent to your email address.'
-        + 'Please check your email to complete your registration');
+        + ' Please check your email to complete your registration');
       expect(response.body).to.have.property('success');
       expect(response.body.success).to.be.equal(true);
       stubCreateTokenAndSendEmail.restore();
