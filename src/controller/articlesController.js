@@ -37,7 +37,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      Error.sendError(res, error);
+      Error.handleErrorResponse(res, error);
     }
   }
 
@@ -79,7 +79,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      Error.sendError(res, error);
+      Error.handleErrorResponse(res, error);
     }
   }
 
@@ -92,11 +92,11 @@ class ArticleController {
   * @memberof ArticlesController
  */
   static async getArticles(req, res) {
-    const peginate = {
+    const paginate = {
       page: parseInt(req.query.page, 10) || 1,
       limit: parseInt(req.query.limit, 10) || 100,
     };
-    const offset = (peginate.page * peginate.limit) - peginate.limit;
+    const offset = (paginate.page * paginate.limit) - paginate.limit;
     const options = {
       attributes: [
         'id',
@@ -105,7 +105,7 @@ class ArticleController {
         'description',
         'image',
       ],
-      limit: peginate.limit,
+      limit: paginate.limit,
       offset,
     };
 

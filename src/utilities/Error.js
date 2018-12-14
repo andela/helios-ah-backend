@@ -11,7 +11,7 @@ class Error {
   * @return {res} res - Response object
   * @memberof Error
  */
-  static sendError(res, error) {
+  static handleErrorResponse(res, error) {
     if (error.errors) {
       res.status(400).json({
         success: false,
