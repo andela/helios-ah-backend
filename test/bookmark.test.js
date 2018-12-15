@@ -148,6 +148,7 @@ describe('POST /api/v1/articles/:articleId/bookmark', () => {
         expect(res2.status).to.equal(201);
         expect(res2.body).to.have.property('message');
         expect(res2.body.message).to.equal('Article created successfully');
+        const articleId = await res2.body.articleCreated.id;
 
         const res3 = await chai.request(app)
           .post(`/api/v1/articles/${articleId}/bookmark`)
