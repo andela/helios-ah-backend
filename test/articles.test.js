@@ -233,7 +233,7 @@ describe('Integration tests for the article controller', () => {
       const user = await Article.findAll({ attributes });
       userId = user[0].dataValues.userId;
       id = user[0].dataValues.id;
-    })
+    });
     it('should update an article with the articles Id', async () => {
       const response = await chai.request(app).put(`/api/v1/articles/${id}`)
       .set('x-access-token', myToken).send(articleDetails);
@@ -249,7 +249,7 @@ describe('Integration tests for the article controller', () => {
         expect(response.body.message).to.equal('Provide a valid article Id');
         expect(response.body.success).to.equal(false);
     });
-  })
+  });
   describe('Test Pagination', () => {
     let articles = [];
     before(async () => {
@@ -260,6 +260,7 @@ describe('Integration tests for the article controller', () => {
           description: faker.lorem.sentence(),
           image: faker.image.imageUrl(),
           isDraft: false,
+          readTime: "7",
           userId
         });
       }
