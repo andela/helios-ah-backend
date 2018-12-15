@@ -11,6 +11,7 @@ branches:
   except:
   - gh-pages
 before_script:
+  - psql -c 'DROP DATABASE if exists travis;' -U postgres
   - psql -c 'CREATE DATABASE travis;' -U postgres
 script:
   - npm test
