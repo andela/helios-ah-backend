@@ -10,3 +10,4 @@ import './unitTest/followerTest';
 import './comments.test';
 import './requestPassword.test';
 import './resetPassword.test';
+import './bookmark.test';

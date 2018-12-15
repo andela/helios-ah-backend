@@ -7,12 +7,13 @@ import {
 
 import {
   validateUserInputs,
-  findDatabaseField,
   follower
 } from '../utilities';
 import Authorization from '../middlewares/Authorization';
 import userMiddleware from '../middlewares/User';
-
+import checkArticleExists from '../middlewares/checkArticleExists';
+import checkBookmarkExists from '../middlewares/checkBookmarkExists';
+import findDatabaseField from '../middlewares/FindDatabaseField';
 /**
  * Handles request
  * @param {object} app - An instance of the express module
@@ -102,6 +103,15 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleAuth,
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
+  );
+  app.post(
+    '/api/v1/articles/:articleId/bookmark',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    validateUserInputs.uuidV4Validator,
+    checkArticleExists,
+    checkBookmarkExists,
+    ArticleController.bookmarkArticle
   );
   app.get(
     '/api/v1/articles',

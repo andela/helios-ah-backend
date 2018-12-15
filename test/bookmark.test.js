@@ -139,22 +139,20 @@ describe('POST /api/v1/articles/:articleId/bookmark', () => {
         expect(res.status).to.equal(201);
         expect(res.body).to.have.property('token');
 
+
         const res2 = await chai.request(app)
           .post('/api/v1/articles')
           .set('x-access-token', userToken)
           .send(articleDetails);
 
-        articleId = await res2.body.articleCreated.id;
-
         expect(res2.status).to.equal(201);
         expect(res2.body).to.have.property('message');
         expect(res2.body.message).to.equal('Article created successfully');
-
+        const articleId = await res2.body.articleCreated.id;
 
         const res3 = await chai.request(app)
           .post(`/api/v1/articles/${articleId}/bookmark`)
           .set('x-access-token', userToken);
-
         expect(res3.status).to.equal(201);
         expect(res3.body).to.have.property('message');
         expect(res3.body.message).to.equal('Article successfully bookmarked');
@@ -179,7 +177,6 @@ describe('POST /api/v1/articles/:articleId/bookmark', () => {
           .send(articleDetails);
 
         const articleId = await res2.body.articleCreated.id;
-
         expect(res2.status).to.equal(201);
         expect(res2.body).to.have.property('message');
         expect(res2.body.message).to.equal('Article created successfully');
