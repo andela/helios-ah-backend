@@ -2,11 +2,19 @@
 import {
   UserController,
   ArticleController,
+  CommentController
 } from '../controller';
 
-import { validateUserInputs } from '../utilities';
+import {
+  validateUserInputs,
+  follower
+} from '../utilities';
 import Authorization from '../middlewares/Authorization';
 import userMiddleware from '../middlewares/User';
+import checkArticleExists from '../middlewares/checkArticleExists';
+import checkBookmarkExists from '../middlewares/checkBookmarkExists';
+import findDatabaseField from '../middlewares/FindDatabaseField';
+
 
 /**
  * Handles request
@@ -35,8 +43,24 @@ const routes = (app) => {
     ArticleController.createArticle
   );
   app.get(
-    '/api/v1/articles',
+    '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
+    validateUserInputs.uuidV4Validator,
+    findDatabaseField.UserInToken,
+    findDatabaseField.UserInParams,
+    follower.checkForSelfFollow,
+    follower.checkForExistingFollowing,
+    follower.updatePreviousFollowing,
+    UserController.followUser
+  );
+  app.delete(
+    '/api/v1/profiles/:id/follow',
+    Authorization.checkToken,
+    validateUserInputs.uuidV4Validator,
+    findDatabaseField.UserInToken,
+    findDatabaseField.UserInParams,
+    follower.checkForSelfUnfollow,
+    UserController.unfollowUser,
     ArticleController.getArticles
   );
   app.get(
@@ -46,14 +70,26 @@ const routes = (app) => {
   );
   app.put(
     '/api/v1/articles/:articleId',
-    validateUserInputs.validateCreateArticle,
     Authorization.checkToken,
+    validateUserInputs.validateCreateArticle,
     ArticleController.updateArticle
   );
   app.get(
     '/api/v1/authors',
     Authorization.checkToken,
     UserController.getAuthors
+  );
+  app.post(
+    '/api/v1/articles/:articleId/comments',
+    Authorization.checkToken,
+    validateUserInputs.validateCreateComment,
+    CommentController.createComment
+  );
+  app.post(
+    '/api/v1/comments/:commentId/childcomments',
+    Authorization.checkToken,
+    validateUserInputs.validateCreateComment,
+    CommentController.createChildComment
   );
   app.post(
     '/api/v1/user/requests/password/reset',
@@ -72,6 +108,20 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleAuth,
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
+  );
+  app.post(
+    '/api/v1/articles/:articleId/bookmark',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    validateUserInputs.uuidV4Validator,
+    checkArticleExists,
+    checkBookmarkExists,
+    ArticleController.bookmarkArticle
+  );
+  app.get(
+    '/api/v1/articles',
+    Authorization.checkToken,
+    ArticleController.getArticles,
   );
 };
 

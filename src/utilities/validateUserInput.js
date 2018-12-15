@@ -14,11 +14,13 @@ const trimValues = (objectWithValuesToTrim) => {
 /**
  * Defines the failed message returned when required fields are missing.
  * @param {object} res - Response object
+ * @param {string} message - specific error message
  * @returns {res} - Response object
  */
-const allFieldsRequired = (res) => {
+const allFieldsRequired = (res, message) => {
   res.status(400).send({
-    message: 'Invalid request. All fields are required',
+    success: false,
+    message: message || 'Invalid request. All fields are required',
   });
 };
 
@@ -66,6 +68,50 @@ class Validate {
       next();
     } else {
       allFieldsRequired(res);
+    }
+  }
+
+  /**
+   * @description checks if id from params is UUIDV4 or not
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {function} next - callback
+   *
+   * @returns {Boolean} Returns an object
+   */
+  static async uuidV4Validator(req, res, next) {
+    const { id } = req.params;
+
+    const uuidV4Regex = new RegExp(['^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-',
+      '[89AB][0-9A-F]{3}-[0-9A-F]{12}$'].join(''), 'i');
+
+    const result = await uuidV4Regex.test(id);
+
+    if (result) {
+      return next();
+    }
+    res.status(400).json({ message: 'Invalid Id' });
+  }
+
+  /**
+   *  *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - Response object when query is invalid
+   * @memberof Validate
+   */
+  static validateCreateComment(req, res, next) {
+    req.body = trimValues(req.body);
+    const {
+      commentText
+    } = req.body;
+    if (commentText) {
+      next();
+    } else {
+      allFieldsRequired(res, 'commentText field is required');
     }
   }
 

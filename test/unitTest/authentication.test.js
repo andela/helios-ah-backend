@@ -2,11 +2,11 @@ import chai from 'chai';
 import { Authentication } from '../../src/utilities';
 const { expect } = chai;
 
-let data = {
+const data = {
   id: 2,
   role: 1,
   username: 'helios'
-}
+};
 
 describe('valid token should be generated', () => {
   it('it should return a Scrambled token', async () => {

@@ -47,10 +47,10 @@ node_modules
 .env
 
 # editor package.back-up.json
+# webstor files
 .idea
 
-.vscode
-package.back-up.json
+.DS_Store
 
 # vscode user and workspace settings
 .vscode

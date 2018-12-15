@@ -67,7 +67,7 @@ describe('Unit test for user controller', () => {
   });
   describe('Test complete a user\'s registration', () => {
     it('should send error message when token is invalid', async () => {
-      const spyVerifyToken = sinon.spy(Authentication, 'verifyToken');
+      const spyVerifyToken = sinon.stub(Authentication, 'verifyToken').returns(false);
       const response = await UserController.completeRegistration(req, res);
       expect(spyVerifyToken.called).to.equal(true);
       expect(response.success).to.equal(false);

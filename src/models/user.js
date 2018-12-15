@@ -101,6 +101,28 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'articles',
     });
+    Users.belongsToMany(models.Users, {
+      as: 'Follow',
+      through: {
+        model: 'Follower',
+      },
+      foreignKey: 'userId',
+    });
+    Users.belongsToMany(models.Users, {
+      as: 'Following',
+      through: {
+        model: 'Follower'
+      },
+      foreignKey: 'followerId'
+    });
+    Users.hasMany(models.Comments, {
+      foreignKey: 'userId',
+      as: 'comments'
+    });
+    Users.hasMany(models.ChildComments, {
+      foreignKey: 'userId',
+      as: 'childComments'
+    });
     Users.belongsTo(models.roles, {
       foreignKey: 'roleId'
     });
