@@ -1,43 +1,40 @@
 
+
 export default {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Articles', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('Bookmarks', {
     id: {
       allowNull: false,
       primaryKey: true,
       type: Sequelize.UUID,
+      defaultValue: Sequelize.UUIDV4,
     },
-    title: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    body: {
-      type: Sequelize.TEXT,
-      allowNull: false
-    },
-    description: {
-      type: Sequelize.STRING,
-      allowNull: false,
-    },
-    readTime: {
+    name: {
       type: Sequelize.STRING,
       allowNull: false
     },
-    image: {
-      type: Sequelize.STRING,
-    },
-    isDraft: {
+    isActive: {
       type: Sequelize.BOOLEAN,
       defaultValue: true,
+      allowNull: false
     },
     userId: {
       type: Sequelize.UUID,
-      allowNull: false,
       defaultValue: Sequelize.UUIDV4,
+      allowNull: false,
       onDelete: 'CASCADE',
-      reference: {
+      references: {
         model: 'Users',
         key: 'id',
-        as: 'articles',
+      }
+    },
+    articleId: {
+      type: Sequelize.UUID,
+      defaultValue: Sequelize.UUIDV4,
+      allowNull: false,
+      onDelete: 'CASCADE',
+      references: {
+        model: 'Articles',
+        key: 'id',
       }
     },
     createdAt: {
@@ -49,5 +46,5 @@ export default {
       type: Sequelize.DATE
     }
   }),
-  down: queryInterface => queryInterface.dropTable('Articles')
+  down: queryInterface => queryInterface.dropTable('bookmarks')
 };

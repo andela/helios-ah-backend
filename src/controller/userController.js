@@ -1,9 +1,11 @@
 import { authentication } from '../utilities';
+import followersUtil from '../utilities/followers';
 import models from '../models';
 import SendEmail from '../utilities/sendEmail';
 import Authentication from '../utilities/authentication';
 
-const { Users } = models;
+const { Users, sequelize, Follower } = models;
+const { Op } = sequelize.Sequelize;
 let resetLink, token;
 
 /**
@@ -36,6 +38,7 @@ class UserController {
       if (userCreated) {
         const tokenCreated = await authentication.getToken(userCreated);
         res.status(201).send({
+          success: true,
           message: `User ${userCreated.username} created successfully`,
           id: userCreated.id,
           username: userCreated.username,
@@ -45,6 +48,131 @@ class UserController {
       }
     } catch (error) {
       res.status(500).send({
+        success: false,
+        message: 'Internal server error',
+      });
+    }
+  }
+
+
+  /**
+  * @description function to allow a user follow another
+  *
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  *
+  * @return {res} res - Response object
+  *
+ */
+  static async followUser(req, res) {
+    const userId = await req.params.id;
+    const followerId = await req.decoded.id;
+
+    try {
+      const createFollower = await Follower.create({
+        userId,
+        followerId
+      });
+      if (createFollower) {
+        res.status(200).json({
+          success: true,
+          message: 'You are now following this user'
+        });
+      }
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  }
+
+  /**
+  * @description function to allow a user unfollow another
+  *
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  *
+  * @return {res} res - Response object
+  *
+ */
+  static async unfollowUser(req, res) {
+    const userId = await req.params.id;
+    const followerId = await req.decoded.id;
+
+    const isExistingFollowing = await
+    followersUtil.queryForExistingFollowing(true, userId, followerId);
+
+    if (isExistingFollowing) {
+      await followersUtil
+        .queryForUpdatingPreviousFollowing(false, userId, followerId);
+      res.status(200).json({
+        success: true,
+        message: 'You have unfollowed this user'
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'You do not follow this user'
+      });
+    }
+  }
+
+  /**
+  * Updates user role
+  * List Authors
+  * Route: GET: /authors
+  * Route: GET: /authors/:search
+  * @param {object} req -Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof USerController
+ */
+  static async getAuthors(req, res) {
+    let authors;
+    const options = {
+      attributes: [
+        'id',
+        'firstName',
+        'lastName',
+        'email',
+        'image',
+        'bio',
+        'username'
+      ],
+      where: {
+        isVerified: true,
+      },
+    };
+    try {
+      if (req.query.search) {
+        options.where = {
+          [Op.or]: [
+            {
+              username: {
+                [Op.like]: `%${req.query.search}%`
+              }
+            },
+            {
+              firstName: {
+                [Op.like]: `%${req.query.search}%`
+              }
+            },
+            {
+              lastName: {
+                [Op.like]: `%${req.query.search}%`
+              }
+            },
+          ],
+          isVerified: true,
+        };
+      }
+      authors = await Users.findAll(options);
+
+      res.status(200).json({
+        success: true,
+        authors,
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
         message: 'Internal server error',
       });
     }
