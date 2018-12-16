@@ -1,9 +1,6 @@
 
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import jwt from 'jsonwebtoken';
-import app from '../../src/app';
-import truncate from '../../src/utilities/truncate';
 
 chai.should();
 chai.use(chaiHttp);
