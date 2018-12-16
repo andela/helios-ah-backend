@@ -160,6 +160,36 @@ class ArticleController {
       res.status(500).json({ error });
     }
   }
+
+  /**
+  * @description Delete an Article
+  *
+  * @param {object} req - Request Object
+  * @param {object} res - Response Object
+  *
+  * @return {obejct} database response
+  * @memberof ArticleController
+  */
+  static async deleteArticle(req, res) {
+    const options = {
+      where: {
+        id: req.params.articleId
+      },
+      returning: true,
+    };
+    try {
+      const articleDeleted = await Article.update({
+        isDeleted: true
+      }, options);
+      res.status(200).json({
+        success: true,
+        message: 'Article deleted successfully',
+        articleDeleted: articleDeleted[1],
+      });
+    } catch (error) {
+      Error.handleErrorResponse(res, error);
+    }
+  }
 }
 
 export default ArticleController;

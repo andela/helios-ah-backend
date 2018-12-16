@@ -19,7 +19,12 @@ const articleModel = (sequelize, DataTypes) => {
     userId: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      onDelete: 'CASCADE',
+      onDelete: 'CASCADE'
+    },
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
     },
     body: {
       type: DataTypes.TEXT,

@@ -54,5 +54,28 @@ class Authorization {
       });
     }
   }
+
+  /**
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - Response object containing an error due
+   * to unauthorized access
+   */
+  static async checkForUnAuthorisedUser(req, res, next) {
+    const queriedEntityId = req.article.userId;
+
+    if (queriedEntityId !== req.decoded.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorised to perform this action'
+      });
+    }
+    next();
+  }
 }
 export default Authorization;

@@ -3,13 +3,18 @@ import chaiHttp from 'chai-http';
 import app from '../src/app';
 import models from '../src/models'
 import faker from 'faker';
+import authentication from '../src/utilities/authentication';
+import truncate from '../src/utilities/truncate';
 import { helperMethods } from '../src/utilities';
+import { decode } from 'punycode';
 
 chai.use(chaiHttp);
 const { expect } = chai;
 const { Article } = models;
 let myToken;
 let userId;
+let decodedUserToken;
+let response;
 
 describe('Integration tests for the article controller', () => {
   before('Create users before running tests', async () => {
@@ -25,6 +30,7 @@ describe('Integration tests for the article controller', () => {
       .send(userDetails);
     myToken = response.body.token;
   });
+
   describe('Tests for creating an article', () => {
     it('should create an article', async () => {
       const articleDetails = {
@@ -203,6 +209,163 @@ describe('Integration tests for the article controller', () => {
         expect(response.body.success).to.equal(false);
     });
   })
+  describe('Test for deleting article', () => {
+    let id;
+    const articleDetails = {
+      title: 'I will delete this article',
+      body: 'This is how I will delete this article',
+      description: 'I am describing how I will delete this article',
+      image: 'https://Iwilldeletethisarticle.com',
+    };
+    it('should throw an error if there is no token provided', async () => {
+      try {
+        const res = await chai.request(app)
+            .post('/api/v1/articles')
+            .send(articleDetails)
+
+        const articleId = res.body.id;
+        const res2 = await chai.request(app)
+          .delete(`/api/v1/articles/${articleId}`)
+        expect(res2.status).to.deep.equal(401);
+        expect(res2.body).to.have.property('message');
+        expect(res2.body.message).to.equal('User not authorized')
+        expect(res2.body).to.have.property('code');
+        expect(res2.body.code).to.equal(401)
+      } catch (err) {
+        throw err;
+      }
+    });
+    it('should throw an error if there is an invalid token provided', async () => {
+      decodedUserToken = await authentication.verifyToken(myToken)
+      try {
+        const res = await chai.request(app)
+            .post('/api/v1/articles')
+            .send(articleDetails)
+
+        const articleId = res.body.id;
+        const invalidToken = `${myToken}21djxdw`
+
+        const res2 = await chai.request(app)
+          .delete(`/api/v1/articles/${articleId}`)
+          .set('x-access-token', invalidToken)
+        expect(res2.status).to.deep.equal(401);
+        expect(res2.body).to.have.property('message');
+        expect(res2.body.message).to.equal('Authentication failed')
+        expect(res2.body).to.have.property('code');
+        expect(res2.body.code).to.equal(401)
+      } catch (err) {
+        throw err;
+      }
+    });
+    it('should throw an Error if the articleId is not of type UUIDV4',
+      async () => {
+        decodedUserToken = await authentication.verifyToken(myToken)
+        try {
+          const res2 = await chai.request(app)
+            .delete('/api/v1/articles/abc123-123-405')
+            .set('x-access-token', myToken);
+          expect(res2.status).to.equal(400);
+          expect(res2.body).to.have.property('message');
+          expect(res2.body.message).to.equal('Invalid Id');
+        } catch (err) {
+          throw err;
+        }
+      });
+      it('should throw an Error if the article does not exist',
+      async () => {
+        try {
+          const res = await chai.request(app)
+            .post('/api/v1/articles')
+            .send(articleDetails)
+            .set('x-access-token', myToken)
+
+          const articleId = await res.body.articleCreated.id;
+
+          const res2 = await chai.request(app)
+            .delete(`/api/v1/articles/${articleId.slice(0, -12)}${'0'
+            .repeat(12)}`)
+            .set('x-access-token', myToken);
+
+          expect(res2.status).to.equal(404);
+          expect(res2.body).to.have.property('message');
+          expect(res2.body.message).to.equal('Article does not exist');
+        } catch (err) {
+          throw err;
+        }
+      });
+      it('should throw an Error if an unauthorised user tries to delete an article',
+      async () => {
+        const unauthorisedUserDetails = {
+          username: 'JohnDoe',
+          password: 'password',
+          email: 'johndoe@wemail.com',
+          firstName: 'Jane',
+          lastName: 'Doe',
+          bio: 'Mischevious hacker extraordinaire',
+        };
+        try {
+          const res = await chai.request(app)
+            .post('/api/v1/auth/signup')
+            .send(unauthorisedUserDetails)
+
+            expect(res.status).to.equal(201);
+            expect(res.body).to.have.property('message');
+            expect(res.body.message).to.equal('User JohnDoe created successfully');
+
+            const unauthorisedUserToken = await res.body.token
+
+          const res2 = await chai.request(app)
+            .post('/api/v1/articles')
+            .send(articleDetails)
+            .set('x-access-token', myToken)
+
+            expect(res2.status).to.equal(201);
+            expect(res2.body).to.have.property('message');
+            expect(res2.body.message).to.equal('Article created successfully');
+            expect(res2.body).to.have.property('success');
+            expect(res2.body.success).to.equal(true);
+
+          const res3 = await chai.request(app)
+            .delete(`/api/v1/articles/${res2.body.articleCreated.id}`)
+            .set('x-access-token', unauthorisedUserToken);
+
+          expect(res3.status).to.equal(403);
+          expect(res3.body).to.have.property('message');
+          expect(res3.body.message).to.equal('You are not authorised to perform this action');
+          expect(res3.body).to.have.property('success');
+          expect(res3.body.success).to.equal(false);
+        } catch (err) {
+          throw err;
+        }
+      });
+      it('should delete an article successfully',
+      async () => {
+        try {
+          const response2 = await chai.request(app)
+            .post('/api/v1/articles')
+            .send(articleDetails)
+            .set('x-access-token', myToken)
+
+            expect(response2.status).to.equal(201);
+            expect(response2.body).to.have.property('message');
+            expect(response2.body.message).to.equal('Article created successfully');
+            expect(response2.body).to.have.property('success');
+            expect(response2.body.success).to.equal(true);
+
+          const response3 = await chai.request(app)
+            .delete(`/api/v1/articles/${response2.body.articleCreated.id}`)
+            .set('x-access-token', myToken);
+
+          expect(response3.status).to.equal(200);
+          expect(response3.body).to.have.property('message');
+          expect(response3.body.message).to.equal('Article deleted successfully');
+          expect(response3.body).to.have.property('success');
+          expect(response3.body.success).to.equal(true);
+        } catch (err) {
+          throw err;
+        }
+      });
+  })
   describe('Test Pagination', () => {
     let articles = [];
     before(async () => {
@@ -210,7 +373,7 @@ describe('Integration tests for the article controller', () => {
         articles.push({
           title: faker.name.firstName(),
           body: faker.lorem.paragraph(),
-          description: faker.lorem.sentence(),
+          description: 'This article is a test for pagination',
           image: faker.image.imageUrl(),
           isDraft: false,
           userId

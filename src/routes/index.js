@@ -36,6 +36,15 @@ const routes = (app) => {
     validateUserInputs.validateCreateArticle,
     ArticleController.createArticle
   );
+  app.delete(
+    '/api/v1/articles/:articleId',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    validateUserInputs.uuidV4Validator,
+    findDatabaseField.articleInParams,
+    Authorization.checkForUnAuthorisedUser,
+    ArticleController.deleteArticle
+  );
   app.get(
     '/api/v1/profiles/:id/follow',
     validateUserInputs.uuidV4Validator,
@@ -55,7 +64,6 @@ const routes = (app) => {
     findDatabaseField.UserInParams,
     follower.checkForSelfUnfollow,
     UserController.unfollowUser,
-    Authorization.checkToken,
     ArticleController.getArticles
   );
   app.get(
