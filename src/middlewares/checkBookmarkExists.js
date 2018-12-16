@@ -8,6 +8,7 @@ const { Bookmark } = models;
  * @function checkBookmarkExists
  *
    *@description checks if bookmark exists on the database
+
    * @param {object} req - Request Object
    * @param {object} res - Response Object
    * @param {Function} next - callback function

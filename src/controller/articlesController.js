@@ -15,7 +15,7 @@ class ArticleController {
   * @param {object} req - Request object
   * @param {object} res - Response object
   * @return {res} res - Response object
-  * @memberof ArticlesController
+  * @memberof ArticleController
  */
   static async createArticle(req, res) {
     const {

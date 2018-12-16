@@ -7,6 +7,7 @@ const { Article } = models;
  * @function checkArticleExists
  *
    *@description checks if article exists on the database
+
    * @param {object} req - Request Object
    * @param {object} res - Response Object
    * @param {Function} next - callback function

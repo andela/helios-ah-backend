@@ -72,29 +72,6 @@ class Validate {
   }
 
   /**
-   * @description checks if id from params is UUIDV4 or not
-   *
-   * @param {object} req - Request object
-   * @param {object} res - Response object
-   * @param {function} next - callback
-   *
-   * @returns {Boolean} Returns an object
-   */
-  static async uuidV4Validator(req, res, next) {
-    const { id } = req.params;
-
-    const uuidV4Regex = new RegExp(['^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-',
-      '[89AB][0-9A-F]{3}-[0-9A-F]{12}$'].join(''), 'i');
-
-    const result = await uuidV4Regex.test(id);
-
-    if (result) {
-      return next();
-    }
-    res.status(400).json({ message: 'Invalid Id' });
-  }
-
-  /**
    *  *
    * @param {object} req - Request object
    * @param {object} res - Response object
@@ -153,6 +130,26 @@ class Validate {
         message: 'Invalid token. Only Admins. can update roles',
       });
     }
+  }
+
+  /**
+   * @description checks if id from params is UUIDV4 or not
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {function} next - callback
+   *
+   * @returns {Boolean} Returns an object
+   */
+  static async uuidV4Validator(req, res, next) {
+    const id = req.params.id || req.params.userId || req.params.articleId;
+    const uuidV4Regex = new RegExp(['^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-',
+      '[89AB][0-9A-F]{3}-[0-9A-F]{12}$'].join(''), 'i');
+    const result = await uuidV4Regex.test(id);
+    if (result) {
+      return next();
+    }
+    res.status(400).json({ message: 'Invalid Id' });
   }
 }
 
