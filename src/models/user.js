@@ -123,7 +123,7 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'childComments'
     });
-    Users.belongsTo(models.roles, {
+    Users.belongsTo(models.Roles, {
       foreignKey: 'roleId'
     });
     Users.belongsToMany(models.Article, {
