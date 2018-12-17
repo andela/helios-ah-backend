@@ -42,16 +42,23 @@ class Authorization {
         message: 'User not authorized',
       });
     } else {
-      const tokenVerified = await Auth.verifyToken(token);
-
-      if (tokenVerified.success) {
-        req.decoded = tokenVerified;
-        return next();
+      try {
+        const tokenVerified = await Auth.verifyToken(token);
+        if (tokenVerified) {
+          req.decoded = tokenVerified;
+          next();
+        } else {
+          return res.status(401).send({
+            success: false,
+            message: 'Authentication failed',
+          });
+        }
+      } catch (error) {
+        return res.status(401).send({
+          success: false,
+          message: 'Authentication failed',
+        });
       }
-      res.status(401).send({
-        code: 401,
-        message: 'Authentication failed',
-      });
     }
   }
 }

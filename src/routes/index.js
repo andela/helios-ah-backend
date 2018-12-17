@@ -14,6 +14,8 @@ import userMiddleware from '../middlewares/User';
 import checkArticleExists from '../middlewares/checkArticleExists';
 import checkBookmarkExists from '../middlewares/checkBookmarkExists';
 import findDatabaseField from '../middlewares/FindDatabaseField';
+
+
 /**
  * Handles request
  * @param {object} app - An instance of the express module
@@ -25,6 +27,10 @@ const routes = (app) => {
       message: 'Welcome to the Authors-Haven API'
     });
   });
+  app.get(
+    '/api/v1/auth/complete_reg/',
+    UserController.completeRegistration
+  );
   app.post(
     '/api/v1/auth/signup',
     validateUserInputs.validateSignup,
@@ -38,8 +44,8 @@ const routes = (app) => {
   );
   app.get(
     '/api/v1/profiles/:id/follow',
-    validateUserInputs.uuidV4Validator,
     Authorization.checkToken,
+    validateUserInputs.uuidV4Validator,
     findDatabaseField.UserInToken,
     findDatabaseField.UserInParams,
     follower.checkForSelfFollow,
@@ -49,13 +55,12 @@ const routes = (app) => {
   );
   app.delete(
     '/api/v1/profiles/:id/follow',
-    validateUserInputs.uuidV4Validator,
     Authorization.checkToken,
+    validateUserInputs.uuidV4Validator,
     findDatabaseField.UserInToken,
     findDatabaseField.UserInParams,
     follower.checkForSelfUnfollow,
     UserController.unfollowUser,
-    Authorization.checkToken,
     ArticleController.getArticles
   );
   app.get(
@@ -65,8 +70,8 @@ const routes = (app) => {
   );
   app.put(
     '/api/v1/articles/:articleId',
-    validateUserInputs.validateCreateArticle,
     Authorization.checkToken,
+    validateUserInputs.validateCreateArticle,
     ArticleController.updateArticle
   );
   app.get(
@@ -76,14 +81,14 @@ const routes = (app) => {
   );
   app.post(
     '/api/v1/articles/:articleId/comments',
-    validateUserInputs.validateCreateComment,
     Authorization.checkToken,
+    validateUserInputs.validateCreateComment,
     CommentController.createComment
   );
   app.post(
     '/api/v1/comments/:commentId/childcomments',
-    validateUserInputs.validateCreateComment,
     Authorization.checkToken,
+    validateUserInputs.validateCreateComment,
     CommentController.createChildComment
   );
   app.post(
@@ -93,8 +98,8 @@ const routes = (app) => {
   );
   app.put(
     '/api/v1/change/password',
-    userMiddleware.getUserByMail,
     Authorization.checkToken,
+    userMiddleware.getUserByMail,
     UserController.resetPassword
   );
   app.put(
