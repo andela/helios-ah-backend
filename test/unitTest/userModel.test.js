@@ -41,16 +41,16 @@ const obj = {
     username: '_abc'
   },
   pass: {
-    firstName: 'john',
+    firstName: 'jahn',
     lastName: 'doe',
-    email: 'example@gmail.com',
+    email: 'chris@gmail.com',
     password: '123456',
-    username: 'john134'
+    username: 'john13tt45'
   },
   failedDuplicateEmail: {
     firstName: 'john',
     lastName: 'doe',
-    email: 'example@gmail.com',
+    email: 'chris@gmail.com',
     password: '123456',
     username: 'mike42'
   },

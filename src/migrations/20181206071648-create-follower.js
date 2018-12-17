@@ -9,6 +9,7 @@ export default {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
       allowNull: false,
+      onDelete: 'CASCADE',
       references: {
         key: 'id',
         model: 'Users'
@@ -18,6 +19,7 @@ export default {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
       allowNull: false,
+      onDelete: 'CASCADE',
       references: {
         key: 'id',
         model: 'Users'

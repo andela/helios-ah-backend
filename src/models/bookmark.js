@@ -13,12 +13,14 @@ const bookmarkModel = (sequelize, DataTypes) => {
     articleId: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      allowNull: false
+      allowNull: false,
+      onDelete: 'CASCADE',
     },
     userId: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
+      onDelete: 'CASCADE',
     },
     isActive: {
       type: DataTypes.BOOLEAN,

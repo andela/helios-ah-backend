@@ -1,29 +1,27 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import app from '../src/app';
-import models from '../src/models'
+import app from '../../src/app';
+import { Authentication } from '../../src/utilities';
+import models from '../../src/models'
 import faker from 'faker';
-import { helperMethods } from '../src/utilities';
 
 chai.use(chaiHttp);
 const { expect } = chai;
 const { Article } = models;
-let myToken;
-let userId;
 
 describe('Integration tests for the article controller', () => {
-  before('Create users before running tests', async () => {
+  let myToken, userId, articleId;
+  before('Create token to validate routes', async () => {
     const userDetails = {
+      id: 'dccd8ee7-bc98-4a8e-a832-ca116c5fff0a',
       username: 'JaneDoe',
       password: 'password',
       email: 'janedoe@wemail.com',
       firstName: 'Jane',
       lastName: 'Doe',
       bio: 'Fun to be with. Cool and calm',
-    };
-    const response = await chai.request(app).post('/api/v1/auth/signup')
-      .send(userDetails);
-    myToken = response.body.token;
+    }
+    myToken = await Authentication.getToken(userDetails);
   });
   describe('Tests for creating an article', () => {
     it('should create an article', async () => {
@@ -46,6 +44,8 @@ describe('Integration tests for the article controller', () => {
       expect(response.body.articleCreated).to.have.property('image');
       expect(response.body.articleCreated.image).to.equal(articleDetails.image);
       expect(response.body.articleCreated.isDraft).to.equal(true);
+      articleId = response.body.articleCreated.id;
+      userId = response.body.articleCreated.userId;
     });
     it('should send an error message when image field is not a URL', async () => {
       const articleDetails = {
@@ -174,21 +174,14 @@ describe('Integration tests for the article controller', () => {
     });
   });
   describe('Test update article', () => {
-    let id;
     const articleDetails = {
       title: 'The brow fox',
       body: 'so i saw a dog',
       description: 'narrative',
       image: 'https://someimage.uplodersite.com',
     };
-    before('create article before updating article', async () => {
-      const attributes = [ 'userId', 'id']
-      const user = await Article.findAll({ attributes });
-      userId = user[0].dataValues.userId;
-      id = user[0].dataValues.id;
-    })
     it('should update an article with the articles Id', async () => {
-      const response = await chai.request(app).put(`/api/v1/articles/${id}`)
+      const response = await chai.request(app).put(`/api/v1/articles/${articleId}`)
       .set('x-access-token', myToken).send(articleDetails);
         expect(response.status).to.equal(200);
         expect(response.body).to.have.property('articleUpdated');

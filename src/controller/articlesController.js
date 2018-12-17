@@ -1,5 +1,5 @@
 import models from '../models';
-import Error from '../utilities/Error';
+import errorResponse from '../utilities/Error';
 
 const { Article, Bookmark } = models;
 
@@ -37,7 +37,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      Error.handleErrorResponse(res, error);
+      errorResponse.handleErrorResponse(res, error);
     }
   }
 
@@ -79,7 +79,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      Error.handleErrorResponse(res, error);
+      errorResponse.handleErrorResponse(res, error);
     }
   }
 
