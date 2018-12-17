@@ -106,7 +106,7 @@ class UserController {
   static async completeRegistration(req, res) {
     const verifiedToken = await Authentication.verifyToken(req.query.token);
     if (!verifiedToken) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: 'Could not complete your registration. Please re-register.'
       });
@@ -121,12 +121,11 @@ class UserController {
         SendEmail.confirmRegistrationComplete(userUpdated.email);
         if (isEmailSent) {
           const tokenCreated = await Authentication.getToken(userUpdated);
-          return res.status(201).send({
+          return res.status(201).json({
             success: true,
             message: `User ${userUpdated.username} created successfully`,
             id: userUpdated.id,
             username: userUpdated.username,
-            email: userUpdated.email,
             token: tokenCreated,
           });
         }
@@ -379,16 +378,64 @@ class UserController {
         }
       );
       if (userUpdated[0] === 1) {
-        return res.status(200).send({
+        return res.status(200).json({
           message: 'User role was updated successfully',
           success: true
         });
       }
     } catch (error) {
-      res.status(500).send({
+      res.status(500).json({
         message: 'Internal server error',
         success: false,
       });
+    }
+  }
+
+  /**
+   * User Login
+   * Route: POST: auth/login
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @return {res} res - Response object
+   * @memberof UserController
+   */
+  static async userLogin(req, res) {
+    const { email, password } = req.body;
+    try {
+      const userFound = await Users.findOne({ where: { email, } });
+      if (!userFound) {
+        return res.status(404).json({
+          success: false,
+          message: 'Email or password does not exist',
+        });
+      }
+      if (userFound && userFound.verifyPassword(password)) {
+        const tokenCreated = await Authentication.getToken({
+          id: userFound.id,
+          username: userFound.username,
+          role: userFound.role,
+        });
+        if (tokenCreated) {
+          const userDetails = {
+            id: userFound.id,
+            username: userFound.username,
+            role: userFound.roleId,
+            token: tokenCreated,
+          };
+          return res.status(200).json({
+            success: true,
+            message: 'Login successful',
+            userDetails,
+          });
+        }
+        return helperMethods.serverError(res);
+      }
+      return res.status(400).send({
+        success: false,
+        message: 'Email or password does not exist',
+      });
+    } catch (error) {
+      helperMethods.serverError(res);
     }
   }
 }

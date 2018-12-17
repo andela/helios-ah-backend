@@ -28,7 +28,7 @@ const res = {
   status() {
     return this;
   },
-  send(obj) {
+  json(obj) {
     return obj;
   }
 }
@@ -88,7 +88,6 @@ describe('Unit test for user controller', () => {
       expect(response.message).to.equal('User myUserName created successfully');
       expect(response.id).to.equal('dccd8ee7-bc98-4a8e-a832-ca116c5fff0a');
       expect(response.username).to.equal('myUserName');
-      expect(response.email).to.equal('userUpdated@email.com');
       expect(response.token).to.equal('myRandomStringToken');
       stubVerifyToken.restore();
       stubFindByPk.restore();
@@ -115,6 +114,30 @@ describe('Unit test for user controller', () => {
       expect(response).to.have.property('message');
       expect(response.message).to.equal('User role was updated successfully');
       stubUpdateMethod.restore();
+    });
+  });
+  describe('Test for logging in a user', () => {
+    it('should send a failed message when email does not exist', async () => {
+      const myReq = { body: { email: 'email', password: 'password' } };
+      const myRes = { status() {return this; }, json(obj) { return obj; } };
+      const stubFindOne = sinon.stub(Users, 'findOne').returns(false);
+      const response = await UserController.userLogin(myReq, myRes);
+      expect(response).to.have.property('success');
+      expect(response).to.have.property('message');
+      expect(response.success).to.equal(false);
+      expect(response.message).to.equal('Email or password does not exist');
+      stubFindOne.restore();
+    });
+    it('should send a failed message when password is invalid', async () => {
+      const myReq = { body: { email: 'email', password: 'password' } };
+      const myRes = { status() {return this; }, json(obj) { return obj; } };
+      const stubVerifyPassword = sinon.stub(Users.prototype, 'verifyPassword').returns(false);
+      const response = await UserController.userLogin(myReq, myRes);
+      expect(response).to.have.property('success');
+      expect(response).to.have.property('message');
+      expect(response.success).to.equal(false);
+      expect(response.message).to.equal('Email or password does not exist');
+      stubVerifyPassword.restore();
     });
   });
 });
