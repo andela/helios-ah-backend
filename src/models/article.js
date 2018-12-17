@@ -51,7 +51,6 @@ const articleModel = (sequelize, DataTypes) => {
   Article.associate = (models) => {
     Article.belongsTo(models.Users, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE',
     });
     Article.belongsToMany(models.Users, {
       as: 'article',

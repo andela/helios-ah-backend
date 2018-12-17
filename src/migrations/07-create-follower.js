@@ -1,21 +1,9 @@
-
-
 export default {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Bookmarks', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('Followers', {
     id: {
-      allowNull: false,
       primaryKey: true,
       type: Sequelize.UUID,
-      defaultValue: Sequelize.UUIDV4,
-    },
-    name: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
-    isActive: {
-      type: Sequelize.BOOLEAN,
-      defaultValue: true,
-      allowNull: false
+      defaultValue: Sequelize.UUIDV4
     },
     userId: {
       type: Sequelize.UUID,
@@ -23,19 +11,26 @@ export default {
       allowNull: false,
       onDelete: 'CASCADE',
       references: {
-        model: 'Users',
         key: 'id',
+        model: 'Users',
+        as: 'following'
       }
     },
-    articleId: {
+    followerId: {
       type: Sequelize.UUID,
       defaultValue: Sequelize.UUIDV4,
       allowNull: false,
       onDelete: 'CASCADE',
       references: {
-        model: 'Articles',
         key: 'id',
+        model: 'Users',
+        as: 'follower'
       }
+    },
+    isActive: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      allowNull: false
     },
     createdAt: {
       allowNull: false,
@@ -46,5 +41,5 @@ export default {
       type: Sequelize.DATE
     }
   }),
-  down: queryInterface => queryInterface.dropTable('bookmarks')
+  down: queryInterface => queryInterface.dropTable('Followers')
 };
