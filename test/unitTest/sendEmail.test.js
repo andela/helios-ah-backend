@@ -2,10 +2,8 @@ import chai from 'chai';
 import SendEmail from '../../src/utilities/sendEmail';
 import sendGrid from '@sendgrid/mail';
 import sinon from 'sinon';
-
-const { expect } = chai;
-
-describe('Utility to send emails', () => {
+ const { expect } = chai;
+ describe('Utility to send emails', () => {
   it('should send verification email after registration', async () => {
     const stubEmailSender = sinon.stub(SendEmail, 'emailSender').returns(true);
     const response = await SendEmail.verifyEmail('jideajayi11@gmail.com');
@@ -23,8 +21,7 @@ describe('Utility to send emails', () => {
     const response = await SendEmail.emailSender(details);
     expect(response).to.equal(true);
     stubSendMethod.restore();
-
-  });
+   });
   it('should send a mail to the user on completing registration', async () => {
     const stubSendMethod = sinon.stub(SendEmail, 'emailSender').returns(true);
     const response = await 

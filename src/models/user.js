@@ -78,10 +78,20 @@ export default (sequelize, DataTypes) => {
           len: [3, 20],
           isAlphanumeric: {
             args: true,
-            msg: 'Username must contain only alphanumeric',
+            msg: 'Username must contain only alphabet, numbers,'
+            + ' and characters  and must begin with an alphabet',
           }
         }
       },
+      facebookId: {
+        type: DataTypes.TEXT,
+      },
+      twitterId: {
+        type: DataTypes.TEXT,
+      },
+      googleId: {
+        type: DataTypes.TEXT,
+      }
     }, {
       hooks: {
         beforeUpdate: async (user) => {

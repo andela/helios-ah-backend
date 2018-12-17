@@ -1,5 +1,5 @@
 
-module.exports = {
+export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Articles', {
     id: {
       allowNull: false,
@@ -27,6 +27,7 @@ module.exports = {
     },
     userId: {
       type: Sequelize.UUID,
+      allowNull: false,
       onDelete: 'CASCADE',
       reference: {
         model: 'Users',

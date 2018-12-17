@@ -4,7 +4,7 @@
  * @param {String} message - The error message you want to set.
  * @returns {object} res - The HTTP response object
  */
-const serverError = (res, message) => res.status(500).send({
+const serverError = (res, message) => res.status(500).json({
   success: false,
   message: message || 'Internal server error',
 });
@@ -15,7 +15,7 @@ const serverError = (res, message) => res.status(500).send({
  * @param {object} error - The error object from sequelize.
  * @returns {object} res - The HTTP response object
  */
-const sequelizeValidationError = (res, error) => res.status(400).send({
+const sequelizeValidationError = (res, error) => res.status(400).json({
   success: false,
   message: error.errors[0].message,
 });
@@ -23,10 +23,10 @@ const sequelizeValidationError = (res, error) => res.status(400).send({
 /**
  * A method used to confirm that a request was successful
  * @param {object} res - HTTP response object
- * @param {string} message - Custom message we want to send to the fron-end
+ * @param {string} message - Custom message we want to send to the front-end
  * @returns {object} res - HTTP response object
  */
-const requestSuccessful = (res, message) => res.status(200).send({
+const requestSuccessful = (res, message) => res.status(200).json({
   success: true,
   message: message || 'request completed successfully',
 });

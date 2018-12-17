@@ -14,6 +14,7 @@ describe('Integration tests for the article controller', () => {
   let myToken;
   before('Create token to validate routes', async () => {
     const userDetails = {
+      id: 'dccd8ee7-bc98-4a8e-a832-ca116c5fff0a',
       username: 'JaneDoe',
       password: 'password',
       email: 'janedoe@wemail.com',
@@ -82,7 +83,7 @@ describe('Integration tests for the article controller', () => {
       .set('x-access-token', myToken).send(articleDetails)
         expect(response.status).to.equal(400);
         expect(response.body).to.have.property('message');
-        expect(response.body.message).to.equal('Title should not exceed 80 characters');
+        expect(response.body.message).to.equal('Title field accepts 2 - 80 characters');
     });
     it('should send an error message when description field is too long', async() => {
       const articleDetails = {
@@ -98,7 +99,22 @@ describe('Integration tests for the article controller', () => {
       .set('x-access-token', myToken).send(articleDetails)
         expect(response.status).to.equal(400);
         expect(response.body).to.have.property('message');
-        expect(response.body.message).to.equal('Description field should not exceed 200 character');
+        expect(response.body.message).to.equal('Description field accepts 2 - 200 characters');
+    });
+    it('should send an error message when title field is too long', async() => {
+      const articleDetails = {
+        title: `Thebrowfoxwe@rtyhgfdrghnbfrtyhjnbgfthjmnbghjmnbghjmnbghjmnbghjnbg
+                asdfghjnbvcdfghnbvfrtyuioiuytuioiuhghjkiuytyuiughjkghjh`,
+        body: 'so i saw a dog',
+        description: 'narrative',
+        image: 'https://someimage.uplodersite.com',
+      };
+      const response = await chai.request(app).post('/api/v1/articles')
+      .set('x-access-token', myToken).send(articleDetails)
+        expect(response.status).to.equal(400);
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.equal(
+          'Title should contain letters, numbers, !""?');
     });
 
     it('should get all articles', async () => {

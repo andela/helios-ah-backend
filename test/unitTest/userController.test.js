@@ -28,7 +28,7 @@ const res = {
   status() {
     return this;
   },
-  send(obj) {
+  json(obj) {
     return obj;
   }
 }

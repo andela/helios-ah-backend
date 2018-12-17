@@ -1,6 +1,6 @@
 
 import chai from 'chai';
-import models from '../../src/models';
+import models from '../../src/models'
 
 const { expect } = chai;
 const { Users } = models;
@@ -39,19 +39,19 @@ const obj = {
     lastName: 'doe',
     email: 'example@gmail.com',
     password: '123456',
-    username: '_abc'
+    username: '_46134'
   },
   pass: {
-    firstName: 'jahn',
+    firstName: 'john',
     lastName: 'doe',
-    email: 'chris@gmail.com',
+    email: 'example@gmail.com',
     password: '123456',
-    username: 'manajohn13tt45'
+    username: 'john134'
   },
   failedDuplicateEmail: {
     firstName: 'john',
     lastName: 'doe',
-    email: 'chris@gmail.com',
+    email: 'example@gmail.com',
     password: '123456',
     username: 'mike42'
   },
@@ -99,9 +99,9 @@ describe('Test user model', () => {
 
   it('should reject username containing invalid characters', async () => {
     try {
-      expect(await Users.create(obj.failedUsername)).to.equal('Username must contain only alphanumeric');
+      expect(await Users.create(obj.failedUsername)).to.equal('Username must contain only alphabet, numbers, and characters  and must begin with an alphabet');
     } catch (error) {
-      expect(error.errors[0].message).to.equal('Username must contain only alphanumeric');
+      expect(error.errors[0].message).to.equal('Username must contain only alphabet, numbers, and characters  and must begin with an alphabet');
     }
   });
 

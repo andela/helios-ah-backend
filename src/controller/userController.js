@@ -104,7 +104,7 @@ class UserController {
   static async completeRegistration(req, res) {
     const verifiedToken = await Authentication.verifyToken(req.query.token);
     if (!verifiedToken) {
-      return res.status(400).send({
+      return res.status(400).json({
         success: false,
         message: 'Could not complete your registration. Please re-register.'
       });
@@ -119,7 +119,7 @@ class UserController {
         SendEmail.confirmRegistrationComplete(userUpdated.email);
         if (isEmailSent) {
           const tokenCreated = await Authentication.getToken(userUpdated);
-          return res.status(201).send({
+          return res.status(201).json({
             success: true,
             message: `User ${userUpdated.username} created successfully`,
             id: userUpdated.id,
@@ -315,13 +315,18 @@ class UserController {
         }
       );
       if (userUpdated[0] === 1) {
-        return res.status(200).send({
+        return res.status(200).json({
           message: 'User role was updated successfully',
           success: true
         });
       }
     } catch (error) {
-      res.status(500).send({
+      if (error.errors) {
+        return res.status(400).json({
+          message: error.errors[0].message
+        });
+      }
+      res.status(500).json({
         message: 'Internal server error',
         success: false,
       });

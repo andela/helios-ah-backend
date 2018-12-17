@@ -13,6 +13,7 @@ describe('Integration tests for comments controller', () => {
 
     before('Create a user before running tests', async () => {
         const userDetails = {
+            id: 'dccd8ee7-bc98-4a8e-a832-ca116c5fff0a',
             username: 'SamDoe',
             password: 'password',
             email: 'samdoe@wemail.com',
