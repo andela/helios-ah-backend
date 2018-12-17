@@ -231,7 +231,6 @@ describe('Integration tests for the article controller', () => {
       const attributes = [ 'userId', 'id']
       const user = await Article.findAll({ attributes });
       userId = user[0].dataValues.userId;
-      id = user[0].dataValues.id;
     });
     it('should update an article with the articles Id', async () => {
       const response = await chai.request(app).put(`/api/v1/articles/${articleId}`)

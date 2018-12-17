@@ -25,6 +25,7 @@ export default {
       references: {
         model: 'Users',
         key: 'id',
+        as: 'booked',
       }
     },
     articleId: {
@@ -35,6 +36,7 @@ export default {
       references: {
         model: 'Articles',
         key: 'id',
+        as: 'article',
       }
     },
     createdAt: {
@@ -46,5 +48,5 @@ export default {
       type: Sequelize.DATE
     }
   }),
-  down: queryInterface => queryInterface.dropTable('bookmarks')
+  down: queryInterface => queryInterface.dropTable('Bookmarks')
 };

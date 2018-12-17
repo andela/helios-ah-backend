@@ -11,8 +11,9 @@ export default {
       allowNull: false,
       onDelete: 'CASCADE',
       references: {
+        model: 'Users',
         key: 'id',
-        model: 'Users'
+        as: 'following',
       }
     },
     followerId: {
@@ -21,8 +22,9 @@ export default {
       allowNull: false,
       onDelete: 'CASCADE',
       references: {
+        model: 'Users',
         key: 'id',
-        model: 'Users'
+        as: 'follower',
       }
     },
     isActive: {
@@ -39,5 +41,5 @@ export default {
       type: Sequelize.DATE
     }
   }),
-  down: queryInterface => queryInterface.dropTable('followers')
+  down: queryInterface => queryInterface.dropTable('Followers')
 };
