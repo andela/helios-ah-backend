@@ -126,7 +126,6 @@ class UserController {
             message: `User ${userUpdated.username} created successfully`,
             id: userUpdated.id,
             username: userUpdated.username,
-            email: userUpdated.email,
             token: tokenCreated,
           });
         }
@@ -394,6 +393,61 @@ class UserController {
         message: 'Internal server error',
         success: false,
       });
+    }
+  }
+
+  /**
+   * User Login
+   * Route: POST: auth/login
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @return {res} res - Response object
+   * @memberof UserController
+   */
+  static async userLogin(req, res) {
+    const { email, password } = req.body;
+    try {
+      const userFound = await Users.findOne({ where: { email, } });
+      if (!userFound) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email or password does not exist',
+        });
+      }
+      if (userFound.isVerified === false) {
+        return res.status(401).json({
+          success: false,
+          message: 'You had started the registration process already. '
+          + 'Please check your email to complete your registration.'
+        });
+      }
+      if (userFound && userFound.verifyPassword(password)) {
+        const tokenCreated = await Authentication.getToken({
+          id: userFound.id,
+          username: userFound.username,
+          role: userFound.role,
+        });
+        if (tokenCreated) {
+          const userDetails = {
+            id: userFound.id,
+            username: userFound.username,
+            role: userFound.roleId,
+            token: tokenCreated,
+          };
+          return res.status(200).json({
+            success: true,
+            message: 'Login successful',
+            userDetails,
+          });
+        }
+        return helperMethods.serverError(res);
+      }
+      return res.status(400).send({
+        success: false,
+        message: 'Email or password does not exist',
+      });
+    } catch (error) {
+      return helperMethods.serverError(res);
     }
   }
 }

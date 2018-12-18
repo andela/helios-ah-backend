@@ -133,5 +133,44 @@ describe('Integration tests for the user controller', () => {
         'user not found'
       )
     });
-  })
+  });
+  describe('Test for logging in a user', () => {
+    it('should send a success message when a user logs in successfully',
+    async () => {
+      const userDetails = {
+        email: 'yomizy@wizzy.com',
+        password: 'myPassword',
+      }
+      const response = await chai.request(app).post('/api/v1/auth/login')
+      .send(userDetails);
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('success');
+      expect(response.body.success).to.equal(true);
+      expect(response.body).to.have.property('message');
+      expect(response.body.message).to.equal('Login successful');
+      expect(response.body).to.have.property('userDetails');
+      expect(response.body.userDetails).to.have.property('token');
+      expect(response.body.userDetails.token).to.be.a('string');
+      expect(response.body.userDetails.token).to.not.equal(null);
+      expect(response.body.userDetails).to.have.property('username');
+      expect(response.body.userDetails.username).to.not.equal(null);
+      expect(response.body.userDetails).to.have.property('role');
+      expect(response.body.userDetails.role).to.not.equal(null);
+      expect(response.body.userDetails).to.have.property('id');
+      expect(response.body.userDetails.id).to.not.equal(null);
+    });
+    it('should send an failed message when required fields are not given',
+    async () =>{
+      const userDetails = {
+        email: 'yomizy@wizzy.com',
+      }
+      const response = await chai.request(app).post('/api/v1/auth/login')
+      .send(userDetails);
+      expect(response.body).to.have.property('success');
+      expect(response.body.success).to.equal(false);
+      expect(response.body).to.have.property('message');
+      expect(response.body.message).
+      to.equal('Invalid request. All fields are required');
+    });
+  });
 });

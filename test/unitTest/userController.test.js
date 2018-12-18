@@ -89,7 +89,6 @@ describe('Unit test for user controller', () => {
       expect(response.message).to.equal('User myUserName created successfully');
       expect(response.id).to.equal('dccd8ee7-bc98-4a8e-a832-ca116c5fff0a');
       expect(response.username).to.equal('myUserName');
-      expect(response.email).to.equal('userUpdated@email.com');
       expect(response.token).to.equal('myRandomStringToken');
       stubVerifyToken.restore();
       stubFindByPk.restore();
@@ -116,6 +115,41 @@ describe('Unit test for user controller', () => {
       expect(response).to.have.property('message');
       expect(response.message).to.equal('User role was updated successfully');
       stubUpdateMethod.restore();
+    });
+  });
+  describe('Test for logging in a user', () => {
+    const myReq = { body: { email: 'email', password: 'password' } };
+    const myRes = { status() {return this; }, json(obj) { return obj; } };
+    it('should send a failed message when email does not exist', async () => {
+      const stubFindOne = sinon.stub(Users, 'findOne').returns(false);
+      const response = await UserController.userLogin(myReq, myRes);
+      expect(response).to.have.property('success');
+      expect(response).to.have.property('message');
+      expect(response.success).to.equal(false);
+      expect(response.message).to.equal('Email or password does not exist');
+      stubFindOne.restore();
+    });
+    it('should send a failed message when password is invalid', async () => {
+      const stubVerifyPassword = sinon
+      .stub(Users.prototype, 'verifyPassword').returns(false);
+      const response = await UserController.userLogin(myReq, myRes);
+      expect(response).to.have.property('success');
+      expect(response).to.have.property('message');
+      expect(response.success).to.equal(false);
+      expect(response.message).to.equal('Email or password does not exist');
+      stubVerifyPassword.restore();
+    });
+    it('should check if the user is verified before logging in the user',
+    async () => {
+      const stubFindOne = sinon.stub(Users, 'findOne').returns({isVerified: false});
+      const response = await UserController.userLogin(myReq, myRes);
+      expect(response).to.have.property('success');
+      expect(response).to.have.property('message');
+      expect(response.success).to.equal(false);
+      expect(response.message).to
+      .equal('You had started the registration process already. '
+      + 'Please check your email to complete your registration.');
+      stubFindOne.restore();
     });
   });
 });
