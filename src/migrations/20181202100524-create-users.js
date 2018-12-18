@@ -40,13 +40,22 @@ export default {
       allowNull: false,
       defaultValue: 1
     },
-    feedback: {
+    ratings: {
       type: Sequelize.UUID,
       onDelete: 'CASCADE',
       reference: {
-        model: 'Feedback',
+        model: 'Likes',
         key: 'userId',
-        as: 'Feedback',
+        as: 'likes',
+      }
+    },
+    likes: {
+      type: Sequelize.UUID,
+      onDelete: 'CASCADE',
+      reference: {
+        model: 'Likes',
+        key: 'userId',
+        as: 'likes',
       }
     },
     createdAt: {

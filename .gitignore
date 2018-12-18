@@ -46,5 +46,9 @@ node_modules
 # development ENV file
 .env
 
+# webstor files
+.idea
+
+.DS_Store
 # editor
 .idea

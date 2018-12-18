@@ -1,14 +1,18 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import faker from 'faker';
+import jwt from 'jsonwebtoken';
 import app from '../src/app';
+import sinon from 'sinon';
+import faker from 'faker';
+import sinonChai from 'sinon-chai';
 import models from '../src/models';
 import Authenticate from '../src/middleware/Authorization';
-import sinon from 'sinon';
-import sinonChai from 'sinon-chai';
+import truncate from '../src/utilities/truncate';
 import { authentication } from '../src/utilities';
 
-let dataUserId; 
+let dataUserId;
+let userToken;
+let decodedUserToken;
 
 chai.use(chaiHttp);
 chai.use(sinonChai);
@@ -17,13 +21,16 @@ const { expect } = chai;
 const { Users } = models;
 
 describe('Integration tests for the user controller', () => {
+  beforeEach(async () => {
+     await truncate();
+  });
   describe('Test general error handling and welcome message', () => {
     it('should send an error when there is an unforseen error', (done) => {
       const userDetails = {
         username: 'Thomas?',
         password: 'tomnjerry',
       };
-      chai.request(app).post('/api/v1/auth/signup/%')
+      chai.request(app).post('/api/v1/auth/signup/')
         .send(userDetails)
         .end((err, res) => {
           expect(res.status).to.deep.equal(400);
@@ -31,27 +38,29 @@ describe('Integration tests for the user controller', () => {
           done();
         });
     });
-    it('should send a "Page not found" error when invalid URL is given', (done) => {
-      chai.request(app).get('/api/v1/some/funny/url')
-      .end((err, res) => {
-        expect(res.status).to.equal(404);
-        expect(res.body).to.have.property('message');
-        expect(res.body.message).to.equal('The page you are looking for is not found');
-        done();
+    it('should send a "Page not found" error when invalid URL is given',
+      (done) => {
+        chai.request(app).get('/api/v1/some/funny/url')
+          .end((err, res) => {
+            expect(res.status).to.equal(404);
+            expect(res.body).to.have.property('message');
+            expect(res.body.message)
+              .to.equal('The page you are looking for is not found');
+            done();
+          });
       });
-    });
     it('should welcome the user to the Author\'s-Haven API', (done) => {
       chai.request(app).get('/api/v1/')
-      .end((err, res) => {
-        expect(res.status).to.deep.equal(200);
-        expect(res.body).to.have.property('message');
-        expect(res.body.message).to.equal('Welcome to the Authors-Haven API');
-        done();
-      });
+        .end((err, res) => {
+          expect(res.status).to.deep.equal(200);
+          expect(res.body).to.have.property('message');
+          expect(res.body.message).to.equal('Welcome to the Authors-Haven API');
+          done();
+        });
     });
   });
   describe('Test to signup a user', () => {
-    it('should create a user', (done) =>{
+    it('should create a user', (done) => {
       const userDetails = {
         username: 'JohnDoe',
         password: 'password',
@@ -59,43 +68,44 @@ describe('Integration tests for the user controller', () => {
         firstName: 'John',
         lastName: 'Doe',
         bio: 'Fun to be with. Cool and calm',
-      }
+      };
       chai.request(app).post('/api/v1/auth/signup')
-      .send(userDetails)
-      .end((err, res) => {
-        expect(res.status).to.deep.equal(201);
-        expect(res.body).to.have.property('message');
-        expect(res.body.message).to.not.equal(null);
-        expect(res.body.message).to.equal("User JohnDoe created successfully");
-        expect(res.body).to.have.property('username');
-        expect(res.body.username).to.not.equal(null);
-        expect(res.body.username).to.equal('JohnDoe');
-        expect(res.body).to.have.property('email');
-        expect(res.body.email).to.not.equal(null);
-        expect(res.body).to.have.property('id');
-        expect(res.body.id).to.not.equal(null);
-        expect(res.body).to.have.property('token');
-        expect(res.body.token).to.not.equal(null);
-        dataUserId = res.body.id;
-        done();
-      });
+        .send(userDetails)
+        .end((err, res) => {
+          expect(res.status).to.deep.equal(201);
+          expect(res.body).to.have.property('message');
+          expect(res.body.message).to.not.equal(null);
+          expect(res.body.message)
+            .to.equal('User JohnDoe created successfully');
+          expect(res.body).to.have.property('username');
+          expect(res.body.username).to.not.equal(null);
+          expect(res.body.username).to.equal('JohnDoe');
+          expect(res.body).to.have.property('email');
+          expect(res.body.email).to.not.equal(null);
+          expect(res.body).to.have.property('id');
+          expect(res.body.id).to.not.equal(null);
+          expect(res.body).to.have.property('token');
+          expect(res.body.token).to.not.equal(null);
+          done();
+        });
     });
-    it('should return an error when any user details is not given', (done) =>{
+    it('should return an error when any user details is not given', (done) => {
       const userDetails = {
         username: 'JohnDoe',
         password: 'password',
         email: 'johndoe@wemail.com',
         firstName: 'John',
         bio: 'Fun to be with. Cool and calm',
-      }
+      };
       chai.request(app).post('/api/v1/auth/signup')
-      .send(userDetails)
-      .end((err, res) => {
-        expect(res.status).to.deep.equal(400);
-        expect(res.body).to.have.property('message');
-        expect(res.body.message).to.equal('Invalid request. All fields are required');
-        done();
-      });
+        .send(userDetails)
+        .end((err, res) => {
+          expect(res.status).to.deep.equal(400);
+          expect(res.body).to.have.property('message');
+          expect(res.body.message)
+            .to.equal('Invalid request. All fields are required');
+          done();
+        });
     });
   });
   describe('Test to get Users', () => {
@@ -105,7 +115,7 @@ describe('Integration tests for the user controller', () => {
         role: 2
       });
       for (let index = 0; index < 10; index++) {
-        let user = {
+        const user = {
           firstName: faker.name.firstName(),
           lastName: faker.name.lastName(),
           email: faker.internet.email(),
@@ -113,9 +123,9 @@ describe('Integration tests for the user controller', () => {
           bio: faker.lorem.paragraph(),
           username: faker.name.firstName(),
           isVerified: true,
-        }
+        };
         try {
-         await Users.create(user);
+          await Users.create(user);
         } catch (error) {
           throw error;
         }
@@ -123,14 +133,14 @@ describe('Integration tests for the user controller', () => {
     });
     it('should get all users', async () => {
       const response = await chai.request(app).get('/api/v1/authors')
-      .set('x-access-token', token);
+        .set('x-access-token', token);
       expect(response.status).to.be.equals(200);
       expect(response.body.success).to.be.equals(true);
       expect(response.body.authors).to.be.an('array');
     });
     it('should get all users where search matches like username, firstname, lastname', async () => {
       const response = await chai.request(app).get('/api/v1/authors/?search=john')
-      .set('x-access-token', token);
+        .set('x-access-token', token);
       expect(response.status).to.be.equals(200);
       expect(response.body.success).to.be.equals(true);
       expect(response.body.authors).to.be.an('array');
@@ -143,18 +153,18 @@ describe('Integration tests for the user controller', () => {
         body: {
           userId: 2
         }
-      }
+      };
 
       const response = {
-        status () {},
-        send (args) { return args; }
-      }
+        status() {},
+        send(args) { return args; }
+      };
 
       const next = sinon.stub();
       sinon.stub(response, 'status').returnsThis();
-      
+
       const result = await Authenticate.hasWriteAccess(request, response, next);
-      
+
       expect(response.status).to.be.calledOnce;
       expect(response.status).to.be.calledWith(401);
       expect(result).to.have.property('message', 'You don\'t have access to edit this file');
@@ -176,18 +186,21 @@ describe('Tests for roles', () => {
     };
     invalidRole = {
       roleId: 'invalid role'
-    }
+    };
   });
   describe('Validation for role update', () => {
     it('should return an error for an invalid token', async () => {
-      const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
+      const res = await chai.request(app)
+        .put(`/api/v1/users/role/${dataUserId}`)
         .set('x-access-token', invalidAdminToken).send(newRole);
       expect(res.status).to.deep.equal(401);
       expect(res.body).to.have.property('message');
-      expect(res.body.message).to.equal('Invalid token. Only Admins. can update roles');
+      expect(res.body.message)
+        .to.equal('Invalid token. Only Admins. can update roles');
     });
     it('should return an error for an invalid or empty role', async () => {
-      const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
+      const res = await chai.request(app)
+        .put(`/api/v1/users/role/${dataUserId}`)
         .set('x-access-token', validAdminToken).send(invalidRole);
       expect(res.status).to.deep.equal(400);
       expect(res.body).to.have.property('message');
@@ -195,14 +208,36 @@ describe('Tests for roles', () => {
     });
   });
   describe('Integration test for roles controller', () => {
+    const userDetails = {
+      username: 'JohDoe1',
+      password: 'testPassword',
+      email: 'johndoe1@wemail.com',
+      firstName: 'John',
+      lastName: 'Doe',
+      bio: 'RIP John Doe',
+    };
     it('should update user role', async () => {
-      const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
-        .set('x-access-token', validAdminToken).send(newRole);
-      expect(res.status).to.deep.equal(200);
-      expect(res.body).to.have.property('message');
-      expect(res.body.message).to.equal('User role was updated successfully');
-      expect(res.body).to.have.property('success');
-      expect(res.body.success).to.equal(true);
+      try {
+        const res = await chai.request(app)
+          .post('/api/v1/auth/signup')
+          .send(userDetails);
+        userToken = await res.body.token;
+        expect(res.status).to.equal(201);
+        expect(res.body).to.have.property('token');
+
+        decodedUserToken = jwt.decode(userToken.split('').reverse().join(''));
+        const res2 = await chai.request(app)
+          .put(`/api/v1/users/role/${decodedUserToken.id}`)
+          .set('x-access-token', validAdminToken).send(newRole);
+        expect(res2.status).to.deep.equal(200);
+        expect(res2.body).to.have.property('message');
+        expect(res2.body.message)
+          .to.equal('User role was updated successfully');
+        expect(res2.body).to.have.property('success');
+        expect(res2.body.success).to.equal(true);
+      } catch (err) {
+        throw err;
+      }
     });
   });
 });

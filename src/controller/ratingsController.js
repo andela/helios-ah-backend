@@ -1,8 +1,7 @@
 import models from '../models';
-import { checkFeedbackExist } from '../utilities';
 
 const {
-  Feedback,
+  Ratings
 } = models;
 
 /**
@@ -19,32 +18,28 @@ class RatingsController {
    * @return {res} res - Response object
    */
   static async rateArticle(req, res) {
-    const { articleId } = req.params;
-    const { rating } = req.body;
+    const {
+      articleId
+    } = req.params;
+    const {
+      rating
+    } = req.body;
     const user = req.decoded;
     try {
-      const FeedbackExist = await checkFeedbackExist(res, user, articleId);
-      if (!FeedbackExist) {
-        const articleRating = await Feedback.create({
-          userId: user.id,
-          articleId,
-          rating
-        });
-        if (articleRating) {
-          return res.status(201).json({
-            success: true,
-            message: 'Article Rated successfully',
-            articleId,
-            rating,
-            userId: user.id
-          });
-        }
-      }
-      res.status(400).json({
-        success: false,
-        message: 'Rating already Exist. Please consume'
-        + ' a Put Route for Rating Update'
+      const articleRating = await Ratings.create({
+        userId: user.id,
+        articleId,
+        rating
       });
+      if (articleRating) {
+        return res.status(201).json({
+          success: true,
+          message: 'Article Rated successfully',
+          articleId,
+          rating,
+          userId: user.id
+        });
+      }
     } catch (err) {
       return res.status(500).json({
         success: false,
@@ -61,11 +56,15 @@ class RatingsController {
    * @return {res} res - Response object
    */
   static async updateRating(req, res) {
-    const { articleId } = req.params;
-    const { rating } = req.body;
+    const {
+      articleId
+    } = req.params;
+    const {
+      rating
+    } = req.body;
     const user = req.decoded;
     try {
-      const articleRating = await Feedback.update({
+      const articleRating = await Ratings.update({
         rating,
       }, {
         where: {
@@ -74,7 +73,7 @@ class RatingsController {
         }
       });
       if (articleRating) {
-        return res.status(201).json({
+        return res.status(200).json({
           success: true,
           message: 'Article Rated successfully',
           articleId,
@@ -85,7 +84,7 @@ class RatingsController {
     } catch (err) {
       return res.status(500).json({
         success: false,
-        message: `Internal Server Error, ${err}`
+        message: 'Internal Server Error'
       });
     }
   }

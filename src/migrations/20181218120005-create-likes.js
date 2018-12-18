@@ -1,18 +1,13 @@
 export default {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Feedbacks', {
+  up: (queryInterface, Sequelize) => queryInterface.createTable('Likes', {
     id: {
-      allowNull: false,
-      autoIncrement: true,
       primaryKey: true,
-      type: Sequelize.INTEGER
+      type: Sequelize.UUID,
+      defaultValue: Sequelize.UUIDV4
     },
     isLiked: {
       type: Sequelize.BOOLEAN,
       defaultValue: false
-    },
-    rating: {
-      type: Sequelize.INTEGER,
-      defaultValue: null
     },
     userId: {
       type: Sequelize.UUID,
@@ -41,5 +36,5 @@ export default {
       type: Sequelize.DATE
     }
   }),
-  down: queryInterface => queryInterface.dropTable('Feedbacks')
+  down: queryInterface => queryInterface.dropTable('Likes')
 };

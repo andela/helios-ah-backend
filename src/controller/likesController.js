@@ -1,8 +1,7 @@
 import models from '../models';
-import { checkFeedbackExist } from '../utilities';
 
 const {
-  Feedback,
+  Likes
 } = models;
 
 /**
@@ -24,32 +23,25 @@ class LikesController {
     } = req.params;
     const user = req.decoded;
     try {
-      const FeedbackExist = await checkFeedbackExist(res, user, articleId);
-      if (!FeedbackExist) {
-        const isLiked = await Feedback.create({
-          userId: user.id,
-          articleId,
-          isLiked: 'true'
-        });
-        if (isLiked) {
-          return res.status(201).json({
-            success: true,
-            message: 'Article liked successfully',
-            articleId,
-            isliked: 'true',
-            userId: user.id
-          });
-        }
-      }
-      res.status(400).json({
-        success: false,
-        message: 'Article already liked. Please consume'
-        + ' a Put Route to Update like status'
+      const isLiked = await Likes.create({
+        userId: user.id,
+        articleId,
+        isLiked: 'true'
       });
+      if (isLiked) {
+        return res.status(201).json({
+          success: true,
+          message: 'Article liked successfully',
+          articleId,
+          isliked: 'true',
+          userId: user.id
+        });
+      }
     } catch (err) {
       return res.status(500).json({
-        message: `Internal server Error,  ${err}`,
-        success: 'false'
+        where: 'like controller',
+        success: false,
+        message: 'Internal server Error'
       });
     }
   }
@@ -61,14 +53,15 @@ class LikesController {
    * @param {object} res - Response object
    * @return {res} res - Response object
    */
-  static async unlikeArticle(req, res) {
+  static async updateLikes(req, res) {
     const {
-      articleId
+      articleId,
+      liked
     } = req.params;
     const user = req.decoded;
     try {
-      const isLiked = await Feedback.update({
-        isLiked: 'false'
+      const isLiked = await Likes.update({
+        isLiked: liked || 'false'
       }, {
         where: {
           userId: user.id,
@@ -76,7 +69,7 @@ class LikesController {
         }
       });
       if (isLiked) {
-        res.status(201).json({
+        return res.status(200).json({
           success: true,
           message: 'Article unliked successfully',
           articleId,
@@ -85,9 +78,9 @@ class LikesController {
         });
       }
     } catch (err) {
-      return res.status(400).json({
+      return res.status(500).json({
         success: false,
-        message: `Internal Server Error, ${err}`
+        message: 'Internal Server Error'
       });
     }
   }

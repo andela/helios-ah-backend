@@ -1,6 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/app';
+import authentication from "../src/utilities/authentication";
 
 chai.use(chaiHttp);
 const {
@@ -39,7 +40,7 @@ let newArticle;
 describe('Integration tests for the Rating controller', () => {
   it('Create users before running tests', async () => {
     const response = await chai.request(app).post('/api/v1/auth/signup')
-      .send(user);
+    .send(user);
     token = response.body.token;
     newArticle = await chai.request(app).post('/api/v1/articles')
       .set('x-access-token', token).send(draftArticle);
@@ -67,20 +68,19 @@ describe('Integration tests for the Rating controller', () => {
     })
   });
   describe('Test when article has already been Rated', () => {
-    it('it should promt to re-route to put route for Ratings update', async () => {
+    it('it should promt that rating already exist', async () => {
       const isRated = await chai.request(app).post(`/api/v1/articles/${newArticle.body.articleCreated.id}/ratings`)
         .set('x-access-token', token).send(rating);
       expect(isRated.status).to.equal(400);
       expect(isRated.body.success).to.equal(false);
-      expect(isRated.body.message).to.equal('Rating already Exist. Please consume'
-      + ' a Put Route for Rating Update');
+      expect(isRated.body.message).to.equal(`Article ${newArticle.body.articleCreated.id}, has already been rated.`);
     })
   });
   describe('Test when article has been initially rated', () => {
     it('it should modify ratings value', async () => {
       const isRated = await chai.request(app).put(`/api/v1/articles/${newArticle.body.articleCreated.id}/ratings`)
         .set('x-access-token', token).send(rating);
-      expect(isRated.status).to.equal(201);
+      expect(isRated.status).to.equal(200);
       expect(isRated.body.success).to.equal(true);
       expect(isRated.body.message).to.equal('Article Rated successfully');
       expect(isRated.body.rating).to.equal(rating.rating);

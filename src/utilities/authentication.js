@@ -47,36 +47,55 @@ class Authentication {
   static verifyToken(input) {
     const token = reverseToken(input);
     let output = {};
-    if (!token) {
-      output = {
-        error: 'No token supplied',
-        success: false
-      };
-      return output;
-    }
-    try {
-      jwt.verify(token, process.env.SECRET, (err, decoded) => {
-        // update req with the decrypted token
-        if (err) {
-          output = {
-            error: 'Failed to authenticate token',
-            success: false
-          };
-        }
+    return jwt.verify(token, process.env.SECRET, (err, decoded) => {
+      if (err) {
         output = {
+          Error: 'Failed to authenticate token',
+          success: false
+        };
+      } else {
+        output = {
+          success: true,
           id: decoded.id,
           role: decoded.role,
           username: decoded.username,
         };
-      });
-    } catch (error) {
-      output = {
-        error: 'Invalid Token',
-        success: false
-      };
+      }
       return output;
+    });
+  }
+
+  /**
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - Response object containing an error due
+   * to unauthorized access
+   */
+  static async checkToken(req, res, next) {
+    const token = req.body.token || req.query.token
+      || req.headers['x-access-token'];
+    if (!token) {
+      res.status(401).send({
+        code: 401,
+        message: 'User not authorized',
+      });
+    } else {
+      const tokenVerified = await Authentication.verifyToken(token);
+
+      if (tokenVerified.success) {
+        req.decoded = tokenVerified;
+        return next();
+      }
+      res.status(401).send({
+        code: 401,
+        message: 'Authentication failed',
+      });
     }
-    return output;
   }
 }
 

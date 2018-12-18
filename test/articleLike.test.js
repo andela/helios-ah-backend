@@ -1,11 +1,11 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../src/app';
+import authentication from "../src/utilities/authentication";
+
 
 chai.use(chaiHttp);
-const {
-  expect
-} = chai;
+const { expect } = chai;
 
 const article = {
   title: 'title',
@@ -35,7 +35,7 @@ let newArticle;
 describe('Integration tests for the Like controller', () => {
   before('Create users before running tests', async () => {
     const response = await chai.request(app).post('/api/v1/auth/signup')
-      .send(user);
+    .send(user);
     token = response.body.token;
     newArticle = await chai.request(app).post('/api/v1/articles')
       .set('x-access-token', token).send(draftArticle);
@@ -63,20 +63,19 @@ describe('Integration tests for the Like controller', () => {
     })
   });
   describe('Test when article has already been liked', () => {
-    it('it should promt to re-route to put route for like status update', async () => {
+    it('it should promt that article has been liked', async () => {
       const isLiked = await chai.request(app).post(`/api/v1/articles/${newArticle.body.articleCreated.id}/likes`)
-        .set('x-access-token', token);
+      .set('x-access-token', token);
       expect(isLiked.status).to.equal(400);
       expect(isLiked.body.success).to.equal(false);
-      expect(isLiked.body.message).to.equal('Article already liked. Please consume'
-      + ' a Put Route to Update like status');
+      expect(isLiked.body.message).to.equal(`Article ${newArticle.body.articleCreated.id}, has already been liked.`);
     })
   });
   describe('Test when article is Unliked', () => {
     it('it should change isLiked value to false', async () => {
       const isLiked = await chai.request(app).put(`/api/v1/articles/${newArticle.body.articleCreated.id}/likes`)
         .set('x-access-token', token);
-      expect(isLiked.status).to.equal(201);
+      expect(isLiked.status).to.equal(200);
       expect(isLiked.body.success).to.equal(true);
       expect(isLiked.body.message).to.equal('Article unliked successfully');
       expect(isLiked.body.isliked).to.equal('false');

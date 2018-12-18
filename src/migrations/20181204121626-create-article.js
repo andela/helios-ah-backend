@@ -27,6 +27,8 @@ export default {
     },
     userId: {
       type: Sequelize.UUID,
+      allowNull: false,
+      defaultValue: Sequelize.UUIDV4,
       onDelete: 'CASCADE',
       reference: {
         model: 'Users',
@@ -34,13 +36,22 @@ export default {
         as: 'articles',
       }
     },
-    feedback: {
+    ratings: {
       type: Sequelize.UUID,
       onDelete: 'CASCADE',
       reference: {
-        model: 'Feedback',
-        key: 'articleId',
-        as: 'Feedback',
+        model: 'Likes',
+        key: 'userId',
+        as: 'likes',
+      }
+    },
+    likes: {
+      type: Sequelize.UUID,
+      onDelete: 'CASCADE',
+      reference: {
+        model: 'Likes',
+        key: 'userId',
+        as: 'likes',
       }
     },
     createdAt: {

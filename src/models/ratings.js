@@ -1,18 +1,9 @@
-const feedbackModel = (sequelize, DataTypes) => {
-  const Feedback = sequelize.define('Feedback', {
+const RatingsModel = (sequelize, DataTypes) => {
+  const Ratings = sequelize.define('Ratings', {
     id: {
       type: DataTypes.UUID,
-      defaultValue: sequelize.UUIDV4,
+      defaultValue: DataTypes.UUIDV4,
       primaryKey: true
-    },
-    isLiked: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: false,
-      validate: {
-        isBoolean: {
-          msg: 'like status must be a boolean value'
-        }
-      }
     },
     rating: {
       type: DataTypes.INTEGER,
@@ -29,16 +20,16 @@ const feedbackModel = (sequelize, DataTypes) => {
       }
     }
   });
-  Feedback.associate = (models) => {
-    Feedback.belongsTo(models.Users, {
+  Ratings.associate = (models) => {
+    Ratings.belongsTo(models.Users, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
-    Feedback.belongsTo(models.Article, {
+    Ratings.belongsTo(models.Article, {
       foreignKey: 'articleId',
       onDelete: 'CASCADE'
     });
   };
-  return Feedback;
+  return Ratings;
 };
-export default feedbackModel;
+export default RatingsModel;

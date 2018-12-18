@@ -3,7 +3,7 @@ const articleModel = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
     },
     title: {
       type: DataTypes.STRING,
@@ -14,6 +14,11 @@ const articleModel = (sequelize, DataTypes) => {
           msg: 'Title should not exceed 80 characters',
         }
       }
+    },
+    userId: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      onDelete: 'CASCADE',
     },
     body: {
       type: DataTypes.TEXT,
@@ -47,9 +52,18 @@ const articleModel = (sequelize, DataTypes) => {
       foreignKey: 'userId',
       onDelete: 'CASCADE',
     });
-    Article.hasMany(models.Feedback, {
-      foreignKey: 'userId',
-      as: 'feedback'
+    Article.hasMany(models.Ratings, {
+      foreignKey: 'articleId',
+      as: 'Ratings'
+    });
+    Article.hasMany(models.Likes, {
+      foreignKey: 'articleId',
+      as: 'Likes'
+    });
+    Article.belongsToMany(models.Users, {
+      as: 'article',
+      through: 'Bookmark',
+      foreignKey: 'articleId'
     });
   };
   return Article;

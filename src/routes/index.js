@@ -2,16 +2,23 @@ import {
   UserController,
   ArticleController,
   LikesController,
-  RatingsController
+  RatingsController,
+  CommentController
 } from '../controller';
 
-import { validateUserInputs } from '../utilities';
+import {
+  validateUserInputs,
+  follower
+} from '../utilities';
 
 import {
   userMiddleware,
   checkArticleExists,
   ValidateArticle,
-  Authorization
+  Authorization,
+  checkBookmarkExists,
+  findDatabaseField,
+  checkFeedback
 } from '../middleware';
 
 /**
@@ -37,7 +44,24 @@ const routes = (app) => {
     ArticleController.createArticle
   );
   app.get(
-    '/api/v1/articles',
+    '/api/v1/profiles/:id/follow',
+    validateUserInputs.uuidV4Validator,
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    findDatabaseField.UserInParams,
+    follower.checkForSelfFollow,
+    follower.checkForExistingFollowing,
+    follower.updatePreviousFollowing,
+    UserController.followUser
+  );
+  app.delete(
+    '/api/v1/profiles/:id/follow',
+    validateUserInputs.uuidV4Validator,
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    findDatabaseField.UserInParams,
+    follower.checkForSelfUnfollow,
+    UserController.unfollowUser,
     Authorization.checkToken,
     ArticleController.getArticles
   );
@@ -56,6 +80,18 @@ const routes = (app) => {
     '/api/v1/authors',
     Authorization.checkToken,
     UserController.getAuthors
+  );
+  app.post(
+    '/api/v1/articles/:articleId/comments',
+    validateUserInputs.validateCreateComment,
+    Authorization.checkToken,
+    CommentController.createComment
+  );
+  app.post(
+    '/api/v1/comments/:commentId/childcomments',
+    validateUserInputs.validateCreateComment,
+    Authorization.checkToken,
+    CommentController.createChildComment
   );
   app.post(
     '/api/v1/user/requests/password/reset',
@@ -80,19 +116,22 @@ const routes = (app) => {
     Authorization.checkToken,
     checkArticleExists,
     ValidateArticle.checkArticleNotDraft,
+    checkFeedback.checkLikesExist,
     LikesController.likeArticle
   );
   app.put(
     '/api/v1/articles/:articleId/likes',
     Authorization.checkToken,
     checkArticleExists,
-    LikesController.unlikeArticle
+    checkFeedback.checkLikesNotExist,
+    LikesController.updateLikes
   );
   app.post(
     '/api/v1/articles/:articleId/ratings',
     Authorization.checkToken,
     checkArticleExists,
     ValidateArticle.checkArticleNotDraft,
+    checkFeedback.checkRatingExist,
     validateUserInputs.validateRating,
     RatingsController.rateArticle
   );
@@ -100,8 +139,23 @@ const routes = (app) => {
     '/api/v1/articles/:articleId/ratings',
     Authorization.checkToken,
     checkArticleExists,
+    checkFeedback.checkRatingNotExist,
     validateUserInputs.validateRating,
     RatingsController.updateRating
+  );
+  app.post(
+    '/api/v1/articles/:articleId/bookmark',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    validateUserInputs.uuidV4Validator,
+    checkArticleExists,
+    checkBookmarkExists,
+    ArticleController.bookmarkArticle
+  );
+  app.get(
+    '/api/v1/articles',
+    Authorization.checkToken,
+    ArticleController.getArticles,
   );
 };
 
