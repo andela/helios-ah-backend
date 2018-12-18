@@ -1,4 +1,5 @@
 import models from '../models';
+import { helperMethods } from '../utilities';
 
 const {
   Article
@@ -35,10 +36,7 @@ class ValidateArticle {
         });
       }
     } catch (err) {
-      res.status(500).json({
-        Success: false,
-        message: 'Internal Server Error'
-      });
+      return helperMethods.serverError(res);
     }
     next();
   }

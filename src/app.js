@@ -3,7 +3,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import logger from 'morgan';
-import routes from './routes/index';
+import routes from './routes';
 
 // Create global app object
 const app = express();

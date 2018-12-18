@@ -9,6 +9,7 @@ const followerModel = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
+      onDelete: 'CASCADE',
       references: {
         key: 'id',
         model: 'Users'
@@ -18,6 +19,7 @@ const followerModel = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
+      onDelete: 'CASCADE',
       references: {
         key: 'id',
         model: 'Users'

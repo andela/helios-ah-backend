@@ -1,5 +1,5 @@
 import models from '../models';
-import Error from '../utilities/Error';
+import errorResponse from '../utilities/Error';
 
 const { Article, Bookmark } = models;
 
@@ -26,6 +26,8 @@ class ArticleController {
         title,
         body,
         description,
+        readTime: (body.split(' ').length < 200) ? 'less than 1min'
+          : `about ${Math.round(body.split(' ').length / 200)}min`,
         image,
         userId: req.decoded.id,
         isDraft: isDraft || 'true'
@@ -38,7 +40,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      Error.handleErrorResponse(res, error);
+      errorResponse.handleErrorResponse(res, error);
     }
   }
 
@@ -81,7 +83,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      Error.handleErrorResponse(res, error);
+      errorResponse.handleErrorResponse(res, error);
     }
   }
 

@@ -1,29 +1,24 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import app from '../src/app';
-import models from '../src/models'
+import app from '../../src/app';
+import { UserController } from '../../src/controller';
+import models from '../../src/models'
 import faker from 'faker';
-import { helperMethods } from '../src/utilities';
 
 chai.use(chaiHttp);
 const { expect } = chai;
 const { Article } = models;
-let myToken;
-let userId;
 
 describe('Integration tests for the article controller', () => {
-  before('Create users before running tests', async () => {
+  let myToken, userId, articleId;
+  before('Create token to validate routes', async () => {
     const userDetails = {
-      username: 'JaneDoe',
-      password: 'password',
-      email: 'janedoe@wemail.com',
-      firstName: 'Jane',
-      lastName: 'Doe',
-      bio: 'Fun to be with. Cool and calm',
-    };
-    const response = await chai.request(app).post('/api/v1/auth/signup')
-      .send(userDetails);
-    myToken = response.body.token;
+      email: 'yomizy@wizzy.com',
+      password: 'myPassword',
+    }
+    const response = await chai.request(app).post('/api/v1/auth/login')
+    .send(userDetails);
+    myToken = response.body.userDetails.token;
   });
   describe('Tests for creating an article', () => {
     it('should create an article', async () => {
@@ -46,6 +41,55 @@ describe('Integration tests for the article controller', () => {
       expect(response.body.articleCreated).to.have.property('image');
       expect(response.body.articleCreated.image).to.equal(articleDetails.image);
       expect(response.body.articleCreated.isDraft).to.equal(true);
+      articleId = response.body.articleCreated.id;
+      userId = response.body.articleCreated.userId;
+    });
+    it('should add less than 1 minute read time to the article', async () => {
+      const articleDetails = {
+        title: 'The brow fox',
+        body: 'so i saw a dog',
+        description: 'narrative',
+        image: 'https://someimage.uplodersite.com',
+      };
+      const response = await chai.request(app).post('/api/v1/articles')
+      .set('x-access-token', myToken).send(articleDetails);
+        expect(response.status).to.equal(201);
+        expect(response.body).to.have.property('articleCreated');
+        expect(response.body.articleCreated).to.have.property('title');
+        expect(response.body.articleCreated.title).to.equal(articleDetails.title);
+        expect(response.body.articleCreated).to.have.property('body');
+        expect(response.body.articleCreated.body).to.equal(articleDetails.body);
+        expect(response.body.articleCreated).to.have.property('description');
+        expect(response.body.articleCreated.body).to.equal(articleDetails.body);
+        expect(response.body.articleCreated).to.have.property('readTime');
+        expect(response.body.articleCreated.readTime).to.equal('less than 1min');
+        expect(response.body.articleCreated).to.have.property('image');
+        expect(response.body.articleCreated.image).to.equal(articleDetails.image);
+        expect(response.body.articleCreated.isDraft).to.equal(true);
+    });
+    it('should add calculated read time to the article', async () => {
+      const articleDetails = {
+        title: 'The brow fox',
+        body: 'Knowing that millions of people around the world would be watching in person and on television and expecting great things from him — at least one  that millions of people around the world would be watching in person and on television and expecting great things from him — at least one more gold medal for America, if not another world record — during this, his fourth and surely his last appearance in the World Olympics, and realizing that his legs could no longer carry him down the runway with the same blazing speed and confidence in making a huge, eye-popping leap that they were capable of a few years ago when he set world records in the 100-meter dash and in the 400-meter relay and won a silver medal in the long jump, the renowned sprinter and track-and-field personality Carl Lewis, who had known pressure from fans and media before but never, even as a professional runner, this kind of pressure, made only a few appearances in races during the few months before the Summer Olympics in Atlanta, Georgia, partly because he was afraid of raising expectations even higher and he did not want to be distracted by interviews and adoring fans who would follow him into stores and restaurants demanding autographs and photo-opportunities, but mostly because he wanted to conserve his energies and concentrate, like a martial arts expert, on the job at hand: winning his favorite competition, the long jump, and bringing home another Gold Medal for the United States, the most fitting conclusion to his brilliant career in track and field.',
+        description: 'narrative',
+        image: 'https://someimage.uplodersite.com',
+      };
+      const readTime = Math.round(articleDetails.body.split(' ').length / 200);
+      const response = await chai.request(app).post('/api/v1/articles')
+      .set('x-access-token', myToken).send(articleDetails);
+        expect(response.status).to.equal(201);
+        expect(response.body).to.have.property('articleCreated');
+        expect(response.body.articleCreated).to.have.property('title');
+        expect(response.body.articleCreated.title).to.equal(articleDetails.title);
+        expect(response.body.articleCreated).to.have.property('body');
+        expect(response.body.articleCreated.body).to.equal(articleDetails.body);
+        expect(response.body.articleCreated).to.have.property('description');
+        expect(response.body.articleCreated.body).to.equal(articleDetails.body);
+        expect(response.body.articleCreated).to.have.property('readTime');
+        expect(response.body.articleCreated.readTime).to.equal(`about ${readTime}min`);
+        expect(response.body.articleCreated).to.have.property('image');
+        expect(response.body.articleCreated.image).to.equal(articleDetails.image);
+        expect(response.body.articleCreated.isDraft).to.equal(true);
     });
     it('should send an error message when image field is not a URL', async () => {
       const articleDetails = {
@@ -174,7 +218,6 @@ describe('Integration tests for the article controller', () => {
     });
   });
   describe('Test update article', () => {
-    let id;
     const articleDetails = {
       title: 'The brow fox',
       body: 'so i saw a dog',
@@ -185,10 +228,9 @@ describe('Integration tests for the article controller', () => {
       const attributes = [ 'userId', 'id']
       const user = await Article.findAll({ attributes });
       userId = user[0].dataValues.userId;
-      id = user[0].dataValues.id;
-    })
+    });
     it('should update an article with the articles Id', async () => {
-      const response = await chai.request(app).put(`/api/v1/articles/${id}`)
+      const response = await chai.request(app).put(`/api/v1/articles/${articleId}`)
       .set('x-access-token', myToken).send(articleDetails);
         expect(response.status).to.equal(200);
         expect(response.body).to.have.property('articleUpdated');
@@ -202,7 +244,7 @@ describe('Integration tests for the article controller', () => {
         expect(response.body.message).to.equal('Provide a valid article Id');
         expect(response.body.success).to.equal(false);
     });
-  })
+  });
   describe('Test Pagination', () => {
     let articles = [];
     before(async () => {
@@ -213,6 +255,7 @@ describe('Integration tests for the article controller', () => {
           description: faker.lorem.sentence(),
           image: faker.image.imageUrl(),
           isDraft: false,
+          readTime: "7",
           userId
         });
       }

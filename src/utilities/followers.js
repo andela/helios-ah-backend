@@ -58,7 +58,7 @@ class Followers {
         }
       );
     } catch (error) {
-      throw error;
+      return error;
     }
   }
 
@@ -78,13 +78,12 @@ class Followers {
     Followers.queryForExistingFollowing(true, userId, followerId);
 
     if (isExistingFollowing) {
-      res.status(409).json({
+      return res.status(409).json({
         success: false,
         message: 'You are already following this user'
       });
-    } else {
-      next();
     }
+    next();
   }
 
   /**
@@ -106,13 +105,12 @@ class Followers {
     if (isPreviousFollowing) {
       await Followers
         .queryForUpdatingPreviousFollowing(true, userId, followerId);
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: 'You are now following this user'
       });
-    } else {
-      next();
     }
+    next();
   }
 
   /**
@@ -129,13 +127,12 @@ class Followers {
     const followerId = await req.decoded.id;
 
     if (userId === followerId) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: 'You cannot follow yourself'
       });
-    } else {
-      next();
     }
+    next();
   }
 
   /**
@@ -152,13 +149,12 @@ class Followers {
     const followerId = await req.decoded.id;
 
     if (userId === followerId) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         message: 'You cannot follow or unfollow yourself'
       });
-    } else {
-      next();
     }
+    next();
   }
 }
 

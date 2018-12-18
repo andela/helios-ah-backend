@@ -1,4 +1,5 @@
 import models from '../models';
+import { helperMethods } from '../utilities';
 
 const { Users } = models;
 
@@ -32,10 +33,7 @@ class GetUser {
         error: 'user not found'
       });
     } catch (error) {
-      return res.status(500).send({
-        message: 'Internal Server Error',
-        error
-      });
+      return helperMethods.serverError(res);
     }
   }
 }

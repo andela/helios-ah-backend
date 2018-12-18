@@ -1,4 +1,5 @@
 import models from '../models';
+import { helperMethods } from '../utilities';
 
 const {
   Ratings
@@ -41,10 +42,7 @@ class RatingsController {
         });
       }
     } catch (err) {
-      return res.status(500).json({
-        success: false,
-        message: 'Internal Server Error',
-      });
+      return helperMethods.serverError(res);
     }
   }
 
@@ -82,10 +80,7 @@ class RatingsController {
         });
       }
     } catch (err) {
-      return res.status(500).json({
-        success: false,
-        message: 'Internal Server Error'
-      });
+      return helperMethods.serverError(res);
     }
   }
 }

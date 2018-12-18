@@ -34,6 +34,10 @@ const articleModel = (sequelize, DataTypes) => {
         }
       }
     },
+    readTime: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     image: {
       type: DataTypes.STRING,
       validate: {
@@ -50,7 +54,6 @@ const articleModel = (sequelize, DataTypes) => {
   Article.associate = (models) => {
     Article.belongsTo(models.Users, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE',
     });
     Article.hasMany(models.Ratings, {
       foreignKey: 'articleId',

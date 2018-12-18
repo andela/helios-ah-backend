@@ -1,4 +1,4 @@
-import crypter from '../utilities/cryptData';
+import cryptData from '../utilities/cryptData';
 
 export default (sequelize, DataTypes) => {
   const Users = sequelize.define(
@@ -85,10 +85,10 @@ export default (sequelize, DataTypes) => {
     }, {
       hooks: {
         beforeUpdate: async (user) => {
-          user.password = await crypter.encryptData(user.password);
+          user.password = await cryptData.encryptData(user.password);
         },
         beforeCreate: async (user) => {
-          user.password = await crypter.encryptData(user.password);
+          user.password = await cryptData.encryptData(user.password);
         }
       }
     }
@@ -123,7 +123,7 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'childComments'
     });
-    Users.belongsTo(models.roles, {
+    Users.belongsTo(models.Roles, {
       foreignKey: 'roleId'
     });
     Users.hasMany(models.Likes, {
@@ -140,5 +140,7 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId'
     });
   };
+  Users.prototype.verifyPassword = password => cryptData
+    .decryptData(password, Users.password);
   return Users;
 };

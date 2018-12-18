@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import app from '../src/app';
-import authentication from "../src/utilities/authentication";
+import app from '../../src/app';
+import authentication from "../../src/utilities/authentication";
 
 
 chai.use(chaiHttp);
@@ -23,20 +23,18 @@ const draftArticle = {
 }
 
 const user = {
-  username: 'hushpuppy1',
-  password: 'p@ssword123',
-  email: 'userEmail@email.com',
-  firstName: 'Koledowo',
-  lastName: 'smith',
-  bio: 'Get closer and find out yourself'
+  email: 'yomizy@wizzy.com',
+  password: 'myPassword'
 }
+
 let token;
 let newArticle;
 describe('Integration tests for the Like controller', () => {
-  before('Create users before running tests', async () => {
-    const response = await chai.request(app).post('/api/v1/auth/signup')
+  before('login before running tests', async () => {
+    const response = await chai.request(app).post('/api/v1/auth/login')
     .send(user);
-    token = response.body.token;
+    token = response.body.userDetails.token;
+    console.log(token);
     newArticle = await chai.request(app).post('/api/v1/articles')
       .set('x-access-token', token).send(draftArticle);
   });

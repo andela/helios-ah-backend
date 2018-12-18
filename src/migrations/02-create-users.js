@@ -1,4 +1,4 @@
-export default {
+module.exports = {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Users', {
     id: {
       primaryKey: true,
@@ -38,7 +38,7 @@ export default {
     roleId: {
       type: Sequelize.INTEGER,
       allowNull: false,
-      defaultValue: 1
+      defaultValue: 1,
     },
     ratings: {
       type: Sequelize.UUID,

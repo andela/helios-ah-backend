@@ -63,6 +63,27 @@ class Validate {
    * @returns {object} res - Response object when query is invalid
    * @memberof Validate
    */
+  static validateLogin(req, res, next) {
+    req.body = trimValues(req.body);
+    const {
+      password, email
+    } = req.body;
+    if (password && email) {
+      next();
+    } else {
+      allFieldsRequired(res);
+    }
+  }
+
+  /**
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - Response object when query is invalid
+   * @memberof Validate
+   */
   static validateCreateArticle(req, res, next) {
     req.body = trimValues(req.body);
     const {

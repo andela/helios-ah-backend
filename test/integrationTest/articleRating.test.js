@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import app from '../src/app';
-import authentication from "../src/utilities/authentication";
+import app from '../../src/app';
+import authentication from "../../src/utilities/authentication";
 
 chai.use(chaiHttp);
 const {
@@ -28,20 +28,16 @@ const rating = {
 }
 
 const user = {
-  username: 'hush',
-  password: 'p@ssword13',
-  email: 'usel@email.com',
-  firstName: 'Kolwo',
-  lastName: 'smit',
-  bio: 'Get find out yourself man'
+  email: 'yomizy@wizzy.com',
+  password: 'myPassword'
 }
 let token;
 let newArticle;
 describe('Integration tests for the Rating controller', () => {
   it('Create users before running tests', async () => {
-    const response = await chai.request(app).post('/api/v1/auth/signup')
+    const response = await chai.request(app).post('/api/v1/auth/login')
     .send(user);
-    token = response.body.token;
+    token = response.body.userDetails.token;
     newArticle = await chai.request(app).post('/api/v1/articles')
       .set('x-access-token', token).send(draftArticle);
   });

@@ -1,4 +1,5 @@
 import models from '../models';
+import { helperMethods } from '../utilities';
 
 const { Comments, ChildComments } = models;
 
@@ -36,10 +37,7 @@ class CommentController {
           message: error.errors[0].message
         });
       }
-      return res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-      });
+      return helperMethods.serverError(res);
     }
   }
 

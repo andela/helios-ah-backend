@@ -1,4 +1,5 @@
 import models from '../models';
+import { helperMethods } from '../utilities';
 
 const {
   Likes
@@ -38,11 +39,7 @@ class LikesController {
         });
       }
     } catch (err) {
-      return res.status(500).json({
-        where: 'like controller',
-        success: false,
-        message: 'Internal server Error'
-      });
+      return helperMethods.serverError(res);
     }
   }
 
@@ -78,10 +75,7 @@ class LikesController {
         });
       }
     } catch (err) {
-      return res.status(500).json({
-        success: false,
-        message: 'Internal Server Error'
-      });
+      return helperMethods.serverError(res);
     }
   }
 }

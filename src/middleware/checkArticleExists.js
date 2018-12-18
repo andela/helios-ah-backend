@@ -1,4 +1,5 @@
 import models from '../models';
+import { helperMethods } from '../utilities';
 
 const { Article } = models;
 
@@ -29,10 +30,7 @@ const checkArticleExists = async (req, res, next) => {
       });
     }
   } catch (error) {
-    res.status(500).json({
-      sucess: false,
-      message: 'Internal Server Error'
-    });
+    return helperMethods.serverError(res);
   }
 };
 export default checkArticleExists;
