@@ -1,7 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/app';
-import { Authentication } from '../../src/utilities';
+import { UserController } from '../../src/controller';
 import models from '../../src/models'
 import faker from 'faker';
 
@@ -13,15 +13,12 @@ describe('Integration tests for the article controller', () => {
   let myToken, userId, articleId;
   before('Create token to validate routes', async () => {
     const userDetails = {
-      id: 'dccd8ee7-bc98-4a8e-a832-ca116c5fff0a',
-      username: 'JaneDoe',
-      password: 'password',
-      email: 'janedoe@wemail.com',
-      firstName: 'Jane',
-      lastName: 'Doe',
-      bio: 'Fun to be with. Cool and calm',
+      email: 'yomizy@wizzy.com',
+      password: 'myPassword',
     }
-    myToken = await Authentication.getToken(userDetails);
+    const response = await chai.request(app).post('/api/v1/auth/login')
+    .send(userDetails);
+    myToken = response.body.userDetails.token;
   });
   describe('Tests for creating an article', () => {
     it('should create an article', async () => {
