@@ -135,17 +135,17 @@ const routes = (app) => {
   );
   app.get(
     '/api/v1/auth/social_tw/callback',
-    passport.authenticate('twitter', {
-      failureRedirect: 'api/v1/social_login/failed',
-      session: false,
-    }),
+    passport
+      .authenticate('twitter', {
+        failureRedirect: 'api/v1/social_login/failed',
+        session: false,
+      }),
     SocialLoginController.twitterLogin,
   );
   app.get(
     '/api/v1/auth/social_ggl',
-    passport.authenticate(
-      'google', { session: false, scope: ['profile', 'email'] }
-    ),
+    passport
+      .authenticate('google', { session: false, scope: ['profile', 'email'] }),
   );
   app.get(
     '/api/v1/auth/social_ggl/callback',
