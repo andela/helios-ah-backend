@@ -37,6 +37,11 @@ const routes = (app) => {
     UserController.userSignup
   );
   app.post(
+    '/api/v1/auth/login',
+    validateUserInputs.validateLogin,
+    UserController.userLogin
+  );
+  app.post(
     '/api/v1/articles',
     Authorization.checkToken,
     validateUserInputs.validateCreateArticle,
