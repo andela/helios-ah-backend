@@ -26,6 +26,8 @@ class ArticleController {
         title,
         body,
         description,
+        readTime: (body.split(' ').length < 200) ? 'less than 1min'
+          : `about ${Math.round(body.split(' ').length / 200)}min`,
         image,
         userId: req.decoded.id,
       });

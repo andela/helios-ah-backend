@@ -11,9 +11,9 @@ export default {
       allowNull: false,
       onDelete: 'CASCADE',
       references: {
-        key: 'id',
         model: 'Users',
-        as: 'following'
+        key: 'id',
+        as: 'following',
       }
     },
     followerId: {
@@ -22,8 +22,8 @@ export default {
       allowNull: false,
       onDelete: 'CASCADE',
       references: {
-        key: 'id',
         model: 'Users',
+        key: 'id',
         as: 'follower'
       }
     },
