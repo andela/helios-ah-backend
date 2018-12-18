@@ -14,24 +14,24 @@ class Authorization {
    * @returns {null} - returns object
    */
   static async hasWriteAccess(req, res, next) {
-    const article = 'ARTICLE', comment = 'COMMENT',
-      childComment = 'CHILD-COMMENT', user = 'USER';
+    const ARTICLE = 'ARTICLE', COMMENT = 'COMMENT',
+      CHILD = 'CHILD-COMMENT', USER = 'USER';
     let hasAccess;
     if (req.params.articleId) {
       hasAccess = await Access
-        .checkAcces(article, req.params.articleId, req.decoded.id);
+        .checkAcces(ARTICLE, req.params.articleId, req.decoded.id);
     }
     if (req.params.commentId) {
       hasAccess = await Access
-        .checkAcces(comment, req.params.commentId, req.decoded.id);
+        .checkAcces(COMMENT, req.params.commentId, req.decoded.id);
     }
     if (req.params.childCommentId) {
       hasAccess = await Access
-        .checkAcces(childComment, req.params.childCommentId, req.decoded.id);
+        .checkAcces(CHILD, req.params.childCommentId, req.decoded.id);
     }
     if (req.params.userId) {
       hasAccess = await Access
-        .checkAcces(user, req.params.userId, req.decoded.id);
+        .checkAcces(USER, req.params.userId, req.decoded.id);
     }
     if (hasAccess) {
       return next();
