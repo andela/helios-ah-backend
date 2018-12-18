@@ -16,13 +16,15 @@ passport
   (accessToken, refreshToken, profile, cb) => cb(null, profile)));
 
 passport
-  .use(new TwitterStrategy({
-    consumerKey: process.env.twitter_app_id,
-    consumerSecret: process.env.twitter_app_secret,
-    callbackURL: process.env.twitter_app_callback,
-    proxy: true,
-  },
-  (token, tokenSecret, profile, cb) => cb(null, profile)));
+  .use(
+    new TwitterStrategy({
+      consumerKey: process.env.twitter_app_id,
+      consumerSecret: process.env.twitter_app_secret,
+      callbackURL: process.env.twitter_app_callback,
+      proxy: true,
+    },
+    (token, tokenSecret, profile, cb) => cb(null, profile))
+  );
 
 passport
   .use(new GoogleStrategy({

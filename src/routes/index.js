@@ -143,8 +143,9 @@ const routes = (app) => {
   );
   app.get(
     '/api/v1/auth/social_ggl',
-    passport.authenticate('google',
-      { session: false, scope: ['profile', 'email'] }),
+    passport.authenticate(
+      'google', { session: false, scope: ['profile', 'email'] }
+    ),
   );
   app.get(
     '/api/v1/auth/social_ggl/callback',
