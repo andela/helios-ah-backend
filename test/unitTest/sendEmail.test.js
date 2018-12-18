@@ -14,7 +14,7 @@ describe('Utility to send emails', () => {
   });
   it('should send email when passed the email details', async () => {
     const details = {
-      email: 'jideajayi11@gmail.com',
+      email: 'jideajayi111@gmail.com',
       subject: 'Test Email Sending',
       emailBody: '<p>This email is being received</p>'
       + '<p>to test the utility that sends mail.'

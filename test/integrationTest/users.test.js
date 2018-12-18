@@ -3,7 +3,6 @@ import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 import app from '../../src/app';
 import { UserController } from '../../src/controller';
-import { Authentication } from '../../src/utilities';
 
 chai.use(chaiHttp);
 const { expect } = chai;
@@ -81,33 +80,37 @@ describe('Integration tests for the user controller', () => {
     });
   });
   describe('Tests for user roles', () => {
-    let validAdminToken, invalidAdminToken, newRole, invalidRole;
-    const dataUserId = 'dccd8ee7-bc98-4a8e-a832-ca116c5fff0a';
+    let details = {};
     before(async () => {
-      validAdminToken = await Authentication.getToken({
-        role: 2
+      const adminUser = await chai.request(app).post('/api/v1/auth/login')
+      .send({
+        email: 'jide@ajayi.com',
+        password: 'myPassword',
       });
-      invalidAdminToken = await Authentication.getToken({
-        role: 1
+      const regularUser = await chai.request(app).post('/api/v1/auth/login')
+      .send({
+        email: 'yomizy@wizzy.com',
+        password: 'myPassword',
       });
-      newRole = {
-        roleId: 2
+      details = {
+        validAdminToken: adminUser.body.userDetails.token,
+        invalidAdminToken: regularUser.body.userDetails.token,
+        dataUserId: regularUser.body.userDetails.id,
+        newRole: { roleId: 2 },
+        invalidRole: { roleId: 'invalid role' },
       };
-      invalidRole = {
-        roleId: 'invalid role'
-      }
     });
     describe('Test for Validation of role update', () => {
       it('should return an error for an invalid token', async () => {
-        const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
-          .set('x-access-token', invalidAdminToken).send(newRole);
+        const res = await chai.request(app).put(`/api/v1/users/role/${details.dataUserId}`)
+          .set('x-access-token', details.invalidAdminToken).send(details.newRole);
         expect(res.status).to.deep.equal(401);
         expect(res.body).to.have.property('message');
         expect(res.body.message).to.equal('Invalid token. Only Admins. can update roles');
       });
       it('should return an error for an invalid or empty role', async () => {
-        const res = await chai.request(app).put(`/api/v1/users/role/${dataUserId}`)
-          .set('x-access-token', validAdminToken).send(invalidRole);
+        const res = await chai.request(app).put(`/api/v1/users/role/${details.dataUserId}`)
+          .set('x-access-token', details.validAdminToken).send(details.invalidRole);
         expect(res.status).to.deep.equal(400);
         expect(res.body).to.have.property('message');
         expect(res.body.message).to.equal('Invalid role passed');
@@ -158,7 +161,7 @@ describe('Integration tests for the user controller', () => {
       expect(response.body.userDetails).to.have.property('id');
       expect(response.body.userDetails.id).to.not.equal(null);
     });
-    it('should send an failed message when required fields are not given',
+    it('should send a failed message when required fields are not given',
     async () =>{
       const userDetails = {
         email: 'yomizy@wizzy.com',

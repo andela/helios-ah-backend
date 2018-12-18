@@ -384,10 +384,7 @@ class UserController {
         });
       }
     } catch (error) {
-      res.status(500).json({
-        message: 'Internal server error',
-        success: false,
-      });
+      return helperMethods.serverError(res);
     }
   }
 
@@ -420,7 +417,7 @@ class UserController {
         const tokenCreated = await Authentication.getToken({
           id: userFound.id,
           username: userFound.username,
-          role: userFound.role,
+          role: userFound.roleId,
         });
         if (tokenCreated) {
           const userDetails = {

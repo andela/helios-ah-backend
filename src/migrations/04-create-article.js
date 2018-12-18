@@ -1,3 +1,4 @@
+
 export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Articles', {
     id: {

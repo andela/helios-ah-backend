@@ -1,6 +1,6 @@
 export default (sequelize, DataTypes) => {
-  const tag = sequelize.define(
-    'tag',
+  const Tag = sequelize.define(
+    'Tag',
     {
       id: {
         type: DataTypes.UUID,
@@ -19,11 +19,11 @@ export default (sequelize, DataTypes) => {
       }
     }
   );
-  tag.associate = (models) => {
-    tag.belongsToMany(models.Article, {
+  Tag.associate = (models) => {
+    Tag.belongsToMany(models.Article, {
       as: 'Texts',
-      through: 'articleTag',
+      through: 'ArticleTag',
     });
   };
-  return tag;
+  return Tag;
 };

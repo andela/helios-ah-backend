@@ -2,7 +2,8 @@
 import {
   UserController,
   ArticleController,
-  CommentController
+  CommentController,
+  TagController,
 } from '../controller';
 
 import {
@@ -97,9 +98,9 @@ const routes = (app) => {
     CommentController.createChildComment
   );
   app.post(
-    '/api/v1/articles/tag',
-    // authentication.checkToken,
-    ArticleController.createTag
+    '/api/v1/articles/tag/:articleId',
+    Authorization.checkToken,
+    TagController.createTag
   );
   app.post(
     '/api/v1/user/requests/password/reset',
