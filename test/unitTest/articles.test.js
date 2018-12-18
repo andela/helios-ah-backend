@@ -11,6 +11,7 @@ const invalidURLasValue = {
   description: 'narrative',
   image: 'someimageuplodersite',
   userId: 'aa4aaa2c-c6ca-d5f5-b8b2-0b5c78ee2cb7',
+  readTime: '2 mins'
 };
 const invalidCharacterInTitle = {
   title: 'The* brow fox',
@@ -18,6 +19,7 @@ const invalidCharacterInTitle = {
   description: 'narrative',
   image: 'https://someimage.uploder.site.com',
   userId: 'aa4aaa2c-c6ca-d5f5-b8b2-0b5c78ee2cb7',
+  readTime: '2 mins',
 };
 const tooLongTitle = {
   title: `Thebrowdfghtgvfghgmjnbvbgmvbnmbbvxghgnbnvbbnvbcnbbngmnbnbvbgnbvnncno
@@ -26,6 +28,7 @@ const tooLongTitle = {
   description: 'narrative',
   image: 'https://someimage.uploder.site.com',
   userId: 'aa4aaa2c-c6ca-d5f5-b8b2-0b5c78ee2cb7',
+  readTime: '2 mins', 
 };
 describe('Unit tests for the articles model', () => {
   it(

@@ -22,7 +22,8 @@ passport.use(new TwitterStrategy(
     consumerSecret: process.env.twitter_app_secret,
     callbackURL: process.env.twitter_app_callback,
     proxy: true,
-  }, (token, tokenSecret, profile, cb) => cb(null, profile)
+  },
+  (token, tokenSecret, profile, cb) => cb(null, profile)
 ));
 
 passport.use(new GoogleStrategy(
