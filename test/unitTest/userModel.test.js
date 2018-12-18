@@ -1,10 +1,9 @@
 
 import chai from 'chai';
-import models from '../../src/models'
+import models from '../../src/models';
 
 const { expect } = chai;
 const { Users } = models;
-
 const obj = {
   failedFirstName: {
     firstName: 'john15',
@@ -39,19 +38,19 @@ const obj = {
     lastName: 'doe',
     email: 'example@gmail.com',
     password: '123456',
-    username: '46134'
+    username: '_abc'
   },
   pass: {
-    firstName: 'john',
+    firstName: 'jahn',
     lastName: 'doe',
-    email: 'example@gmail.com',
+    email: 'chris@gmail.com',
     password: '123456',
-    username: 'john134'
+    username: 'john13tt45'
   },
   failedDuplicateEmail: {
     firstName: 'john',
     lastName: 'doe',
-    email: 'example@gmail.com',
+    email: 'chris@gmail.com',
     password: '123456',
     username: 'mike42'
   },
@@ -62,46 +61,60 @@ const obj = {
     password: '123456',
     username: 'john134'
   },
-}
+};
 
 describe('Test user model', () => {
   it('should reject first name containing invalid characters', async () => {
     try {
-      expect(await Users.create(obj.failedFirstName)).to.equal('First name must contain only Alphabets');
+      expect(await Users.create(obj.failedFirstName))
+        .to.equal('First name must contain only Alphabets');
     } catch (error) {
-      expect(error.errors[0].message).to.equal('First name must contain only Alphabets');
+      expect(error.errors[0].message)
+        .to.equal('First name must contain only Alphabets');
     }
   });
 
   it('should reject last name containing invalid characters', async () => {
     try {
-      expect(await Users.create(obj.failedLastName)).to.equal('Last name must contain only Alphabets');
+      expect(await Users.create(obj.failedLastName))
+        .to.equal('Last name must contain only Alphabets');
     } catch (error) {
-      expect(error.errors[0].message).to.equal('Last name must contain only Alphabets');
+      expect(error.errors[0].message)
+        .to.equal('Last name must contain only Alphabets');
     }
   });
 
   it('should reject email address', async () => {
     try {
-      expect(await Users.create(obj.failedEmail)).to.equal('Email must be a valid email ID');
+      expect(await Users.create(obj.failedEmail))
+        .to.equal('Email must be a valid email ID');
     } catch (error) {
-      expect(error.errors[0].message).to.equal('Email must be a valid email ID');
+      expect(error.errors[0].message)
+        .to.equal('Email must be a valid email ID');
     }
   });
 
   it('should reject password character less than 6', async () => {
     try {
-      expect(await Users.create(obj.failedPassword)).to.equal('Password must be more than 5 characters');
+      expect(await Users.create(obj.failedPassword))
+        .to.equal('Password must be more than 5 characters');
     } catch (error) {
-      expect(error.errors[0].message).to.equal('Password must be more than 5 characters');
+      expect(error.errors[0].message)
+        .to.equal('Password must be more than 5 characters');
     }
   });
 
   it('should reject username containing invalid characters', async () => {
     try {
-      expect(await Users.create(obj.failedUsername)).to.equal('Username must contain only alphabet, numbers, and characters  and must begin with an alphabet');
+      expect(await Users.create(obj.failedUsername)).to.equal(
+        'Username must contain only alphabet, numbers, and characters /n'
+        + 'and must begin with an alphabet'
+      );
     } catch (error) {
-      expect(error.errors[0].message).to.equal('Username must contain only alphabet, numbers, and characters  and must begin with an alphabet');
+      expect(error.errors[0].message)
+        .to.equal(
+          'Username must contain only alphanumeric'
+        );
     }
   });
 

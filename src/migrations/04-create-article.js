@@ -25,8 +25,9 @@ export default {
       defaultValue: true,
     },
     userId: {
-      type: Sequelize.INTEGER,
-      onDelete: 'CASCADE',
+      type: Sequelize.UUID,
+      allowNull: false,
+      defaultValue: Sequelize.UUIDV4,
       reference: {
         model: 'Users',
         key: 'id',
