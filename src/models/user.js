@@ -32,7 +32,7 @@ export default (sequelize, DataTypes) => {
       },
       email: {
         type: DataTypes.STRING,
-        unique: false,
+        unique: true,
         allowNull: false,
         validate: {
           isEmail: {
@@ -83,15 +83,6 @@ export default (sequelize, DataTypes) => {
           }
         }
       },
-      facebookId: {
-        type: DataTypes.TEXT,
-      },
-      twitterId: {
-        type: DataTypes.TEXT,
-      },
-      googleId: {
-        type: DataTypes.TEXT,
-      }
     }, {
       hooks: {
         beforeUpdate: async (user) => {
@@ -111,6 +102,20 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'articles',
     });
+    Users.belongsToMany(models.Users, {
+      as: 'Follow',
+      through: {
+        model: 'Follower',
+      },
+      foreignKey: 'userId',
+    });
+    Users.belongsToMany(models.Users, {
+      as: 'Following',
+      through: {
+        model: 'Follower'
+      },
+      foreignKey: 'followerId'
+    });
     Users.hasMany(models.Comments, {
       foreignKey: 'userId',
       as: 'comments'
@@ -119,8 +124,13 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'childComments'
     });
-    Users.belongsTo(models.roles, {
+    Users.belongsTo(models.Roles, {
       foreignKey: 'roleId'
+    });
+    Users.belongsToMany(models.Article, {
+      as: 'reader',
+      through: 'Bookmark',
+      foreignKey: 'userId'
     });
   };
   return Users;

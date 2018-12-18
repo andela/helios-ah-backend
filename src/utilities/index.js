@@ -3,6 +3,7 @@ import cryptData from './cryptData';
 import Authentication from './authentication';
 import sendEmail from './sendEmail';
 import helperMethods from './helperMethods';
+import follower from './followers';
 
 export {
   cryptData,
@@ -10,4 +11,5 @@ export {
   Authentication,
   sendEmail,
   helperMethods,
+  follower,
 };

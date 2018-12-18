@@ -1,8 +1,10 @@
+
+import followersUtil from '../utilities/followers';
 import models from '../models';
 import SendEmail from '../utilities/sendEmail';
 import { helperMethods, Authentication } from '../utilities';
 
-const { Users, sequelize } = models;
+const { Users, sequelize, Follower } = models;
 const { Op } = sequelize.Sequelize;
 
 /**
@@ -103,7 +105,7 @@ class UserController {
  */
   static async completeRegistration(req, res) {
     const verifiedToken = await Authentication.verifyToken(req.query.token);
-    if (!verifiedToken) {
+    if (!verifiedToken.success) {
       return res.status(400).json({
         success: false,
         message: 'Could not complete your registration. Please re-register.'
@@ -132,7 +134,69 @@ class UserController {
     }
   }
 
+
   /**
+  * @description function to allow a user follow another
+  *
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  *
+  * @return {res} res - Response object
+  *
+ */
+  static async followUser(req, res) {
+    const userId = await req.params.id;
+    const followerId = await req.decoded.id;
+
+    try {
+      const createFollower = await Follower.create({
+        userId,
+        followerId
+      });
+      if (createFollower) {
+        res.status(200).json({
+          success: true,
+          message: 'You are now following this user'
+        });
+      }
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  }
+
+  /**
+  * @description function to allow a user unfollow another
+  *
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  *
+  * @return {res} res - Response object
+  *
+ */
+  static async unfollowUser(req, res) {
+    const userId = await req.params.id;
+    const followerId = await req.decoded.id;
+
+    const isExistingFollowing = await
+    followersUtil.queryForExistingFollowing(true, userId, followerId);
+
+    if (isExistingFollowing) {
+      await followersUtil
+        .queryForUpdatingPreviousFollowing(false, userId, followerId);
+      res.status(200).json({
+        success: true,
+        message: 'You have unfollowed this user'
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        message: 'You do not follow this user'
+      });
+    }
+  }
+
+  /**
+  * Updates user role
   * List Authors
   * Route: GET: /authors
   * Route: GET: /authors/:search

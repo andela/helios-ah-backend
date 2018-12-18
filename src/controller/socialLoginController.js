@@ -21,6 +21,13 @@ class SocialLogin {
       options = { where: { [obj.verifyWith]: obj.profile.emails[0].value } };
     }
     const userFound = await Users.findOne(options);
+    if (userFound && userFound.isVerified === false) {
+      return obj.res.status(400).json({
+        success: false,
+        message: 'You had started the registration process earlier. '
+        + 'Please check your email to complete your registration.'
+      });
+    }
     if (userFound) {
       const token = await Authentication.getToken(userFound);
       return obj.res.status(200).json({

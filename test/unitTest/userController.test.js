@@ -67,17 +67,18 @@ describe('Unit test for user controller', () => {
   });
   describe('Test complete a user\'s registration', () => {
     it('should send error message when token is invalid', async () => {
-      const spyVerifyToken = sinon.spy(Authentication, 'verifyToken');
+      const stubVerifyToken = sinon.stub(Authentication, 'verifyToken').returns(false);
       const response = await UserController.completeRegistration(req, res);
-      expect(spyVerifyToken.called).to.equal(true);
+      expect(stubVerifyToken.called).to.equal(true);
       expect(response.success).to.equal(false);
       expect(response.message).to.equal(
         'Could not complete your registration. Please re-register.'
       );
-      spyVerifyToken.restore();
+      stubVerifyToken.restore();
     });
     it('should send a success message when registration is complete', async() => {
-      const stubVerifyToken = sinon.stub(Authentication, 'verifyToken').returns(true);
+      const stubVerifyToken = sinon.
+      stub(Authentication, 'verifyToken').returns({ success: true });
       const stubFindByPk = sinon.stub(Users, 'findByPk').returns(foundUser);
       const stubGetToken = sinon.stub(Authentication, 'getToken')
       .returns('myRandomStringToken');

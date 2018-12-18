@@ -38,7 +38,7 @@ class Authorization {
     || req.headers['x-access-token'];
     if (!token) {
       res.status(401).send({
-        success: false,
+        code: 401,
         message: 'User not authorized',
       });
     } else {
@@ -54,10 +54,9 @@ class Authorization {
           });
         }
       } catch (error) {
-        res.status(401).send({
+        return res.status(401).send({
           success: false,
           message: 'Authentication failed',
-          error,
         });
       }
     }

@@ -16,6 +16,11 @@ const articleModel = (sequelize, DataTypes) => {
         }
       }
     },
+    userId: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      onDelete: 'CASCADE',
+    },
     body: {
       type: DataTypes.TEXT,
       allowNull: false
@@ -55,7 +60,11 @@ const articleModel = (sequelize, DataTypes) => {
   Article.associate = (models) => {
     Article.belongsTo(models.Users, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE',
+    });
+    Article.belongsToMany(models.Users, {
+      as: 'article',
+      through: 'Bookmark',
+      foreignKey: 'articleId'
     });
   };
   return Article;
