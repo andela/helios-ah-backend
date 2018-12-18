@@ -34,7 +34,6 @@ describe('Integration tests for the article controller', () => {
       };
       const response = await chai.request(app).post('/api/v1/articles')
         .set('x-access-token', myToken).send(articleDetails);
-      console.log('response.body is ==> ', response);
       expect(response.status).to.equal(201);
       expect(response.body).to.have.property('articleCreated');
       expect(response.body.articleCreated).to.have.property('title');
