@@ -50,7 +50,7 @@ const routes = (app) => {
   app.get(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
-    validateUserInputs.uuidV4Validator,
+    Authorization.uuidV4Validator,
     findDatabaseField.UserInToken,
     findDatabaseField.UserInParams,
     follower.checkForSelfFollow,
@@ -61,7 +61,7 @@ const routes = (app) => {
   app.delete(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
-    validateUserInputs.uuidV4Validator,
+    Authorization.uuidV4Validator,
     findDatabaseField.UserInToken,
     findDatabaseField.UserInParams,
     follower.checkForSelfUnfollow,
@@ -92,14 +92,18 @@ const routes = (app) => {
   );
   app.put(
     '/api/v1/articles/comments/:commentId',
-    validateUserInputs.validateCreateComment,
     Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    Authorization.hasWriteAccess,
+    validateUserInputs.validateCreateComment,
     CommentController.updateComment
   );
   app.put(
     '/api/v1/articles/comments/childComments/:childCommentId',
-    validateUserInputs.validateCreateComment,
     Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    Authorization.hasWriteAccess,
+    validateUserInputs.validateCreateComment,
     CommentController.updateComment
   );
   app.post(
@@ -130,7 +134,7 @@ const routes = (app) => {
     '/api/v1/articles/:articleId/bookmark',
     Authorization.checkToken,
     findDatabaseField.UserInToken,
-    validateUserInputs.uuidV4Validator,
+    Authorization.uuidV4Validator,
     checkArticleExists,
     checkBookmarkExists,
     ArticleController.bookmarkArticle

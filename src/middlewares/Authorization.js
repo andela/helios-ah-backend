@@ -1,4 +1,5 @@
 import Auth from '../utilities/authentication';
+import Access from '../utilities/helperMethods';
 /**
  * Class representing the Authentication methods
  * @class Authenticate
@@ -6,20 +7,37 @@ import Auth from '../utilities/authentication';
  */
 class Authorization {
   /**
-   * check if user is authourized
+   * check if user has access
    * @param {object} req - Request object
    * @param {object} res - Response object
    * @param {callback} next - The callback that passes the request
    * @returns {null} - returns object
    */
   static async hasWriteAccess(req, res, next) {
-    if ((req.decoded.id !== req.body.userId) || !req.body.userId) {
-      return res.status(401).send({
-        success: false,
-        message: 'You don\'t have access to edit this file',
-      });
+    let hasAccess;
+    if (req.params.articleId) {
+      hasAccess = await Access
+        .checkAcces('ARTICLE', req.params.articleId, req.decoded.id);
     }
-    return next();
+    if (req.params.commentId) {
+      hasAccess = await Access
+        .checkAcces('COMMENT', req.params.commentId, req.decoded.id);
+    }
+    if (req.params.childCommentId) {
+      hasAccess = await Access
+        .checkAcces('CHILD-COMMENT', req.params.childCommentId, req.decoded.id);
+    }
+    if (req.params.userId) {
+      hasAccess = await Access
+        .checkAcces('CHILD-COMMENT', req.params.userId, req.decoded.id);
+    }
+    if (hasAccess) {
+      return next();
+    }
+    return res.status(401).send({
+      success: false,
+      message: 'You don\'t have access to modify this record',
+    });
   }
 
   /**
@@ -60,6 +78,30 @@ class Authorization {
         });
       }
     }
+  }
+
+  /**
+   * @description checks if id from params is UUIDV4 or not
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {function} next - callback
+   *
+   * @returns {Boolean} Returns an object
+   */
+  static async uuidV4Validator(req, res, next) {
+    const id = req.params.id || req.params.userId || req.params.articleId
+    || req.params.commentId || req.params.childCommentId;
+    const uuidV4Regex = new RegExp(['^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-',
+      '[89AB][0-9A-F]{3}-[0-9A-F]{12}$'].join(''), 'i');
+    const result = await uuidV4Regex.test(id);
+    if (result) {
+      return next();
+    }
+    res.status(400).json({
+      success: false,
+      message: 'Invalid Id'
+    });
   }
 }
 export default Authorization;

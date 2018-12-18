@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   up: queryInterface => queryInterface.bulkInsert('Roles', [
     {
       id: 1,
@@ -19,6 +19,6 @@ module.exports = {
       updatedAt: new Date(Date.now())
     },
   ]),
-  down: queryInterface =>
-    queryInterface.bulkDelete('Roles', null, { returning: true })
+  down: queryInterface => queryInterface
+    .bulkDelete('Roles', null, { returning: true })
 };
