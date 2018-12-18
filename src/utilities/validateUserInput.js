@@ -172,6 +172,35 @@ class Validate {
     }
     res.status(400).json({ message: 'Invalid Id' });
   }
+
+  /**
+   *  *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - Response object when query is invalid
+   * @memberof Validate
+   */
+  static validateReport(req, res, next) {
+    let message;
+    req.body = trimValues(req.body);
+    const {
+      reportComment, type
+    } = req.body;
+    if (!(type === 'plagiarism' || type === 'agreementViolation')) {
+      message = 'type is required and must be \'plagiarism\' '
+       + 'or \'agreementViolation\'';
+    }
+    if (!reportComment) {
+      message = 'reportComment field is required';
+    }
+    if (message) {
+      allFieldsRequired(res, message);
+    } else {
+      next();
+    }
+  }
 }
 
 export default Validate;
