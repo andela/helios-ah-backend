@@ -10,11 +10,21 @@ export default {
     },
     articleId: {
       type: Sequelize.UUID,
-      primaryKey: true
+      onDelete: 'CASCADE',
+      references: {
+        model: 'Article',
+        key: 'id',
+        as: 'articles'
+      }
     },
     tagId: {
       type: Sequelize.UUID,
-      primaryKey: true
+      onDelete: 'CASCADE',
+      references: {
+        model: 'tags',
+        key: 'id',
+        as: 'labels'
+      }
     }
   }),
   down: queryInterface => queryInterface.dropTable('articleTag')
