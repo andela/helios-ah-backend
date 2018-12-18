@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  const Roles = sequelize.define('roles', {
+  const Roles = sequelize.define('Roles', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,

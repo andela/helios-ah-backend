@@ -48,3 +48,11 @@ node_modules
 
 # editor
 .idea
+# editor package.back-up.json
+# webstor files
+.idea
+
+.DS_Store
+
+# vscode user and workspace settings
+.vscode

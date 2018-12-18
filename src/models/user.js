@@ -1,4 +1,4 @@
-import crypter from '../utilities/cryptData';
+import cryptData from '../utilities/cryptData';
 
 export default (sequelize, DataTypes) => {
   const Users = sequelize.define(
@@ -85,10 +85,10 @@ export default (sequelize, DataTypes) => {
     }, {
       hooks: {
         beforeUpdate: async (user) => {
-          user.password = await crypter.encryptData(user.password);
+          user.password = await cryptData.encryptData(user.password);
         },
         beforeCreate: async (user) => {
-          user.password = await crypter.encryptData(user.password);
+          user.password = await cryptData.encryptData(user.password);
         }
       }
     }
@@ -101,9 +101,38 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'articles',
     });
-    Users.belongsTo(models.roles, {
+    Users.belongsToMany(models.Users, {
+      as: 'Follow',
+      through: {
+        model: 'Follower',
+      },
+      foreignKey: 'userId',
+    });
+    Users.belongsToMany(models.Users, {
+      as: 'Following',
+      through: {
+        model: 'Follower'
+      },
+      foreignKey: 'followerId'
+    });
+    Users.hasMany(models.Comments, {
+      foreignKey: 'userId',
+      as: 'comments'
+    });
+    Users.hasMany(models.ChildComments, {
+      foreignKey: 'userId',
+      as: 'childComments'
+    });
+    Users.belongsTo(models.Roles, {
       foreignKey: 'roleId'
     });
+    Users.belongsToMany(models.Article, {
+      as: 'reader',
+      through: 'Bookmark',
+      foreignKey: 'userId'
+    });
   };
+  Users.prototype.verifyPassword = password => cryptData
+    .decryptData(password, Users.password);
   return Users;
 };

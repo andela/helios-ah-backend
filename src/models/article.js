@@ -4,7 +4,7 @@ const articleModel = (sequelize, DataTypes) => {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
-      defaultValue: DataTypes.UUIDV4
+      defaultValue: DataTypes.UUIDV4,
     },
     title: {
       type: DataTypes.STRING,
@@ -15,6 +15,11 @@ const articleModel = (sequelize, DataTypes) => {
           msg: 'Title should not exceed 80 characters',
         }
       }
+    },
+    userId: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      onDelete: 'CASCADE',
     },
     body: {
       type: DataTypes.TEXT,
@@ -29,6 +34,10 @@ const articleModel = (sequelize, DataTypes) => {
           msg: 'Description field should not exceed 200 character',
         }
       }
+    },
+    readTime: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
     image: {
       type: DataTypes.STRING,
@@ -46,7 +55,11 @@ const articleModel = (sequelize, DataTypes) => {
   Article.associate = (models) => {
     Article.belongsTo(models.Users, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE',
+    });
+    Article.belongsToMany(models.Users, {
+      as: 'article',
+      through: 'Bookmark',
+      foreignKey: 'articleId'
     });
   };
   return Article;

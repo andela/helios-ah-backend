@@ -1,6 +1,7 @@
 import models from '../models';
+import errorResponse from '../utilities/Error';
 
-const { Article } = models;
+const { Article, Bookmark } = models;
 
 /**
  * Class representing the Article controller
@@ -14,7 +15,7 @@ class ArticleController {
   * @param {object} req - Request object
   * @param {object} res - Response object
   * @return {res} res - Response object
-  * @memberof ArticlesController
+  * @memberof ArticleController
  */
   static async createArticle(req, res) {
     const {
@@ -25,6 +26,8 @@ class ArticleController {
         title,
         body,
         description,
+        readTime: (body.split(' ').length < 200) ? 'less than 1min'
+          : `about ${Math.round(body.split(' ').length / 200)}min`,
         image,
         userId: req.decoded.id,
       });
@@ -36,17 +39,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      if (error.errors) {
-        return res.status(400).json({
-          success: false,
-          message: error.errors[0].message
-        });
-      }
-      return res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-        error,
-      });
+      errorResponse.handleErrorResponse(res, error);
     }
   }
 
@@ -88,18 +81,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      if (error.errors) {
-        res.status(400).json({
-          success: false,
-          message: error.errors[0].message
-        });
-      } else {
-        res.status(500).json({
-          success: false,
-          message: 'Internal server error',
-          error,
-        });
-      }
+      errorResponse.handleErrorResponse(res, error);
     }
   }
 
@@ -112,6 +94,11 @@ class ArticleController {
   * @memberof ArticlesController
  */
   static async getArticles(req, res) {
+    const paginate = {
+      page: parseInt(req.query.page, 10) || 1,
+      limit: parseInt(req.query.limit, 10) || 100,
+    };
+    const offset = (paginate.page * paginate.limit) - paginate.limit;
     const options = {
       attributes: [
         'id',
@@ -120,12 +107,14 @@ class ArticleController {
         'description',
         'image',
       ],
+      limit: paginate.limit,
+      offset,
     };
 
     if (req.originalUrl === '/api/v1/articles/user') {
       options.where = {
         isDraft: false,
-        userId: 'req.decoded.id',
+        userId: req.decoded.id,
       };
     } else {
       options.where = {
@@ -142,8 +131,36 @@ class ArticleController {
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Internal server error'
+        message: 'Internal server error',
       });
+    }
+  }
+
+  /**
+  * @description Bookmark an Article
+  *
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  *
+  * @return {object} database response
+  * @memberof ArticleController
+ */
+  static async bookmarkArticle(req, res) {
+    const name = req.body.name || req.article.dataValues.title;
+    const userId = req.decoded.id;
+    const { articleId } = req.params;
+
+    try {
+      const createBookmark = await Bookmark.create({
+        name, userId, articleId
+      });
+      if (createBookmark) {
+        res.status(201).json({
+          message: 'Article successfully bookmarked',
+        });
+      }
+    } catch (error) {
+      res.status(500).json({ error });
     }
   }
 }
