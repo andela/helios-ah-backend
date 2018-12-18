@@ -10,6 +10,12 @@ export default (sequelize, DataTypes) => {
       tagName: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+          len: {
+            args: [2, 20],
+            msg: 'Name of tag should not exceed 20 characters'
+          }
+        }
       }
     }
   );
