@@ -24,7 +24,7 @@ export default {
       references: {
         model: 'Users',
         key: 'id',
-        as: 'follower',
+        as: 'follower'
       }
     },
     isActive: {
