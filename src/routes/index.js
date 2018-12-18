@@ -85,6 +85,18 @@ const routes = (app) => {
     validateUserInputs.validateCreateComment,
     CommentController.createComment
   );
+  app.put(
+    '/api/v1/articles/comments/:commentId',
+    validateUserInputs.validateCreateComment,
+    Authorization.checkToken,
+    CommentController.updateComment
+  );
+  app.put(
+    '/api/v1/articles/comments/childComments/:childCommentId',
+    validateUserInputs.validateCreateComment,
+    Authorization.checkToken,
+    CommentController.updateComment
+  );
   app.post(
     '/api/v1/comments/:commentId/childcomments',
     Authorization.checkToken,

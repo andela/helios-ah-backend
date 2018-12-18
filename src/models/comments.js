@@ -47,6 +47,10 @@ const CommentModel = (sequelize, DataTypes) => {
       foreignKey: 'commentId',
       onDelete: 'CASCADE'
     });
+    Comments.hasMany(models.CommentHistory, {
+      foreignKey: 'comment_id',
+      onDelete: 'CASCADE'
+    });
   };
   return Comments;
 };
