@@ -404,9 +404,16 @@ class UserController {
     try {
       const userFound = await Users.findOne({ where: { email, } });
       if (!userFound) {
-        return res.status(404).json({
+        return res.status(400).json({
           success: false,
           message: 'Email or password does not exist',
+        });
+      }
+      if (userFound.isVerified === false) {
+        return res.status(401).json({
+          success: false,
+          message: 'You had started the registration process already. '
+          + 'Please check your email to complete your registration.'
         });
       }
       if (userFound && userFound.verifyPassword(password)) {
@@ -435,7 +442,7 @@ class UserController {
         message: 'Email or password does not exist',
       });
     } catch (error) {
-      helperMethods.serverError(res);
+      return helperMethods.serverError(res);
     }
   }
 }

@@ -8,27 +8,10 @@ module.exports = {
     roleId: 1,
     password: 'myPassword',
     username: 'icecream',
+    isVerified: true,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }], {}),
-  /*
-      Add altering commands here.
-      Return a promise to correctly handle asynchronicity.
-
-      Example:
-      return queryInterface.bulkInsert('People', [{
-        name: 'John Doe',
-        isBetaMember: false
-      }], {});
-    */
-
 
   down: queryInterface => queryInterface.bulkDelete('Users', null, {})
-  /*
-      Add reverting commands here.
-      Return a promise to correctly handle asynchronicity.
-
-      Example:
-      return queryInterface.bulkDelete('People', null, {});
-    */
 };

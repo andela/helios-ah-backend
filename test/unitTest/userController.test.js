@@ -117,9 +117,9 @@ describe('Unit test for user controller', () => {
     });
   });
   describe('Test for logging in a user', () => {
+    const myReq = { body: { email: 'email', password: 'password' } };
+    const myRes = { status() {return this; }, json(obj) { return obj; } };
     it('should send a failed message when email does not exist', async () => {
-      const myReq = { body: { email: 'email', password: 'password' } };
-      const myRes = { status() {return this; }, json(obj) { return obj; } };
       const stubFindOne = sinon.stub(Users, 'findOne').returns(false);
       const response = await UserController.userLogin(myReq, myRes);
       expect(response).to.have.property('success');
@@ -129,15 +129,26 @@ describe('Unit test for user controller', () => {
       stubFindOne.restore();
     });
     it('should send a failed message when password is invalid', async () => {
-      const myReq = { body: { email: 'email', password: 'password' } };
-      const myRes = { status() {return this; }, json(obj) { return obj; } };
-      const stubVerifyPassword = sinon.stub(Users.prototype, 'verifyPassword').returns(false);
+      const stubVerifyPassword = sinon
+      .stub(Users.prototype, 'verifyPassword').returns(false);
       const response = await UserController.userLogin(myReq, myRes);
       expect(response).to.have.property('success');
       expect(response).to.have.property('message');
       expect(response.success).to.equal(false);
       expect(response.message).to.equal('Email or password does not exist');
       stubVerifyPassword.restore();
+    });
+    it('should check if the user is verified before logging in the user',
+    async () => {
+      const stubFindOne = sinon.stub(Users, 'findOne').returns({isVerified: false});
+      const response = await UserController.userLogin(myReq, myRes);
+      expect(response).to.have.property('success');
+      expect(response).to.have.property('message');
+      expect(response.success).to.equal(false);
+      expect(response.message).to
+      .equal('You had started the registration process already. '
+      + 'Please check your email to complete your registration.');
+      stubFindOne.restore();
     });
   });
 });
