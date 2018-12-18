@@ -61,6 +61,10 @@ const articleModel = (sequelize, DataTypes) => {
       through: 'Bookmark',
       foreignKey: 'articleId'
     });
+    Article.belongsToMany(models.tags, {
+      foreignKey: 'articleId',
+      through: 'articleTag',
+    });
   };
   return Article;
 };
