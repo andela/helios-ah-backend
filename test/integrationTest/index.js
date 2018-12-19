@@ -4,3 +4,4 @@ import './comments.test';
 import './followUser.test';
 import './unfollowUser.test';
 import './users.test'
+import './report.test.js'

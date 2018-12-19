@@ -131,6 +131,10 @@ export default (sequelize, DataTypes) => {
       through: 'Bookmark',
       foreignKey: 'userId'
     });
+    Users.hasMany(models.Report, {
+      foreignKey: 'userId',
+      as: 'report'
+    });
   };
   Users.prototype.verifyPassword = password => cryptData
     .decryptData(password, Users.password);
