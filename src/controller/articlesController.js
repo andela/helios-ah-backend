@@ -138,6 +138,36 @@ class ArticleController {
   }
 
   /**
+   *
+   * @param {object} req - request object
+   * @param {object} res - response object
+   * @returns {object} - server response
+   */
+  static async getArticleById(req, res) {
+    try {
+      const { articleId } = req.params;
+      const article = await Article.findByPk(articleId);
+      if (article) {
+        const views = article.dataValues.viewStats;
+        await article.update({
+          viewStats: views + 1
+        });
+        res.status(200).json({
+          success: true,
+          article
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: 'Article does not exist'
+        });
+      }
+    } catch (error) {
+      errorResponse.handleErrorResponse(res, error);
+    }
+  }
+
+  /**
   * @description Bookmark an Article
   *
   * @param {object} req - Request object

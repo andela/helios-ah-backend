@@ -136,6 +136,11 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
   );
+  app.get(
+    '/api/v1/article/:articleId',
+    validateUserInputs.uuidV4Validator,
+    ArticleController.getArticleById
+  );
   app.post(
     '/api/v1/articles/:articleId/likes',
     Authorization.checkToken,

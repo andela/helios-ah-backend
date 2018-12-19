@@ -1,8 +1,9 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/app';
-import { UserController } from '../../src/controller';
-import models from '../../src/models'
+import { UserController, ArticleController } from '../../src/controller';
+import models from '../../src/models';
+import sinon from 'sinon';
 import faker from 'faker';
 
 chai.use(chaiHttp);
@@ -17,7 +18,7 @@ describe('Integration tests for the article controller', () => {
       password: 'myPassword',
     }
     const response = await chai.request(app).post('/api/v1/auth/login')
-    .send(userDetails);
+      .send(userDetails);
     myToken = response.body.userDetails.token;
   });
   describe('Tests for creating an article', () => {
@@ -52,20 +53,20 @@ describe('Integration tests for the article controller', () => {
         image: 'https://someimage.uplodersite.com',
       };
       const response = await chai.request(app).post('/api/v1/articles')
-      .set('x-access-token', myToken).send(articleDetails);
-        expect(response.status).to.equal(201);
-        expect(response.body).to.have.property('articleCreated');
-        expect(response.body.articleCreated).to.have.property('title');
-        expect(response.body.articleCreated.title).to.equal(articleDetails.title);
-        expect(response.body.articleCreated).to.have.property('body');
-        expect(response.body.articleCreated.body).to.equal(articleDetails.body);
-        expect(response.body.articleCreated).to.have.property('description');
-        expect(response.body.articleCreated.body).to.equal(articleDetails.body);
-        expect(response.body.articleCreated).to.have.property('readTime');
-        expect(response.body.articleCreated.readTime).to.equal('less than 1min');
-        expect(response.body.articleCreated).to.have.property('image');
-        expect(response.body.articleCreated.image).to.equal(articleDetails.image);
-        expect(response.body.articleCreated.isDraft).to.equal(true);
+        .set('x-access-token', myToken).send(articleDetails);
+      expect(response.status).to.equal(201);
+      expect(response.body).to.have.property('articleCreated');
+      expect(response.body.articleCreated).to.have.property('title');
+      expect(response.body.articleCreated.title).to.equal(articleDetails.title);
+      expect(response.body.articleCreated).to.have.property('body');
+      expect(response.body.articleCreated.body).to.equal(articleDetails.body);
+      expect(response.body.articleCreated).to.have.property('description');
+      expect(response.body.articleCreated.body).to.equal(articleDetails.body);
+      expect(response.body.articleCreated).to.have.property('readTime');
+      expect(response.body.articleCreated.readTime).to.equal('less than 1min');
+      expect(response.body.articleCreated).to.have.property('image');
+      expect(response.body.articleCreated.image).to.equal(articleDetails.image);
+      expect(response.body.articleCreated.isDraft).to.equal(true);
     });
     it('should add calculated read time to the article', async () => {
       const articleDetails = {
@@ -76,20 +77,20 @@ describe('Integration tests for the article controller', () => {
       };
       const readTime = Math.round(articleDetails.body.split(' ').length / 200);
       const response = await chai.request(app).post('/api/v1/articles')
-      .set('x-access-token', myToken).send(articleDetails);
-        expect(response.status).to.equal(201);
-        expect(response.body).to.have.property('articleCreated');
-        expect(response.body.articleCreated).to.have.property('title');
-        expect(response.body.articleCreated.title).to.equal(articleDetails.title);
-        expect(response.body.articleCreated).to.have.property('body');
-        expect(response.body.articleCreated.body).to.equal(articleDetails.body);
-        expect(response.body.articleCreated).to.have.property('description');
-        expect(response.body.articleCreated.body).to.equal(articleDetails.body);
-        expect(response.body.articleCreated).to.have.property('readTime');
-        expect(response.body.articleCreated.readTime).to.equal(`about ${readTime}min`);
-        expect(response.body.articleCreated).to.have.property('image');
-        expect(response.body.articleCreated.image).to.equal(articleDetails.image);
-        expect(response.body.articleCreated.isDraft).to.equal(true);
+        .set('x-access-token', myToken).send(articleDetails);
+      expect(response.status).to.equal(201);
+      expect(response.body).to.have.property('articleCreated');
+      expect(response.body.articleCreated).to.have.property('title');
+      expect(response.body.articleCreated.title).to.equal(articleDetails.title);
+      expect(response.body.articleCreated).to.have.property('body');
+      expect(response.body.articleCreated.body).to.equal(articleDetails.body);
+      expect(response.body.articleCreated).to.have.property('description');
+      expect(response.body.articleCreated.body).to.equal(articleDetails.body);
+      expect(response.body.articleCreated).to.have.property('readTime');
+      expect(response.body.articleCreated.readTime).to.equal(`about ${readTime}min`);
+      expect(response.body.articleCreated).to.have.property('image');
+      expect(response.body.articleCreated.image).to.equal(articleDetails.image);
+      expect(response.body.articleCreated.isDraft).to.equal(true);
     });
     it('should send an error message when image field is not a URL', async () => {
       const articleDetails = {
@@ -190,6 +191,23 @@ describe('Integration tests for the article controller', () => {
         expect(response.body.message)
           .to.equal('Title should not exceed 80 characters');
       });
+    it('should send an error message when a user tries to get an article that does not exist',
+      async () => {
+        const response = await chai.request(app).get('/api/v1/article/17d2ec19-7d75-4585-bb91-4c801afba400');
+        expect(response.status).to.equal(404);
+        expect(response.body).to.have.property('message');
+        expect(response.body.message).to.equal(
+          'Article does not exist'
+        );
+      });
+    it('should send an article when a user tries to get an article that exists',
+      async () => {
+        const response = await chai.request(app).get(`/api/v1/article/${articleId}`);
+        expect(response.status).to.equal(200);
+        expect(response.body).to.have.property('success');
+        expect(response.body.success).to.equal(true);
+        expect(response.body.article.viewStats).to.equal(1);
+      });
     it('should send an error message when description field is too long',
       async () => {
         const articleDetails = {
@@ -210,11 +228,11 @@ describe('Integration tests for the article controller', () => {
       });
     it('should get all articles', async () => {
       const response = await chai.request(app).get('/api/v1/articles')
-      .set('x-access-token', myToken);
-        expect(response.status).to.equal(200);
-        expect(response.body).to.have.property('articles');
-        expect(response.body.articles).to.be.an('array');
-        expect(response.body.success).to.equal(true);
+        .set('x-access-token', myToken);
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('articles');
+      expect(response.body.articles).to.be.an('array');
+      expect(response.body.success).to.equal(true);
     });
   });
   describe('Test update article', () => {
@@ -225,24 +243,24 @@ describe('Integration tests for the article controller', () => {
       image: 'https://someimage.uplodersite.com',
     };
     before('create article before updating article', async () => {
-      const attributes = [ 'userId', 'id']
+      const attributes = ['userId', 'id']
       const user = await Article.findAll({ attributes });
       userId = user[0].dataValues.userId;
     });
     it('should update an article with the articles Id', async () => {
       const response = await chai.request(app).put(`/api/v1/articles/${articleId}`)
-      .set('x-access-token', myToken).send(articleDetails);
-        expect(response.status).to.equal(200);
-        expect(response.body).to.have.property('articleUpdated');
-        expect(response.body.success).to.equal(true);
+        .set('x-access-token', myToken).send(articleDetails);
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('articleUpdated');
+      expect(response.body.success).to.equal(true);
     });
     it('should reject update on article with wrong article Id', async () => {
       const response = await chai.request(app).put('/api/v1/articles/773be5c1-1aa5-40d4-bee9-6c47ea903741')
-      .set('x-access-token', myToken).send(articleDetails);
-        expect(response.status).to.equal(400);
-        expect(response.body).to.have.property('message');
-        expect(response.body.message).to.equal('Provide a valid article Id');
-        expect(response.body.success).to.equal(false);
+        .set('x-access-token', myToken).send(articleDetails);
+      expect(response.status).to.equal(400);
+      expect(response.body).to.have.property('message');
+      expect(response.body.message).to.equal('Provide a valid article Id');
+      expect(response.body.success).to.equal(false);
     });
   });
   describe('Test Pagination', () => {
@@ -270,19 +288,19 @@ describe('Integration tests for the article controller', () => {
     });
     it('should get page 1 of 5 articles', async () => {
       const response = await chai.request(app).get('/api/v1/articles?page=1&limit=5')
-      .set('x-access-token', myToken);
-        expect(response.status).to.equal(200);
-        expect(response.body).to.have.property('articles');
-        expect(response.body.articles.length).to.equal(5);
-        expect(response.body.success).to.equal(true);
+        .set('x-access-token', myToken);
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('articles');
+      expect(response.body.articles.length).to.equal(5);
+      expect(response.body.success).to.equal(true);
     });
     it('should get page 1 of 5 articles', async () => {
       const response = await chai.request(app).get('/api/v1/articles?page=2&limit=10')
-      .set('x-access-token', myToken);
-        expect(response.status).to.equal(200);
-        expect(response.body).to.have.property('articles');
-        expect(response.body.articles.length).to.equal(10);
-        expect(response.body.success).to.equal(true);
+        .set('x-access-token', myToken);
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('articles');
+      expect(response.body.articles.length).to.equal(10);
+      expect(response.body.success).to.equal(true);
     });
   })
 });
