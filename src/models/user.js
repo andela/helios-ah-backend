@@ -126,10 +126,22 @@ export default (sequelize, DataTypes) => {
     Users.belongsTo(models.Roles, {
       foreignKey: 'roleId'
     });
+    Users.hasMany(models.Likes, {
+      foreignKey: 'articleId',
+      as: 'likes'
+    });
+    Users.hasMany(models.Ratings, {
+      foreignKey: 'articleId',
+      as: 'ratings'
+    });
     Users.belongsToMany(models.Article, {
       as: 'reader',
       through: 'Bookmark',
       foreignKey: 'userId'
+    });
+    Users.hasMany(models.Report, {
+      foreignKey: 'userId',
+      as: 'report'
     });
   };
   Users.prototype.verifyPassword = password => cryptData

@@ -1,20 +1,26 @@
-
 import {
   UserController,
   ArticleController,
-  CommentController
+  LikesController,
+  RatingsController,
+  CommentController,
+  ReportController
 } from '../controller';
 
 import {
   validateUserInputs,
   follower
 } from '../utilities';
-import Authorization from '../middlewares/Authorization';
-import userMiddleware from '../middlewares/User';
-import checkArticleExists from '../middlewares/checkArticleExists';
-import checkBookmarkExists from '../middlewares/checkBookmarkExists';
-import findDatabaseField from '../middlewares/FindDatabaseField';
 
+import {
+  userMiddleware,
+  checkArticleExists,
+  ValidateArticle,
+  Authorization,
+  checkBookmarkExists,
+  findDatabaseField,
+  checkFeedback
+} from '../middleware';
 
 /**
  * Handles request
@@ -131,6 +137,38 @@ const routes = (app) => {
     UserController.userRole
   );
   app.post(
+    '/api/v1/articles/:articleId/likes',
+    Authorization.checkToken,
+    checkArticleExists,
+    ValidateArticle.checkArticleNotDraft,
+    checkFeedback.checkLikesExist,
+    LikesController.likeArticle
+  );
+  app.put(
+    '/api/v1/articles/:articleId/likes',
+    Authorization.checkToken,
+    checkArticleExists,
+    checkFeedback.checkLikesNotExist,
+    LikesController.updateLikes
+  );
+  app.post(
+    '/api/v1/articles/:articleId/ratings',
+    Authorization.checkToken,
+    checkArticleExists,
+    ValidateArticle.checkArticleNotDraft,
+    checkFeedback.checkRatingExist,
+    validateUserInputs.validateRating,
+    RatingsController.rateArticle
+  );
+  app.put(
+    '/api/v1/articles/:articleId/ratings',
+    Authorization.checkToken,
+    checkArticleExists,
+    checkFeedback.checkRatingNotExist,
+    validateUserInputs.validateRating,
+    RatingsController.updateRating
+  );
+  app.post(
     '/api/v1/articles/:articleId/bookmark',
     Authorization.checkToken,
     findDatabaseField.UserInToken,
@@ -143,6 +181,12 @@ const routes = (app) => {
     '/api/v1/articles',
     Authorization.checkToken,
     ArticleController.getArticles,
+  );
+  app.post(
+    '/api/v1/articles/:articleId/report',
+    Authorization.checkToken,
+    validateUserInputs.validateReport,
+    ReportController.reportArticle
   );
 };
 

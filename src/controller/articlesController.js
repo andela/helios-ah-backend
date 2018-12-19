@@ -19,7 +19,7 @@ class ArticleController {
  */
   static async createArticle(req, res) {
     const {
-      title, body, description, image
+      title, body, description, image, isDraft
     } = req.body;
     try {
       const articleCreated = await Article.create({
@@ -30,6 +30,7 @@ class ArticleController {
           : `about ${Math.round(body.split(' ').length / 200)}min`,
         image,
         userId: req.decoded.id,
+        isDraft: isDraft || 'true'
       });
       if (articleCreated) {
         res.status(201).json({
@@ -53,7 +54,7 @@ class ArticleController {
  */
   static async updateArticle(req, res) {
     const {
-      title, body, description, image
+      title, body, description, image, isDraft
     } = req.body;
     const options = {
       where: {
@@ -67,6 +68,7 @@ class ArticleController {
         body,
         description,
         image,
+        isDraft: isDraft || 'true'
       }, options);
       if (articleUpdated[0] === 1) {
         res.status(200).json({

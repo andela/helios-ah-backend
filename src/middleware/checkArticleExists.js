@@ -1,4 +1,5 @@
 import models from '../models';
+import { helperMethods } from '../utilities';
 
 const { Article } = models;
 
@@ -19,19 +20,17 @@ const checkArticleExists = async (req, res, next) => {
   try {
     const { articleId } = await req.params;
     const article = await Article.findByPk(articleId);
-
     if (article) {
       req.article = article;
       next();
     } else {
-      res.status(404).json({
+      return res.status(404).json({
+        success: false,
         message: 'Article does not exist'
       });
     }
   } catch (error) {
-    res.status(500).json({
-      message: 'Internal Server Error'
-    });
+    return helperMethods.serverError(res);
   }
 };
 export default checkArticleExists;

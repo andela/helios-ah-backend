@@ -22,6 +22,18 @@ module.exports = {
     isVerified: true,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
+  }, {
+    id: 'cccd8ee7-bc98-4a8e-a832-ca116d6fff0b',
+    username: 'JaneDoeReporter',
+    password: 'password',
+    email: 'janedoereporter@wemail.com',
+    firstName: 'JaneReporter',
+    lastName: 'DoeReporter',
+    bio: 'Finds and report articles',
+    roleId: 1,
+    isVerified: true,
+    createdAt: new Date(Date.now()),
+    updatedAt: new Date(Date.now())
   }], {}),
 
   down: queryInterface => queryInterface.bulkDelete('Users', null, {})
