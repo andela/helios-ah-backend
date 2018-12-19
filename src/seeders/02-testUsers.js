@@ -11,9 +11,19 @@ module.exports = {
     isVerified: true,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
-  },
-  {
-    id: 'dccd8ee7-bc98-4a8e-a832-ca116d5fff0a',
+  }, {
+    id: 'e7eaef9b-c3d9-40fa-89e1-26eae190f1aa',
+    firstName: 'Mike',
+    lastName: 'Nugget',
+    email: 'mike@myzone.com',
+    roleId: 1,
+    password: '12345',
+    username: 'shangai',
+    isVerified: true,
+    createdAt: new Date(Date.now()),
+    updatedAt: new Date(Date.now())
+  }, {
+    id: 'cccd8ee7-bc98-4a8e-a832-ca116d6fff0b',
     username: 'JaneDoeReporter',
     password: 'password',
     email: 'janedoereporter@wemail.com',
@@ -24,8 +34,7 @@ module.exports = {
     isVerified: true,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
-  }
-  ], {}),
+  }], {}),
 
   down: queryInterface => queryInterface.bulkDelete('Users', null, {})
 };

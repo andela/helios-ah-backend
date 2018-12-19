@@ -1,3 +1,9 @@
+import models from '../models';
+import accessConstant from '../constants/access';
+
+const {
+  Users, Comments, ChildComments, Article
+} = models;
 /**
  * A method used to send server errors
  * @param {object} res - HTTP response object
@@ -31,8 +37,44 @@ const requestSuccessful = (res, message) => res.status(200).json({
   message: message || 'request completed successfully',
 });
 
+/**
+ * A method used to send sequelize validation error
+ * @param {string} schema - DataBase Schema
+ * @param {string} itemId - Schema item
+ * @param {object} userId - The user trying to modify data.
+ * @returns {object} res - The HTTP response object
+ */
+const checkAcces = async (schema, itemId, userId) => {
+  const options = {
+    where: {
+      id: itemId,
+      userId
+    }
+  };
+  let user;
+  switch (schema) {
+    case accessConstant.ARTICLE:
+      user = await Article.count(options);
+      break;
+    case accessConstant.COMMENT:
+      user = await Comments.count(options);
+      break;
+    case accessConstant.CHILD:
+      user = await ChildComments.count(options);
+      break;
+    case accessConstant.USER:
+      user = await Users.count(options);
+      break;
+    default:
+      user = 0;
+      break;
+  }
+  return user;
+};
+
 export default {
   serverError,
   sequelizeValidationError,
   requestSuccessful,
+  checkAcces,
 };
