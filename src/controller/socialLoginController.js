@@ -67,6 +67,9 @@ class SocialLogin {
     try {
       return SocialLogin.verifyAndLoginUser(verifyWithObjectProperties);
     } catch (error) {
+      if (error.errors) {
+        return helperMethods.sequelizeValidationError(res, error);
+      }
       return helperMethods.serverError(res);
     }
   }
@@ -89,6 +92,9 @@ class SocialLogin {
     try {
       return SocialLogin.verifyAndLoginUser(verifyWithObjectProperties);
     } catch (error) {
+      if (error.errors) {
+        return helperMethods.sequelizeValidationError(res, error);
+      }
       return helperMethods.serverError(res);
     }
   }
@@ -111,6 +117,9 @@ class SocialLogin {
     try {
       return SocialLogin.verifyAndLoginUser(verifyWithObjectProperties);
     } catch (error) {
+      if (error.errors) {
+        return helperMethods.sequelizeValidationError(res, error);
+      }
       return helperMethods.serverError(res);
     }
   }
