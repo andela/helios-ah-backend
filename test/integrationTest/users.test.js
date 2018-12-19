@@ -139,7 +139,7 @@ describe('Integration tests for the user controller', () => {
     async () => {
       const userDetails = {
         email: 'yomizy@wizzy.com',
-        password: 'myPasswords',
+        password: 'password',
       }
       const response = await chai.request(app).post('/api/v1/auth/login')
       .send(userDetails);

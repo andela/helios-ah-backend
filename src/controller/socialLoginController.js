@@ -14,12 +14,12 @@ class SocialLogin {
    * @returns {object} res -
    */
   static async verifyAndLoginUser(obj) {
-    let options;
+    const options = {};
     try {
       if (obj.socialMedia === 'twitter') {
-        options = { where: { username: obj.profile.username } };
+        options.where = { username: obj.profile.username };
       } else {
-        options = { where: { [obj.verifyWith]: obj.profile.emails[0].value } };
+        options.where = { [obj.verifyWith]: obj.profile.emails[0].value };
       }
       const userFound = await Users.findOne(options);
       if (userFound && userFound.isVerified === false) {

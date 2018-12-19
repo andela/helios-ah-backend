@@ -1,5 +1,6 @@
 import { Op } from 'sequelize';
 import models from '../models';
+import { helperMethods } from '../utilities';
 
 const { Bookmark } = models;
 
@@ -36,9 +37,7 @@ const checkBookmarkExists = async (req, res, next) => {
       next();
     }
   } catch (error) {
-    res.status(500).json({
-      message: 'Internal Server Error'
-    });
+    return helperMethods.serverError(res);
   }
 };
 export default checkBookmarkExists;

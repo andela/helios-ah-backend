@@ -15,7 +15,7 @@ describe('Integration tests for the article controller', () => {
   before('Create token to validate routes', async () => {
     const userDetails = {
       email: 'yomizy@wizzy.com',
-      password: 'myPassword',
+      password: 'password',
     }
     const response = await chai.request(app).post('/api/v1/auth/login')
     .send(userDetails);

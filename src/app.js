@@ -6,8 +6,8 @@ import logger from 'morgan';
 import passport from 'passport';
 import dotenv from 'dotenv';
 import session from 'express-session';
-import routes from './routes/index';
 import './utilities/socialAuthStrategies';
+import routes from './routes';
 
 // Create global app object
 const app = express();

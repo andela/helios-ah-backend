@@ -116,6 +116,7 @@ describe('Unit tests for the social login controller', () => {
       const spyGetToken = sinon.spy(Authentication, 'getToken');
       const response = await SocialLoginController
       .verifyAndLoginUser(objectToVerifyWith);
+      console.log('respnse is ==> ', response);
       expect(response.success).to.equal(true);
       expect(response).to.have.property('message');
       expect(response.message).to

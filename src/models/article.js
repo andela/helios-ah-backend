@@ -1,4 +1,3 @@
-
 const articleModel = (sequelize, DataTypes) => {
   const Article = sequelize.define('Article', {
     id: {
@@ -64,6 +63,14 @@ const articleModel = (sequelize, DataTypes) => {
   Article.associate = (models) => {
     Article.belongsTo(models.Users, {
       foreignKey: 'userId',
+    });
+    Article.hasMany(models.Ratings, {
+      foreignKey: 'articleId',
+      as: 'Ratings'
+    });
+    Article.hasMany(models.Likes, {
+      foreignKey: 'articleId',
+      as: 'Likes'
     });
     Article.belongsToMany(models.Users, {
       as: 'article',
