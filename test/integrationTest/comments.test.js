@@ -2,26 +2,23 @@ import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/app';
 import { Authentication } from '../../src/utilities';
+import models from '../../src/models';
 
 chai.use(chaiHttp);
+const { Comments, ChildComments } = models;
 const { expect } = chai;
 
 describe('Integration tests for comments controller', () => {
-    let myToken;
-    let articleId;
-    let commentId;
+    let myToken, anotherToken, articleId, commentId;
 
-    before('Create a user before running tests', async () => {
+    before('Login a user before running tests', async () => {
         const userDetails = {
-            id: 'dccd8ee7-bc98-4a8e-a832-ca116c5fff0a',
-            username: 'SamDoe',
-            password: 'password',
-            email: 'samdoe@wemail.com',
-            firstName: 'Sam',
-            lastName: 'Doe',
-            bio: 'sleeps and eat a lot',
+          email: 'yomizy@wizzy.com',
+          password: 'password',
         }
-        myToken  = await Authentication.getToken(userDetails);
+        const response = await chai.request(app).post('/api/v1/auth/login')
+            .send(userDetails);
+        myToken = response.body.userDetails.token;
     });
 
     describe('Tests for creating a comment for an article', () => {
@@ -67,6 +64,7 @@ describe('Integration tests for comments controller', () => {
             expect(response.body.success).to.equal(true);
             expect(response.body.commentCreated.commentText).to.equal('I like this article very much.');
         });
+        
         it('should send an error message when the required body field is missing', async () => {
             const response = await chai.request(app).post(`/api/v1/articles/${articleId}/comments`).
                 set('x-access-token', myToken).send(emptyComment);
@@ -128,5 +126,112 @@ describe('Integration tests for comments controller', () => {
                 expect(response.body.message).to.equal('Text should be between 3 and 250 characters');
             });
         });
+    });
+
+    describe('Test to update comment', () => {
+      let data;
+      before('create an article before running this test suite', async () => {
+        const userDetails = {
+          email: 'mike@myzone.com',
+          password: 'password',
+        }
+        const response = await chai.request(app).post('/api/v1/auth/login')
+            .send(userDetails);
+        anotherToken = response.body.userDetails.token;
+        const options = {
+          attributes: [
+            'id',
+            'commentText',
+            'userId',
+            'articleId'
+          ]
+        };
+        data = await Comments.findAll(options);
+      });
+      it('should update comment', async () => {
+        const commentDetails = {
+          commentText: 'This is just an update.'
+        }
+        const response = await chai.request(app).put(`/api/v1/articles/comments/${data[0].dataValues.id}`).
+            set('x-access-token', myToken).send(commentDetails);
+            expect(response.status).to.equal(200);
+            expect(response.body).to.have.property('success');
+            expect(response.body).to.have.property('updatedComment');
+            expect(response.body.success).to.equal(true);
+      });
+      it('should reject update comment for user with no access', async () => {
+        const commentDetails = {
+          commentText: 'This is just an update.'
+        }
+        const response = await chai.request(app).put(`/api/v1/articles/comments/${data[0].dataValues.id}`).
+            set('x-access-token', anotherToken).send(commentDetails);
+            expect(response.status).to.equal(401);
+            expect(response.body).to.have.property('success');
+            expect(response.body).to.have.property('message');
+            expect(response.body.message).to.equal('You don\'t have access to modify this record');
+            expect(response.body.success).to.equal(false);
+      });
+      it('should reject update comment for user with no access', async () => {
+        const commentDetails = {
+          commentText: 'This is just an update.'
+        }
+        const response = await chai.request(app).put(`/api/v1/articles/comments/123user`).
+            set('x-access-token', myToken).send(commentDetails);
+            expect(response.status).to.equal(400);
+            expect(response.body).to.have.property('success');
+            expect(response.body).to.have.property('message');
+            expect(response.body.message).to.equal('Invalid Id');
+            expect(response.body.success).to.equal(false);
+      });
+    });
+
+    describe('Test to update child comment', () => {
+      let data;
+      before('create an article before running this test suite', async () => {
+        const options = {
+          attributes: [
+            'id',
+            'commentText',
+            'userId',
+            'commentId'
+          ]
+        };
+        data = await ChildComments.findAll(options);
+      });
+      it('should update child comment', async () => {
+        const commentDetails = {
+          commentText: 'This is just an update.'
+        }
+        const response = await chai.request(app).put(`/api/v1/articles/comments/childComments/${data[0].dataValues.id}`).
+            set('x-access-token', myToken).send(commentDetails);
+            expect(response.status).to.equal(200);
+            expect(response.body).to.have.property('success');
+            expect(response.body).to.have.property('updatedComment');
+            expect(response.body.success).to.equal(true);
+      });
+      it('should reject update comment for user with no access', async () => {
+        const commentDetails = {
+          commentText: 'This is just an update.'
+        }
+        const response = await chai.request(app).put(`/api/v1/articles/comments/childComments/${data[0].dataValues.id}`).
+            set('x-access-token', anotherToken).send(commentDetails);
+            expect(response.status).to.equal(401);
+            expect(response.body).to.have.property('success');
+            expect(response.body).to.have.property('message');
+            expect(response.body.message).to.equal('You don\'t have access to modify this record');
+            expect(response.body.success).to.equal(false);
+      });
+      it('should reject update comment for user with no access', async () => {
+        const commentDetails = {
+          commentText: 'This is just an update.'
+        }
+        const response = await chai.request(app).put(`/api/v1/articles/comments/childComments/123user`).
+            set('x-access-token', myToken).send(commentDetails);
+            expect(response.status).to.equal(400);
+            expect(response.body).to.have.property('success');
+            expect(response.body).to.have.property('message');
+            expect(response.body.message).to.equal('Invalid Id');
+            expect(response.body.success).to.equal(false);
+      });
     });
 });
