@@ -15,34 +15,38 @@ class SocialLogin {
    */
   static async verifyAndLoginUser(obj) {
     let options;
-    if (obj.socialMedia === 'twitter') {
-      options = { where: { username: obj.profile.username } };
-    } else {
-      options = { where: { [obj.verifyWith]: obj.profile.emails[0].value } };
-    }
-    const userFound = await Users.findOne(options);
-    if (userFound && userFound.isVerified === false) {
+    try {
+      if (obj.socialMedia === 'twitter') {
+        options = { where: { username: obj.profile.username } };
+      } else {
+        options = { where: { [obj.verifyWith]: obj.profile.emails[0].value } };
+      }
+      const userFound = await Users.findOne(options);
+      if (userFound && userFound.isVerified === false) {
+        return obj.res.status(400).json({
+          success: false,
+          message: 'You had started the registration process earlier. '
+          + 'Please check your email to complete your registration.'
+        });
+      }
+      if (userFound) {
+        const token = await Authentication.getToken(userFound);
+        return obj.res.status(200).json({
+          success: true,
+          message: `Social login via ${obj.socialMedia} was successful`,
+          id: userFound.id,
+          username: userFound.username,
+          email: userFound.email,
+          token,
+        });
+      }
       return obj.res.status(400).json({
         success: false,
-        message: 'You had started the registration process earlier. '
-        + 'Please check your email to complete your registration.'
+        message: 'You are not registered on this app. Please signup.',
       });
+    } catch (error) {
+      return helperMethods.serverError(obj.res);
     }
-    if (userFound) {
-      const token = await Authentication.getToken(userFound);
-      return obj.res.status(200).json({
-        success: true,
-        message: `Social login via ${obj.socialMedia} was successful`,
-        id: userFound.id,
-        username: userFound.username,
-        email: userFound.email,
-        token,
-      });
-    }
-    return obj.res.status(400).json({
-      success: false,
-      message: 'You are not registered on this app. Please signup.',
-    });
   }
 
   /**
