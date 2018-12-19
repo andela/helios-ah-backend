@@ -115,7 +115,7 @@ class UserController {
     if (foundUser) {
       const userUpdated = await foundUser.update({
         isVerified: true || foundUser.isVerified,
-      });
+      }, { hooks: false });
       if (userUpdated) {
         const isEmailSent = await
         SendEmail.confirmRegistrationComplete(userUpdated.email);
@@ -421,7 +421,8 @@ class UserController {
           + 'Please check your email to complete your registration.'
         });
       }
-      if (userFound && userFound.verifyPassword(password)) {
+      const isPasswordCorrect = await userFound.verifyPassword(password);
+      if (userFound && isPasswordCorrect) {
         const tokenCreated = await Authentication.getToken({
           id: userFound.id,
           username: userFound.username,

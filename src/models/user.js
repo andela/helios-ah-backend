@@ -137,7 +137,11 @@ export default (sequelize, DataTypes) => {
       as: 'report'
     });
   };
-  Users.prototype.verifyPassword = password => cryptData
-    .decryptData(password, Users.password);
+  // eslint-disable-next-line func-names
+  Users.prototype.verifyPassword = async function (clearPassword) {
+    const isPasswordCorrect = await cryptData
+      .decryptData(clearPassword, this.password);
+    return isPasswordCorrect;
+  };
   return Users;
 };
