@@ -104,32 +104,35 @@ class UserController {
   * @memberof UserController
  */
   static async completeRegistration(req, res) {
-    const verifiedToken = await Authentication.verifyToken(req.query.token);
-    if (!verifiedToken.success) {
-      return res.status(400).json({
-        success: false,
-        message: 'Could not complete your registration. Please re-register.'
-      });
-    }
-    const foundUser = await Users.findByPk(verifiedToken.id);
-    if (foundUser) {
-      const userUpdated = await foundUser.update({
-        isVerified: true || foundUser.isVerified,
-      }, { hooks: false });
-      if (userUpdated) {
-        const isEmailSent = await
-        SendEmail.confirmRegistrationComplete(userUpdated.email);
-        if (isEmailSent) {
-          const tokenCreated = await Authentication.getToken(userUpdated);
-          return res.status(201).json({
-            success: true,
-            message: `User ${userUpdated.username} created successfully`,
-            id: userUpdated.id,
-            username: userUpdated.username,
-            token: tokenCreated,
-          });
+    try {
+      const foundUser = await Users.findByPk(req.decoded.id);
+      if (foundUser) {
+        const userUpdated = await foundUser.update({
+          isVerified: true || foundUser.isVerified,
+        }, { hooks: false });
+        if (userUpdated) {
+          const isEmailSent = await
+          SendEmail.confirmRegistrationComplete(userUpdated.email);
+          if (isEmailSent) {
+            const tokenCreated = await Authentication.getToken(userUpdated);
+            return res.status(201).json({
+              success: true,
+              message: `User ${userUpdated.username} created successfully`,
+              id: userUpdated.id,
+              username: userUpdated.username,
+              token: tokenCreated,
+            });
+          }
         }
       }
+      return helperMethods
+        .serverError(res, 'Could not complete your registration. '
+        + 'Please re-register.');
+    } catch (error) {
+      if (error.errors) {
+        return helperMethods.sequelizeValidationError(res, error);
+      }
+      return helperMethods.serverError(res);
     }
   }
 

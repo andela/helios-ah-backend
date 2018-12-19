@@ -1,5 +1,6 @@
 import sinon from 'sinon';
 import chai from 'chai';
+import './'
 import { UserController } from '../../src/controller';
 import { Authentication, sendEmail } from '../../src/utilities';
 import models from '../../src/models';
@@ -21,6 +22,9 @@ const req = {
   },
   params: {
     userId: '4323432',
+  },
+  decoded: {
+    id: '2343-34564-34565-45-44-54er5t54'
   }
 }
 
@@ -67,18 +71,16 @@ describe('Unit test for user controller', () => {
   });
   describe('Test complete a user\'s registration', () => {
     it('should send error message when token is invalid', async () => {
-      const stubVerifyToken = sinon.stub(Authentication, 'verifyToken').returns(false);
+      const stubFindByPk = sinon.stub(Users, 'findByPk').returns(false);
       const response = await UserController.completeRegistration(req, res);
-      expect(stubVerifyToken.called).to.equal(true);
+      expect(stubFindByPk.called).to.equal(true);
       expect(response.success).to.equal(false);
       expect(response.message).to.equal(
         'Could not complete your registration. Please re-register.'
       );
-      stubVerifyToken.restore();
+      stubFindByPk.restore();
     });
     it('should send a success message when registration is complete', async() => {
-      const stubVerifyToken = sinon.
-      stub(Authentication, 'verifyToken').returns({ success: true });
       const stubFindByPk = sinon.stub(Users, 'findByPk').returns(foundUser);
       const stubGetToken = sinon.stub(Authentication, 'getToken')
       .returns('myRandomStringToken');
@@ -90,7 +92,6 @@ describe('Unit test for user controller', () => {
       expect(response.id).to.equal('dccd8ee7-bc98-4a8e-a832-ca116c5fff0a');
       expect(response.username).to.equal('myUserName');
       expect(response.token).to.equal('myRandomStringToken');
-      stubVerifyToken.restore();
       stubFindByPk.restore();
       stubGetToken.restore();
       stubSendEmail.restore();

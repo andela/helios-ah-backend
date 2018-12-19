@@ -39,6 +39,7 @@ const routes = (app) => {
   });
   app.get(
     '/api/v1/auth/complete_reg/',
+    Authorization.checkToken,
     UserController.completeRegistration
   );
   app.post(
