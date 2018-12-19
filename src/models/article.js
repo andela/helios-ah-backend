@@ -70,6 +70,10 @@ const articleModel = (sequelize, DataTypes) => {
       through: 'Bookmark',
       foreignKey: 'articleId'
     });
+    Article.hasMany(models.Report, {
+      foreignKey: 'articleId',
+      as: 'report'
+    });
   };
   return Article;
 };

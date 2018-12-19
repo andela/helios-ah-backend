@@ -7,3 +7,4 @@ import './socialLogin.test';
 import './authentication.test';
 import './sendEmail.test';
 import './followerTest';
+import './reportModel.test';
