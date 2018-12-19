@@ -40,6 +40,24 @@ module.exports = {
       allowNull: false,
       defaultValue: 1,
     },
+    ratings: {
+      type: Sequelize.UUID,
+      onDelete: 'CASCADE',
+      reference: {
+        model: 'Likes',
+        key: 'userId',
+        as: 'likes',
+      }
+    },
+    likes: {
+      type: Sequelize.UUID,
+      onDelete: 'CASCADE',
+      reference: {
+        model: 'Likes',
+        key: 'userId',
+        as: 'likes',
+      }
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

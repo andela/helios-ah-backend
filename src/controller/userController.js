@@ -159,7 +159,7 @@ class UserController {
         });
       }
     } catch (error) {
-      res.status(500).send(error);
+      return helperMethods.serverError(res);
     }
   }
 
@@ -250,10 +250,7 @@ class UserController {
         authors,
       });
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-      });
+      return helperMethods.serverError(res);
     }
   }
 
@@ -311,10 +308,7 @@ class UserController {
         error: 'User with email not found'
       });
     } catch (error) {
-      return res.status(500).send({
-        status: 'error',
-        error: 'Internal Server Error'
-      });
+      return helperMethods.serverError(res);
     }
   }
 
@@ -329,7 +323,7 @@ class UserController {
   static async resetPassword(req, res) {
     if (req.foundUser) {
       const payload = await Authentication.verifyToken(req.query.token);
-      if (payload) {
+      if (payload.success) {
         const user = await Users.findByPk(payload.id);
         if (!req.body.password) {
           return res.status(400).send({
@@ -384,10 +378,7 @@ class UserController {
         });
       }
     } catch (error) {
-      res.status(500).json({
-        message: 'Internal server error',
-        success: false,
-      });
+      return helperMethods.serverError(res);
     }
   }
 
