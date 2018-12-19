@@ -18,23 +18,35 @@ class Authorization {
     let hasAccess;
     if (req.params.articleId) {
       hasAccess = await Access
-        .checkAcces(accessConstant.ARTICLE,
-          req.params.articleId, req.decoded.id);
+        .checkAcces(
+          accessConstant.ARTICLE,
+          req.params.articleId,
+          req.decoded.id
+        );
     }
     if (req.params.commentId) {
       hasAccess = await Access
-        .checkAcces(accessConstant.COMMENT,
-          req.params.commentId, req.decoded.id);
+        .checkAcces(
+          accessConstant.COMMENT,
+          req.params.commentId,
+          req.decoded.id
+        );
     }
     if (req.params.childCommentId) {
       hasAccess = await Access
-        .checkAcces(accessConstant.CHILD,
-          req.params.childCommentId, req.decoded.id);
+        .checkAcces(
+          accessConstant.CHILD,
+          req.params.childCommentId,
+          req.decoded.id
+        );
     }
     if (req.params.userId) {
       hasAccess = await Access
-        .checkAcces(accessConstant.USER,
-          req.params.userId, req.decoded.id);
+        .checkAcces(
+          accessConstant.USER,
+          req.params.userId,
+          req.decoded.id
+        );
     }
     if (hasAccess) {
       return next();
