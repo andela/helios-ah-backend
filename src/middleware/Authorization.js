@@ -1,5 +1,6 @@
 import Auth from '../utilities/authentication';
 import Access from '../utilities/helperMethods';
+import accessConstant from '../constants/access';
 /**
  * Class representing the Authentication methods
  * @class Authenticate
@@ -14,24 +15,22 @@ class Authorization {
    * @returns {null} - returns object
    */
   static async hasWriteAccess(req, res, next) {
-    const ARTICLE = 'ARTICLE', COMMENT = 'COMMENT',
-      CHILD = 'CHILD-COMMENT', USER = 'USER';
     let hasAccess;
     if (req.params.articleId) {
       hasAccess = await Access
-        .checkAcces(ARTICLE, req.params.articleId, req.decoded.id);
+        .checkAcces(accessConstant.ARTICLE, req.params.articleId, req.decoded.id);
     }
     if (req.params.commentId) {
       hasAccess = await Access
-        .checkAcces(COMMENT, req.params.commentId, req.decoded.id);
+        .checkAcces(accessConstant.COMMENT, req.params.commentId, req.decoded.id);
     }
     if (req.params.childCommentId) {
       hasAccess = await Access
-        .checkAcces(CHILD, req.params.childCommentId, req.decoded.id);
+        .checkAcces(accessConstant.CHILD, req.params.childCommentId, req.decoded.id);
     }
     if (req.params.userId) {
       hasAccess = await Access
-        .checkAcces(USER, req.params.userId, req.decoded.id);
+        .checkAcces(accessConstant.USER, req.params.userId, req.decoded.id);
     }
     if (hasAccess) {
       return next();

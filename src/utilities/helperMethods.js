@@ -1,4 +1,5 @@
 import models from '../models';
+import accessConstant from '../constants/access';
 
 const {
   Users, Comments, ChildComments, Article
@@ -44,8 +45,6 @@ const requestSuccessful = (res, message) => res.status(200).json({
  * @returns {object} res - The HTTP response object
  */
 const checkAcces = async (schema, itemId, userId) => {
-  const ARTICLE = 'ARTICLE', COMMENT = 'COMMENT',
-    CHILD = 'CHILD-COMMENT', USER = 'USER';
   const options = {
     where: {
       id: itemId,
@@ -54,16 +53,16 @@ const checkAcces = async (schema, itemId, userId) => {
   };
   let user;
   switch (schema) {
-    case ARTICLE:
+    case accessConstant.ARTICLE:
       user = await Article.count(options);
       break;
-    case COMMENT:
+    case accessConstant.COMMENT:
       user = await Comments.count(options);
       break;
-    case CHILD:
+    case accessConstant.CHILD:
       user = await ChildComments.count(options);
       break;
-    case USER:
+    case accessConstant.USER:
       user = await Users.count(options);
       break;
     default:
