@@ -6,3 +6,4 @@ import './unfollowUser.test';
 import './users.test'
 import './articleLike.test';
 import './articleRating.test'
+import './report.test.js'

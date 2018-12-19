@@ -3,7 +3,8 @@ import {
   ArticleController,
   LikesController,
   RatingsController,
-  CommentController
+  CommentController,
+  ReportController
 } from '../controller';
 
 import {
@@ -164,6 +165,12 @@ const routes = (app) => {
     '/api/v1/articles',
     Authorization.checkToken,
     ArticleController.getArticles,
+  );
+  app.post(
+    '/api/v1/articles/:articleId/report',
+    Authorization.checkToken,
+    validateUserInputs.validateReport,
+    ReportController.reportArticle
   );
 };
 
