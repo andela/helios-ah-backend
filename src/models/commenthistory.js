@@ -36,11 +36,11 @@ const commentHistoryModel = (sequelize, DataTypes) => {
   });
   CommentHistory.associate = (models) => {
     CommentHistory.belongsTo(models.Users, {
-      foreign: 'userId',
+      foreignKey: 'userId',
       onDelete: 'CASCADE'
     });
     CommentHistory.belongsTo(models.Comments, {
-      foreign: 'commentId',
+      foreignKey: 'commentId',
       onDelete: 'CASCADE'
     });
   };
