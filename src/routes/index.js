@@ -1,21 +1,27 @@
-
 import {
   UserController,
   ArticleController,
+  LikesController,
+  RatingsController,
   CommentController,
   TagController,
+  ReportController,
 } from '../controller';
 
 import {
   validateUserInputs,
   follower
 } from '../utilities';
-import Authorization from '../middlewares/Authorization';
-import userMiddleware from '../middlewares/User';
-import checkArticleExists from '../middlewares/checkArticleExists';
-import checkBookmarkExists from '../middlewares/checkBookmarkExists';
-import findDatabaseField from '../middlewares/FindDatabaseField';
 
+import {
+  userMiddleware,
+  checkArticleExists,
+  ValidateArticle,
+  Authorization,
+  checkBookmarkExists,
+  findDatabaseField,
+  checkFeedback
+} from '../middleware';
 
 /**
  * Handles request
@@ -65,7 +71,7 @@ const routes = (app) => {
   app.get(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
-    validateUserInputs.uuidV4Validator,
+    Authorization.uuidV4Validator,
     findDatabaseField.UserInToken,
     findDatabaseField.UserInParams,
     follower.checkForSelfFollow,
@@ -76,7 +82,7 @@ const routes = (app) => {
   app.delete(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
-    validateUserInputs.uuidV4Validator,
+    Authorization.uuidV4Validator,
     findDatabaseField.UserInToken,
     findDatabaseField.UserInParams,
     follower.checkForSelfUnfollow,
@@ -103,6 +109,22 @@ const routes = (app) => {
     Authorization.checkToken,
     validateUserInputs.validateCreateComment,
     CommentController.createComment
+  );
+  app.put(
+    '/api/v1/articles/comments/:commentId',
+    Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    Authorization.hasWriteAccess,
+    validateUserInputs.validateCreateComment,
+    CommentController.updateComment
+  );
+  app.put(
+    '/api/v1/articles/comments/childComments/:childCommentId',
+    Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    Authorization.hasWriteAccess,
+    validateUserInputs.validateCreateComment,
+    CommentController.updateComment
   );
   app.post(
     '/api/v1/comments/:commentId/childcomments',
@@ -146,10 +168,42 @@ const routes = (app) => {
     UserController.userRole
   );
   app.post(
+    '/api/v1/articles/:articleId/likes',
+    Authorization.checkToken,
+    checkArticleExists,
+    ValidateArticle.checkArticleNotDraft,
+    checkFeedback.checkLikesExist,
+    LikesController.likeArticle
+  );
+  app.put(
+    '/api/v1/articles/:articleId/likes',
+    Authorization.checkToken,
+    checkArticleExists,
+    checkFeedback.checkLikesNotExist,
+    LikesController.updateLikes
+  );
+  app.post(
+    '/api/v1/articles/:articleId/ratings',
+    Authorization.checkToken,
+    checkArticleExists,
+    ValidateArticle.checkArticleNotDraft,
+    checkFeedback.checkRatingExist,
+    validateUserInputs.validateRating,
+    RatingsController.rateArticle
+  );
+  app.put(
+    '/api/v1/articles/:articleId/ratings',
+    Authorization.checkToken,
+    checkArticleExists,
+    checkFeedback.checkRatingNotExist,
+    validateUserInputs.validateRating,
+    RatingsController.updateRating
+  );
+  app.post(
     '/api/v1/articles/:articleId/bookmark',
     Authorization.checkToken,
     findDatabaseField.UserInToken,
-    validateUserInputs.uuidV4Validator,
+    Authorization.uuidV4Validator,
     checkArticleExists,
     checkBookmarkExists,
     ArticleController.bookmarkArticle
@@ -158,6 +212,12 @@ const routes = (app) => {
     '/api/v1/articles',
     Authorization.checkToken,
     ArticleController.getArticles,
+  );
+  app.post(
+    '/api/v1/articles/:articleId/report',
+    Authorization.checkToken,
+    validateUserInputs.validateReport,
+    ReportController.reportArticle
   );
 };
 

@@ -31,8 +31,7 @@ class Authentication {
         role: data.role,
         username: data.username
       },
-      process.env.SECRET,
-      {
+      process.env.SECRET, {
         expiresIn: time || 86400 // expires in 1 day
       }
     );

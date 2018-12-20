@@ -44,6 +44,10 @@ const ChildCommentModel = (sequelize, DataTypes) => {
       foreign: 'userId',
       onDelete: 'CASCADE'
     });
+    ChildComments.hasMany(models.ChildCommentHistory, {
+      foreignKey: 'comment_id',
+      onDelete: 'CASCADE'
+    });
   };
   return ChildComments;
 };

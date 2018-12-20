@@ -4,3 +4,4 @@ import './authentication.test';
 import './sendEmail.test';
 import './followerTest';
 import './tags.test';
+import './reportModel.test';
