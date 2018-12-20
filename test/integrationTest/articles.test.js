@@ -10,7 +10,7 @@ const { expect } = chai;
 const { Article } = models;
 
 describe('Integration tests for the article controller', () => {
-  let myToken, userId, articleId;
+  let myToken, userId, articleId, comment, childComment;
   before('Create token to validate routes', async () => {
     const userDetails = {
       email: 'yomizy@wizzy.com',
@@ -285,4 +285,39 @@ describe('Integration tests for the article controller', () => {
         expect(response.body.success).to.equal(true);
     });
   })
+  describe('Test for specific article', ()=> {
+    before('Getting specific article', async () => {
+      comment = await chai.request(app).post(`/api/v1/articles/${articleId}/comments`).
+                set('x-access-token', myToken).send({ commentText: faker.lorem.sentence(5,7) });
+      await chai.request(app).put(`/api/v1/articles/comments/${comment.body.commentCreated.id}`).
+                set('x-access-token', myToken).send({ commentText: faker.lorem.sentence(5,7) });
+      childComment = await chai.request(app).post(`/api/v1/comments/${comment.body.commentCreated.id}/childcomments`).
+                set('x-access-token', myToken).send({ commentText: faker.lorem.sentence(5,7) });
+      await chai.request(app).put(`/api/v1/articles/comments/childComments/${childComment.body.childCommentCreated.id}`).
+                set('x-access-token', myToken).send({ commentText: faker.lorem.sentence(5,7) });
+    });
+    it('should get a specific article by Id', async () => {
+      const response = await chai.request(app).get(`/api/v1/articles/${articleId}`)
+      .set('x-access-token', myToken);
+      expect(response.status).to.equal(200);
+      expect(response.body.success).to.equal(true);
+      expect(response.body.article.Comments).to.be.an('array');
+      expect(response.body.article.Comments[0]).to.be.an('object');
+      expect(response.body.article.Comments[0]).to.have.property('User');
+      expect(response.body.article.Comments[0].User).to.be.an('object');
+      expect(response.body.article.Comments[0].User).to.have.property('firstName');
+      expect(response.body.article.Comments[0]).to.have.property('CommentHistories');
+      expect(response.body.article.Comments[0]).to.have.property('ChildComments');
+      expect(response.body.article.Comments[0].CommentHistories).to.be.an('array');
+      expect(response.body.article.Comments[0].ChildComments).to.be.an('array');
+    });
+    it('should reject request with invalid article Id', async () => {
+      const response = await chai.request(app).get(`/api/v1/articles/${comment.body.commentCreated.id}`)
+      .set('x-access-token', myToken);
+      expect(response.status).to.equal(404);
+      expect(response.body.success).to.equal(false);
+      expect(response.body).to.have.property('message');
+      expect(response.body.message).to.equal('Invalid article Id');
+    });
+  });
 });
