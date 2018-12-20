@@ -1,7 +1,7 @@
 const articleTagModel = (sequelize, DataTypes) => {
   const articleTag = sequelize.define('ArticleTag', {
     id: {
-      // allowNull: false,
+      allowNull: false,
       primaryKey: true,
       defaultValue: DataTypes.UUIDV4,
       type: DataTypes.UUID,
