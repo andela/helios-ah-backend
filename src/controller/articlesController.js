@@ -1,7 +1,15 @@
 import models from '../models';
 import errorResponse from '../utilities/Error';
 
-const { Article, Bookmark } = models;
+const {
+  Article,
+  Users,
+  Bookmark,
+  Comments,
+  CommentHistory,
+  ChildComments,
+  ChildCommentHistory,
+} = models;
 
 /**
  * Class representing the Article controller
@@ -134,6 +142,67 @@ class ArticleController {
         success: false,
         message: 'Internal server error',
       });
+    }
+  }
+
+  /**
+  * Get a specific Article
+  * Route: POST: /articles
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof ArticleController
+ */
+  static async getArticle(req, res) {
+    try {
+      const article = await Article.findOne({
+        include: [
+          {
+            model: Comments,
+            as: 'Comments',
+            include: [
+              {
+                model: Users,
+                attributes: ['firstName', 'lastName', 'username'],
+              },
+              {
+                model: CommentHistory,
+                attributes: { exclude: ['userId', 'commentId'] }
+              }, {
+                model: ChildComments,
+                include: [
+                  {
+                    model: Users,
+                    attributes: ['firstName', 'lastName', 'username'],
+                  },
+                  {
+                    model: ChildCommentHistory,
+                    attributes: { exclude: ['userId', 'childCommentId'] }
+                  }
+                ],
+                attributes: { exclude: ['userId', 'commentId'] }
+              }
+            ],
+            attributes: { exclude: ['userId', 'articleId'] }
+          }
+        ],
+        where: {
+          id: req.params.articleId,
+        }
+      });
+      if (article) {
+        res.status(200).json({
+          success: true,
+          article,
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: 'Invalid article Id',
+        });
+      }
+    } catch (error) {
+      errorResponse.handleErrorResponse(res, error);
     }
   }
 
