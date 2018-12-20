@@ -45,6 +45,9 @@ class SocialLogin {
         message: 'You are not registered on this app. Please signup.',
       });
     } catch (error) {
+      if (error.errors) {
+        return helperMethods.sequelizeValidationError(obj.res, error);
+      }
       return helperMethods.serverError(obj.res);
     }
   }
