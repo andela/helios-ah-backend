@@ -59,7 +59,7 @@ describe('Unit test for user controller', () => {
       expect(UserController.completeRegistration).to.be.a('function');
     });
     it('should be a method userRole', () => {
-    expect(UserController.userRole).to.be.a('function');
+      expect(UserController.userRole).to.be.a('function');
     });
     it('should exist a method called userRole', () => {
       expect(UserController.userRole).to.exist;
@@ -76,13 +76,13 @@ describe('Unit test for user controller', () => {
       );
       spyVerifyToken.restore();
     });
-    it('should send a success message when registration is complete', async() => {
+    it('should send a success message when registration is complete', async () => {
       const stubVerifyToken = sinon.stub(Authentication, 'verifyToken').returns(true);
       const stubFindByPk = sinon.stub(Users, 'findByPk').returns(foundUser);
       const stubGetToken = sinon.stub(Authentication, 'getToken')
-      .returns('myRandomStringToken');
+        .returns('myRandomStringToken');
       const stubSendEmail = sinon.stub(sendEmail, 'confirmRegistrationComplete')
-      .returns(true);
+        .returns(true);
       const response = await UserController.completeRegistration(req, res);
       expect(response.success).to.equal(true);
       expect(response.message).to.equal('User myUserName created successfully');
@@ -100,7 +100,7 @@ describe('Unit test for user controller', () => {
       const stubFindOneMethod = sinon.stub(Users, 'findOne').throws({
         'error': 'some random error',
       });
-      const response =  await UserController.userSignup(req, res);
+      const response = await UserController.userSignup(req, res);
       expect(response.success).to.equal(false);
       expect(response.message).to.equal('Internal server error');
       stubFindOneMethod.restore();
@@ -118,7 +118,7 @@ describe('Unit test for user controller', () => {
   });
   describe('Test for logging in a user', () => {
     const myReq = { body: { email: 'email', password: 'password' } };
-    const myRes = { status() {return this; }, json(obj) { return obj; } };
+    const myRes = { status() { return this; }, json(obj) { return obj; } };
     it('should send a failed message when email does not exist', async () => {
       const stubFindOne = sinon.stub(Users, 'findOne').returns(false);
       const response = await UserController.userLogin(myReq, myRes);
@@ -130,7 +130,7 @@ describe('Unit test for user controller', () => {
     });
     it('should send a failed message when password is invalid', async () => {
       const stubVerifyPassword = sinon
-      .stub(Users.prototype, 'verifyPassword').returns(false);
+        .stub(Users.prototype, 'verifyPassword').returns(false);
       const response = await UserController.userLogin(myReq, myRes);
       expect(response).to.have.property('success');
       expect(response).to.have.property('message');
@@ -139,16 +139,16 @@ describe('Unit test for user controller', () => {
       stubVerifyPassword.restore();
     });
     it('should check if the user is verified before logging in the user',
-    async () => {
-      const stubFindOne = sinon.stub(Users, 'findOne').returns({isVerified: false});
-      const response = await UserController.userLogin(myReq, myRes);
-      expect(response).to.have.property('success');
-      expect(response).to.have.property('message');
-      expect(response.success).to.equal(false);
-      expect(response.message).to
-      .equal('You had started the registration process already. '
-      + 'Please check your email to complete your registration.');
-      stubFindOne.restore();
-    });
+      async () => {
+        const stubFindOne = sinon.stub(Users, 'findOne').returns({ isVerified: false });
+        const response = await UserController.userLogin(myReq, myRes);
+        expect(response).to.have.property('success');
+        expect(response).to.have.property('message');
+        expect(response.success).to.equal(false);
+        expect(response.message).to
+          .equal('You had started the registration process already. '
+            + 'Please check your email to complete your registration.');
+        stubFindOne.restore();
+      });
   });
 });

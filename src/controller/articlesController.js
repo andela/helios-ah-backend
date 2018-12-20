@@ -151,19 +151,18 @@ class ArticleController {
         const views = article.dataValues.viewStats;
         await article.update({
           viewStats: views + 1
-        });
-        res.status(200).json({
+        }, { hooks: false });
+        return res.status(200).json({
           success: true,
           article
         });
-      } else {
-        res.status(404).json({
-          success: false,
-          message: 'Article does not exist'
-        });
       }
+      return res.status(404).json({
+        success: false,
+        message: 'Article does not exist'
+      });
     } catch (error) {
-      errorResponse.handleErrorResponse(res, error);
+      return errorResponse.handleErrorResponse(res, error);
     }
   }
 

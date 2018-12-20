@@ -1,9 +1,8 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/app';
-import { UserController, ArticleController } from '../../src/controller';
+// import { UserController, ArticleController } from '../../src/controller';
 import models from '../../src/models';
-import sinon from 'sinon';
 import faker from 'faker';
 
 chai.use(chaiHttp);
