@@ -70,4 +70,17 @@ describe('Integration tests for the tag controller', () => {
     expect(response.body).to.have.property('success');
     expect(response.body.success).to.equal(true);
   });
+
+  it('should not tag an article that does not exist', async () => {
+    const response = await chai.request(app)
+      .post('/api/v1/articles/tag/88dd5021-4b65-4e39-b133-e22d25ca011b')
+      .set('x-access-token', tagDetails.token).send({
+        tagName: tagDetails.tagName,
+      });
+    expect(response.status).to.equal(500);
+    expect(response.body).to.have.property('message');
+    expect(response.body.message).to.equal('Internal server error');
+    expect(response.body).to.have.property('success');
+    expect(response.body.success).to.equal(false);
+  });
 });

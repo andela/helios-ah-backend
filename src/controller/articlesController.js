@@ -1,7 +1,7 @@
 import models from '../models';
 import errorResponse from '../utilities/Error';
 
-const { Article, Bookmark, tag } = models;
+const { Article, Bookmark } = models;
 
 /**
  * Class representing the Article controller
@@ -26,6 +26,8 @@ class ArticleController {
         title,
         body,
         description,
+        readTime: (body.split(' ').length < 200) ? 'less than 1min'
+          : `about ${Math.round(body.split(' ').length / 200)}min`,
         image,
         userId: req.decoded.id,
       });
@@ -111,6 +113,7 @@ class ArticleController {
 
     if (req.originalUrl === '/api/v1/articles/user') {
       options.where = {
+        isDraft: false,
         userId: req.decoded.id,
       };
     } else {
@@ -129,33 +132,6 @@ class ArticleController {
       res.status(500).json({
         success: false,
         message: 'Internal server error',
-      });
-    }
-  }
-
-  /**
-  * Create a Tag for an Article
-  * Route: POST: /articles/tag
-  * @param {object} req - Request object
-  * @param {object} res - Response object
-  * @return {res} res - Response object
-  * @memberof ArticlesController
- */
-  static async createTag(req, res) {
-    const { articleId, tagName } = req.body;
-    try {
-      const createTag = await tag.create({ tagName });
-      const setArticleTag = await createTag.setTexts([articleId]);
-      if (setArticleTag) {
-        res.status(201).json({
-          message: 'Tag was created successfully',
-          success: true,
-        });
-      }
-    } catch (error) {
-      res.status(400).json({
-        message: error.errors[0].message,
-        success: false,
       });
     }
   }

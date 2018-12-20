@@ -4,6 +4,7 @@ export default {
     id: {
       allowNull: false,
       primaryKey: true,
+      defaultValue: Sequelize.UUIDV4,
       type: Sequelize.UUID,
     },
     title: {
@@ -18,6 +19,10 @@ export default {
       type: Sequelize.STRING,
       allowNull: false,
     },
+    readTime: {
+      type: Sequelize.STRING,
+      allowNull: false
+    },
     image: {
       type: Sequelize.STRING,
     },
@@ -29,6 +34,7 @@ export default {
       type: Sequelize.UUID,
       allowNull: false,
       defaultValue: Sequelize.UUIDV4,
+      onDelete: 'CASCADE',
       reference: {
         model: 'Users',
         key: 'id',

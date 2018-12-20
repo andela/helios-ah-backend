@@ -35,6 +35,10 @@ const articleModel = (sequelize, DataTypes) => {
         }
       }
     },
+    readTime: {
+      type: DataTypes.STRING,
+      allowNull: false
+    },
     image: {
       type: DataTypes.STRING,
       validate: {
@@ -57,9 +61,10 @@ const articleModel = (sequelize, DataTypes) => {
       through: 'Bookmark',
       foreignKey: 'articleId'
     });
-    Article.belongsToMany(models.Tag, {
-      as: 'Labels',
-      through: 'ArticleTag',
+    Article.belongsToMany(models.Tags, {
+      foreignKey: 'articleId',
+      through: 'ArticleTags',
+      as: 'Articles',
     });
   };
   return Article;

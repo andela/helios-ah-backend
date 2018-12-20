@@ -49,6 +49,20 @@ const routes = (app) => {
     ArticleController.createArticle
   );
   app.get(
+    '/api/v1/articles',
+    Authorization.checkToken,
+    ArticleController.getArticles
+  );
+  app.get(
+    '/api/v1/articles/user',
+    Authorization.checkToken,
+    ArticleController.getArticles
+  );
+  app.put(
+    '/api/v1/articles/:articleId',
+    validateUserInputs.validateCreateArticle
+  );
+  app.get(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
     validateUserInputs.uuidV4Validator,
@@ -83,7 +97,18 @@ const routes = (app) => {
   app.get(
     '/api/v1/authors',
     Authorization.checkToken,
-    UserController.getAuthors
+  );
+  app.post(
+    '/api/v1/articles/:articleId/comments',
+    Authorization.checkToken,
+    validateUserInputs.validateCreateComment,
+    CommentController.createComment
+  );
+  app.post(
+    '/api/v1/comments/:commentId/childcomments',
+    Authorization.checkToken,
+    validateUserInputs.validateCreateComment,
+    CommentController.createChildComment
   );
   app.post(
     '/api/v1/articles/:articleId/comments',

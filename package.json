@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon ./src/app.js --exec babel-node",
-    "test": "export NODE_ENV=test && npm run undo:migration && npm run migrate && npm run undo:seeder && npm run seeder && nyc --reporter=html --reporter=text mocha --exit --require babel-register --require babel-polyfill ./test/index.js",
+    "test": "export NODE_ENV=test && npm run undo:migration && npm run migrate && npm run seeder && nyc --reporter=html --reporter=text mocha --exit --require babel-register --require babel-polyfill ./test/index.js",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "eslint": "./node_modules/eslint/bin/eslint.js './**/*.js'",
     "heroku-postbuild": "npm run create-database-table",
