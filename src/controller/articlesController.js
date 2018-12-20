@@ -1,5 +1,6 @@
 import models from '../models';
 import errorResponse from '../utilities/Error';
+import helperMethod from '../utilities/helperMethods';
 
 const {
   Article,
@@ -191,6 +192,7 @@ class ArticleController {
         }
       });
       if (article) {
+        await helperMethod.updateViewStat(article.id, article.viewStats);
         res.status(200).json({
           success: true,
           article,
