@@ -1,10 +1,10 @@
-import sinon from 'sinon';
 import chai from 'chai';
-import { ArticleController } from '../../src/controller';
-import models from '../../src/models';
+import helperMethods from '../../src/utilities/helperMethods';
 import app from '../../src/app';
+import ArticleController from '../../src/controller/articlesController';
+// import models from '../../src/models';
 
-const { Article } = models;
+// const { Article } = models;
 const { expect } = chai;
 const res = {
   status() {
@@ -20,7 +20,7 @@ const articleDetails = {
   description: 'narrative',
   image: 'https://someimage.uplodersite.com',
 };
-let articleId;
+let articleId, viewStats;
 describe('Unit test for the Article controller', () => {
   before('Create token to validate routes, then create article', async () => {
     const userDetails = {
@@ -33,6 +33,7 @@ describe('Unit test for the Article controller', () => {
     response = await chai.request(app).post('/api/v1/articles')
       .set('x-access-token', myToken).send(articleDetails);
     articleId = response.body.articleCreated.id;
+    viewStats = response.body.articleCreated.viewStats;
   });
   describe('Test that all methods of the article controller class are available', () => {
     it('should check if createArticle exists', () => {
@@ -53,12 +54,6 @@ describe('Unit test for the Article controller', () => {
     it('should check if getArticle is a method', () => {
       expect(ArticleController.getArticles).to.be.a('function');
     });
-    it('should check if getArticleById exists', () => {
-      expect(ArticleController.getArticleById).to.exist;
-    });
-    it('should check if getArticleById is a method', () => {
-      expect(ArticleController.getArticleById).to.be.a('function');
-    });
     it('should check if bookmarkArticle exists', () => {
       expect(ArticleController.bookmarkArticle).to.exist;
     });
@@ -66,39 +61,10 @@ describe('Unit test for the Article controller', () => {
       expect(ArticleController.bookmarkArticle).to.be.a('function');
     });
   });
-  describe('Test internal server error of getArticleById method', () => {
-
-    it('should send internal server error', async () => {
-      const stubFindByPkMethod = sinon.stub(Article, 'findByPk').throws({
-        'error': 'Some Crazy Error thrown by stub',
-      });
-      const req = {
-        params: {
-          articleId: '3e3e1ba7-3e2c-4c3d-a793-bab88af5fbbb',
-        }
-      };
-      const response = await ArticleController.getArticleById(req, res);
-      expect(response.success).to.equal(false);
-      expect(response.message).to.equal('Internal server error');
-      stubFindByPkMethod.restore();
-    });
-    it('should send success message when a user tries to get an article', async () => {
-      const article = {
-        update: () => { },
-        dataValues: {
-          viewStats: 3
-        }
-      };
-      const stubFindByPkMethod = await sinon.stub(Article, 'findByPk').returns(article);
-      const req = {
-        params: {
-          articleId
-        }
-      };
-      const response = await ArticleController.getArticleById(req, res);
-      expect(response.success).to.equal(true);
-      expect(response).to.have.property('article');
-      stubFindByPkMethod.restore();
+  describe('unit test for update view stat helper method', () => {
+    it('should test for the update view stat method', async () => {
+      const article = await helperMethods.updateViewStat(articleId, viewStats);
+      expect(article[1][0].dataValues.viewStats).to.eql(1);
     });
   });
 });

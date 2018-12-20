@@ -38,6 +38,25 @@ const requestSuccessful = (res, message) => res.status(200).json({
 });
 
 /**
+ * A method that updates the value of the reading stats column
+ * @param {string} articleId - id of article
+ * @param {integer} stat - current view stat of article
+ * @returns {function} - update method
+ */
+const updateViewStat = async (articleId, stat) => {
+  const options = {
+    hooks: false,
+    where: {
+      id: articleId,
+    },
+    returning: true
+  };
+  return Article.update({
+    viewStats: stat + 1
+  }, options);
+};
+
+/**
  * A method used to send sequelize validation error
  * @param {string} schema - DataBase Schema
  * @param {string} itemId - Schema item
@@ -77,4 +96,5 @@ export default {
   sequelizeValidationError,
   requestSuccessful,
   checkAcces,
+  updateViewStat
 };

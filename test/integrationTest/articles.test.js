@@ -1,7 +1,6 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/app';
-// import { UserController, ArticleController } from '../../src/controller';
 import models from '../../src/models';
 import faker from 'faker';
 
@@ -189,23 +188,6 @@ describe('Integration tests for the article controller', () => {
         expect(response.body).to.have.property('message');
         expect(response.body.message)
           .to.equal('Title should not exceed 80 characters');
-      });
-    it('should send an error message when a user tries to get an article that does not exist',
-      async () => {
-        const response = await chai.request(app).get('/api/v1/article/17d2ec19-7d75-4585-bb91-4c801afba400');
-        expect(response.status).to.equal(404);
-        expect(response.body).to.have.property('message');
-        expect(response.body.message).to.equal(
-          'Article does not exist'
-        );
-      });
-    it('should send an article when a user tries to get an article that exists',
-      async () => {
-        const response = await chai.request(app).get(`/api/v1/article/${articleId}`);
-        expect(response.status).to.equal(200);
-        expect(response.body).to.have.property('success');
-        expect(response.body.success).to.equal(true);
-        expect(response.body.article.viewStats).to.equal(1);
       });
     it('should send an error message when description field is too long',
       async () => {
