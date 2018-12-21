@@ -8,10 +8,26 @@ module.exports = {
     roleId: 1,
     password: 'myPassword',
     username: 'icecream',
+    emailNotification: true,
+    inAppNotification: true,
     isVerified: true,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }, {
+    id: 'c667aa9b-e5a1-4552-960b-8cc2a9c09ccb',
+    firstName: 'Tony',
+    lastName: 'Nwosu',
+    email: 'tonyboy@andela.com',
+    roleId: 1,
+    password: 'password',
+    username: 'Tonyboy',
+    isVerified: true,
+    emailNotification: false,
+    inAppNotification: false,
+    createdAt: new Date(Date.now()),
+    updatedAt: new Date(Date.now())
+  },
+  {
     id: 'e7eaef9b-c3d9-40fa-89e1-26eae190f1aa',
     firstName: 'Mike',
     lastName: 'Nugget',
@@ -19,6 +35,8 @@ module.exports = {
     roleId: 1,
     password: '12345',
     username: 'shangai',
+    emailNotification: false,
+    inAppNotification: false,
     isVerified: true,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
@@ -32,6 +50,8 @@ module.exports = {
     bio: 'Finds and report articles',
     roleId: 1,
     isVerified: true,
+    emailNotification: true,
+    inAppNotification: true,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }], {}),

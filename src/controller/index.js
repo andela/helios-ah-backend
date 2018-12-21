@@ -4,6 +4,7 @@ import LikesController from './likesController';
 import RatingsController from './ratingsController';
 import CommentController from './commentController';
 import ReportController from './reportController';
+import NotificationController from './NotificationController';
 
 export {
   ArticleController,
@@ -11,5 +12,6 @@ export {
   LikesController,
   RatingsController,
   CommentController,
-  ReportController
+  ReportController,
+  NotificationController
 };

@@ -1,7 +1,7 @@
 import models from '../models';
 import { helperMethods } from '../utilities';
 
-const { Article } = models;
+const { Article, Users } = models;
 
 /**
  *
@@ -19,7 +19,16 @@ const { Article } = models;
 const checkArticleExists = async (req, res, next) => {
   try {
     const { articleId } = await req.params;
-    const article = await Article.findByPk(articleId);
+    const article = await Article
+      .findByPk(articleId,
+        {
+          include:
+          {
+            model: Users,
+            attributes: ['email']
+          }
+        });
+
     if (article) {
       req.article = article;
       next();

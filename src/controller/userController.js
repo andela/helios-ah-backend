@@ -1,8 +1,9 @@
-
 import followersUtil from '../utilities/followers';
 import models from '../models';
 import SendEmail from '../utilities/sendEmail';
+import NotificationController from '../utilities/Notification';
 import { helperMethods, Authentication } from '../utilities';
+
 
 const { Users, sequelize, Follower } = models;
 const { Op } = sequelize.Sequelize;
@@ -146,13 +147,29 @@ class UserController {
   static async followUser(req, res) {
     const userId = await req.params.id;
     const followerId = await req.decoded.id;
-
+    const { email } = req.paramsUser;
+    const details = {
+      email,
+      subject: 'Author\'s Haven - Email notification',
+      emailBody: `<p>You are now being followed by ${req.user.username}</p>`
+    };
     try {
       const createFollower = await Follower.create({
         userId,
         followerId
       });
+      const notificationText = `You are now being followed 
+      by ${req.user.username}`;
+
       if (createFollower) {
+        req.io.emit('inAppNotifications', { notificationText });
+        await NotificationController
+          .setSingleEmailNotification(req.paramsUser, details);
+
+        await NotificationController
+          .setSingleAppNotification(req.paramsUser, notificationText);
+
+
         res.status(200).json({
           success: true,
           message: 'You are now following this user'

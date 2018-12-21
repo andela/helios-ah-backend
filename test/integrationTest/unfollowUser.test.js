@@ -1,68 +1,201 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/app';
+import authentication from '../../src/utilities/authentication';
 
 
 chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
+let followerToken;
+let decodedUserToken;
+let userToken;
 
 describe('DELETE /api/v1/profiles/:userId/follow', () => {
   const userDetails = {
-    username: 'JohDoe',
-    password: 'testPassword',
-    email: 'johndoe@wemail.com',
-    firstName: 'John',
-    lastName: 'Doe',
-    bio: 'RIP John Doe',
+    password: 'password',
+    email: 'tonyboy@andela.com'
   };
 
-  const anotherUserDetails = {
-    username: 'follower1',
-    password: 'testPassword',
-    email: 'follower1@wemail.com',
-    firstName: 'Follow',
-    lastName: 'Follow',
-    bio: 'I like to follow people',
-  };
-  const anotherUserDetails2 = {
-    username: 'fodsewllower1',
-    password: 'testPassword',
-    email: 'follsded1@wesdedail.com',
-    firstName: 'Follow',
-    lastName: 'Follow',
-    bio: 'I like to follow people',
+  const followerDetails = {
+    email: 'mike@myzone.com',
+    password: '12345'
   };
 
   describe('Bad request', () => {
     it('should throw an Error if the userId is not of type UUIDV4',
       async () => {
-        expect(true).to.equal(true);
+        try {
+          const res = await chai.request(app)
+            .post('/api/v1/auth/login')
+            .send(userDetails);
+          userToken = res.body.userDetails.token;
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('success');
+          expect(res.body).to.have.property('message');
+          expect(res.body).to.have.property('userDetails');
+
+          const res2 = await chai.request(app)
+            .delete('/api/v1/profiles/23/follow')
+            .set('x-access-token', userToken);
+          expect(res2.status).to.equal(400);
+          expect(res2.body).to.have.property('message');
+          expect(res2.body.message).to.equal('Invalid Id');
+        } catch (err) {
+          throw err;
+        }
       });
     it('should throw an Error if user tries to unfollow himself/herself',
       async () => {
-        expect(true).to.equal(true);
+        try {
+          const res = await chai.request(app)
+            .post('/api/v1/auth/login')
+            .send(userDetails);
+          userToken = await res.body.userDetails.token;
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('success');
+          expect(res.body).to.have.property('message');
+          expect(res.body).to.have.property('userDetails');
+
+          decodedUserToken = authentication.verifyToken(userToken);
+          const res2 = await chai.request(app)
+            .delete(`/api/v1/profiles/${decodedUserToken.id}/follow`)
+            .set('x-access-token', userToken);
+
+          console.log("decodedToken", decodedUserToken)
+          
+          expect(res2.status).to.equal(400);
+          expect(res2.body).to.have.property('message');
+          expect(res2.body.message)
+            .to.equal('You cannot follow or unfollow yourself');
+        } catch (err) {
+          throw err;
+        }
       });
     it('should throw an Error if user is trying to unfollow another user that '
-    + 'he/she does not followed',
+    + 'he/she does not follow',
     async () => {
-      expect(true).to.equal(true);
+      try {
+        const res = await chai.request(app)
+          .post('/api/v1/auth/login')
+          .send(userDetails);
+        userToken = await res.body.userDetails.token;
+        expect(res.status).to.equal(200);
+        expect(res.body).to.have.property('success');
+        expect(res.body).to.have.property('message');
+        expect(res.body).to.have.property('userDetails');;
+
+        const res2 = await chai.request(app)
+          .post('/api/v1/auth/login')
+          .send(followerDetails);
+        followerToken = await res2.body.userDetails.token;
+        expect(res.status).to.equal(200);
+        expect(res.body).to.have.property('success');
+        expect(res.body).to.have.property('message');
+        expect(res.body).to.have.property('userDetails');
+
+        decodedUserToken = authentication.verifyToken(userToken);
+        const res3 = await chai.request(app)
+          .delete(`/api/v1/profiles/${decodedUserToken.id}/follow`)
+          .set('x-access-token', followerToken);
+        expect(res3.status).to.equal(400);
+        expect(res3.body).to.have.property('message');
+        expect(res3.body.message).to.equal('You do not follow this user');
+      } catch (err) {
+        throw err;
+      }
     });
   });
   describe('User not found', () => {
     it('should throw an Error if the unfollowed does not exist on the database',
       async () => {
-        expect(true).to.equal(true);
+        try {
+          const res = await chai.request(app)
+            .post('/api/v1/auth/login')
+            .send(userDetails);
+          userToken = await res.body.userDetails.token;
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('success');
+          expect(res.body).to.have.property('message');
+          expect(res.body).to.have.property('userDetails');
+
+          decodedUserToken = authentication.verifyToken(userToken);
+          const res2 = await chai.request(app)
+            .delete(`/api/v1/profiles/${decodedUserToken.id.slice(0, -12)}${'0'
+              .repeat(12)}/follow`)
+            .set('x-access-token', userToken);
+          expect(res2.status).to.equal(404);
+          expect(res2.body).to.have.property('message');
+          expect(res2.body.message).to.equal('User does not exist');
+        } catch (err) {
+          throw err;
+        }
       });
   });
   describe('UnAuthenticated User', () => {
     it('should throw an Error if no token is provided', async () => {
-      expect(true).to.equal(true);
+      try {
+        const res = await chai.request(app)
+          .post('/api/v1/auth/login')
+          .send(userDetails);
+        userToken = await res.body.userDetails.token;
+        expect(res.status).to.equal(200);
+        expect(res.body).to.have.property('success');
+        expect(res.body).to.have.property('message');
+        expect(res.body).to.have.property('userDetails');
+
+        decodedUserToken = authentication.verifyToken(userToken);
+        const res2 = await chai.request(app)
+          .delete(`/api/v1/profiles/${decodedUserToken.id}/follow`);
+        expect(res2.status).to.equal(401);
+        expect(res2.body).to.have.property('message');
+        expect(res2.body.message).to.equal('User not authorized');
+      } catch (err) {
+        throw err;
+      }
     });
   });
   describe('Successful unfollow', () => {
     it('should be successful when a user unfollows another', async () => {
-      expect(true).to.equal(true);
+      try {
+        const res = await chai.request(app)
+          .post('/api/v1/auth/login')
+          .send(userDetails);
+        userToken = await res.body.userDetails.token;
+        expect(res.status).to.equal(200);
+        expect(res.body).to.have.property('success');
+        expect(res.body).to.have.property('message');
+        expect(res.body).to.have.property('userDetails');
+
+        const res2 = await chai.request(app)
+          .post('/api/v1/auth/login')
+          .send(followerDetails);
+        followerToken = await res2.body.userDetails.token;
+        expect(res.status).to.equal(200);
+        expect(res.body).to.have.property('success');
+        expect(res.body).to.have.property('message');
+        expect(res.body).to.have.property('userDetails');
+
+        decodedUserToken = await authentication.verifyToken(userToken);
+        console.log("working decoded", decodedUserToken)
+        const res3 = await chai.request(app)
+          .get(`/api/v1/profiles/${decodedUserToken.id}/follow`)
+          .set('x-access-token', followerToken);
+
+        expect(res3.status).to.equal(200);
+        expect(res3.body).to.have.property('message');
+        expect(res3.body.message).to.equal('You are now following this user');
+
+        const res4 = await chai.request(app)
+          .delete(`/api/v1/profiles/${decodedUserToken.id}/follow`)
+          .set('x-access-token', followerToken);
+
+        expect(res4.status).to.equal(200);
+        expect(res4.body).to.have.property('message');
+        expect(res4.body.message).to.equal('You have unfollowed this user');
+      } catch (err) {
+        throw err;
+      }
     });
   });
 });

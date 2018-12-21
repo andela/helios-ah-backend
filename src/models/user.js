@@ -70,6 +70,16 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false
       },
+      emailNotification: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+      },
+      inAppNotification: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+      },
       username: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -99,22 +109,21 @@ export default (sequelize, DataTypes) => {
     });
     Users.hasMany(models.Article, {
       foreignKey: 'userId',
-      as: 'articles',
+      as: 'articles'
     });
-    Users.belongsToMany(models.Users, {
-      as: 'Follow',
-      through: {
-        model: 'Follower',
-      },
+
+    Users.belongsToMany(Users, {
+      as: 'followers',
       foreignKey: 'userId',
+      through: 'Follower'
     });
-    Users.belongsToMany(models.Users, {
-      as: 'Following',
-      through: {
-        model: 'Follower'
-      },
-      foreignKey: 'followerId'
+
+    Users.belongsToMany(Users, {
+      as: 'followings',
+      foreignKey: 'followerId',
+      through: 'Follower'
     });
+
     Users.hasMany(models.Comments, {
       foreignKey: 'userId',
       as: 'comments'
@@ -142,6 +151,10 @@ export default (sequelize, DataTypes) => {
     Users.hasMany(models.Report, {
       foreignKey: 'userId',
       as: 'report'
+    });
+    Users.hasMany(models.Notification, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
     });
   };
   Users.prototype.verifyPassword = password => cryptData
