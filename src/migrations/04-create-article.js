@@ -35,7 +35,6 @@ export default {
       allowNull: false,
       onDelete: 'CASCADE',
       defaultValue: Sequelize.UUIDV4,
-      onDelete: 'CASCADE',
       reference: {
         model: 'Users',
         key: 'id',
