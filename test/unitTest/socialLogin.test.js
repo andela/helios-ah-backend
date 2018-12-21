@@ -124,8 +124,6 @@ describe('Unit tests for the social login controller', () => {
       expect(response.id).to.equal(userFound.id);
       expect(response).to.have.property('username');
       expect(response.username).to.equal(userFound.username);
-      expect(response).to.have.property('email');
-      expect(response.email).to.equal(userFound.email);
       expect(response).to.have.property('token');
       expect(response.token).to.be.a('string');
       sinon.assert.calledOnce(spyGetToken);
@@ -159,8 +157,6 @@ describe('Unit tests for the social login controller', () => {
       expect(response.id).to.equal(userFound.id);
       expect(response).to.have.property('username');
       expect(response.username).to.equal(userFound.username);
-      expect(response).to.have.property('email');
-      expect(response.email).to.equal(userFound.email);
       expect(response).to.have.property('token');
       expect(response.token).to.be.a('string');
       sinon.assert.calledOnce(spyGetToken);
