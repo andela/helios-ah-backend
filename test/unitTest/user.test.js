@@ -1,6 +1,6 @@
 
 import chai from 'chai';
-import models from '../../src/models'
+import models from '../../src/models';
 
 const { expect } = chai;
 const { Users } = models;
