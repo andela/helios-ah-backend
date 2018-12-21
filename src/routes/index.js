@@ -1,9 +1,13 @@
+
+import passport from 'passport';
+
 import {
   UserController,
   ArticleController,
   LikesController,
   RatingsController,
   CommentController,
+  SocialLoginController,
   ReportController
 } from '../controller';
 
@@ -36,6 +40,7 @@ const routes = (app) => {
   });
   app.get(
     '/api/v1/auth/complete_reg/',
+    Authorization.checkToken,
     UserController.completeRegistration
   );
   app.post(
@@ -170,6 +175,49 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleAuth,
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
+  );
+  app.get(
+    '/api/v1/auth/social_fb',
+    passport.authenticate('facebook', { session: false }),
+  );
+  app.get(
+    '/api/v1/auth/social_fb/callback',
+    passport.authenticate('facebook', {
+      failureRedirect: 'api/v1/social_login/failed',
+      session: false,
+    }),
+    SocialLoginController.facebookLogin,
+  );
+  app.get(
+    '/api/v1/auth/social_tw',
+    passport.authenticate('twitter', { session: false }),
+  );
+  app.get(
+    '/api/v1/auth/social_tw/callback',
+    passport
+      .authenticate('twitter', {
+        failureRedirect: 'api/v1/social_login/failed',
+        session: false,
+      }),
+    SocialLoginController.twitterLogin,
+  );
+  app.get(
+    '/api/v1/auth/social_ggl',
+    passport
+      .authenticate('google', { session: false, scope: ['profile', 'email'] }),
+  );
+  app.get(
+    '/api/v1/auth/social_ggl/callback',
+    passport.authenticate('google', {
+      failureRedirect: 'api/v1/social_login/failed',
+      session: false,
+      scope: ['profile'],
+    }),
+    SocialLoginController.googleLogin,
+  );
+  app.get(
+    'api/v1/social_login/failed',
+    SocialLoginController.socialLoginFailed
   );
   app.post(
     '/api/v1/articles/:articleId/likes',
