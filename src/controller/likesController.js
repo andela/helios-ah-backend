@@ -38,18 +38,19 @@ class LikesController {
       });
 
       if (isLiked) {
-        req.io.emit(
-          'inAppNotifications', `
-          ${notificationText}`
-        );
+        req.io.emit('inAppNotifications', `${notificationText}`);
 
         await NotificationController
-          .setSingleAppNotification(req.user,
-            notificationText);
+          .setSingleAppNotification(
+            req.user,
+            notificationText
+          );
 
         await NotificationController
-          .setSingleEmailNotification(req.user,
-            details);
+          .setSingleEmailNotification(
+            req.user,
+            details
+          );
 
         return res.status(201).json({
           success: true,
