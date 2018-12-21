@@ -13,7 +13,7 @@ describe('Integration tests for like comment and update comment like status', ()
         updateCommentId = '781063b9-92be-4d9a-8699-fdac9227f32c'
     const userDetails = {
         email: 'yomizy@wizzy.com',
-        password: 'myPassword'
+        password: 'password'
     }
     before('Login a user before running tests', async () => {
         const createAuthor = await chai.request(app).post('/api/v1/auth/login')
