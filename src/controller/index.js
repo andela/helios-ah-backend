@@ -4,6 +4,7 @@ import LikesController from './likesController';
 import RatingsController from './ratingsController';
 import CommentController from './commentController';
 import TagController from './tagsController';
+import SocialLoginController from './socialLoginController';
 import ReportController from './reportController';
 
 export {
@@ -13,5 +14,6 @@ export {
   TagController,
   LikesController,
   RatingsController,
+  SocialLoginController,
   ReportController
 };

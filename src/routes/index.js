@@ -1,3 +1,6 @@
+
+import passport from 'passport';
+
 import {
   UserController,
   ArticleController,
@@ -6,6 +9,7 @@ import {
   CommentController,
   TagController,
   ReportController,
+  SocialLoginController,
 } from '../controller';
 
 import {
@@ -36,6 +40,7 @@ const routes = (app) => {
   });
   app.get(
     '/api/v1/auth/complete_reg/',
+    Authorization.checkToken,
     UserController.completeRegistration
   );
   app.post(
@@ -86,13 +91,17 @@ const routes = (app) => {
     findDatabaseField.UserInToken,
     findDatabaseField.UserInParams,
     follower.checkForSelfUnfollow,
-    UserController.unfollowUser,
-    ArticleController.getArticles
+    UserController.unfollowUser
   );
   app.get(
     '/api/v1/articles/user',
     Authorization.checkToken,
     ArticleController.getArticles
+  );
+  app.get(
+    '/api/v1/articles/:articleId',
+    Authorization.uuidV4Validator,
+    ArticleController.getArticle
   );
   app.put(
     '/api/v1/articles/:articleId',
@@ -167,6 +176,49 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
   );
+  app.get(
+    '/api/v1/auth/social_fb',
+    passport.authenticate('facebook', { session: false }),
+  );
+  app.get(
+    '/api/v1/auth/social_fb/callback',
+    passport.authenticate('facebook', {
+      failureRedirect: 'api/v1/social_login/failed',
+      session: false,
+    }),
+    SocialLoginController.facebookLogin,
+  );
+  app.get(
+    '/api/v1/auth/social_tw',
+    passport.authenticate('twitter', { session: false }),
+  );
+  app.get(
+    '/api/v1/auth/social_tw/callback',
+    passport
+      .authenticate('twitter', {
+        failureRedirect: 'api/v1/social_login/failed',
+        session: false,
+      }),
+    SocialLoginController.twitterLogin,
+  );
+  app.get(
+    '/api/v1/auth/social_ggl',
+    passport
+      .authenticate('google', { session: false, scope: ['profile', 'email'] }),
+  );
+  app.get(
+    '/api/v1/auth/social_ggl/callback',
+    passport.authenticate('google', {
+      failureRedirect: 'api/v1/social_login/failed',
+      session: false,
+      scope: ['profile'],
+    }),
+    SocialLoginController.googleLogin,
+  );
+  app.get(
+    'api/v1/social_login/failed',
+    SocialLoginController.socialLoginFailed
+  );
   app.post(
     '/api/v1/articles/:articleId/likes',
     Authorization.checkToken,
@@ -210,7 +262,6 @@ const routes = (app) => {
   );
   app.get(
     '/api/v1/articles',
-    Authorization.checkToken,
     ArticleController.getArticles,
   );
   app.post(
