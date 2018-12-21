@@ -36,8 +36,12 @@ class LikesController {
         articleId,
         isLiked: 'true'
       });
+
       if (isLiked) {
-        req.io.emit('inAppNotifications', `${notificationText}`);
+        req.io.emit(
+          'inAppNotifications', `
+          ${notificationText}`
+        );
 
         await NotificationController
           .setSingleAppNotification(req.user,
