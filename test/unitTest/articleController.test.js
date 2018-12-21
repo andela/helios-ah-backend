@@ -2,9 +2,7 @@ import chai from 'chai';
 import helperMethods from '../../src/utilities/helperMethods';
 import app from '../../src/app';
 import ArticleController from '../../src/controller/articlesController';
-// import models from '../../src/models';
 
-// const { Article } = models;
 const { expect } = chai;
 const res = {
   status() {
@@ -15,17 +13,17 @@ const res = {
   }
 }
 const articleDetails = {
-  title: 'The brow fox',
+  title: 'fox',
   body: 'so i saw a dog',
   description: 'narrative',
   image: 'https://someimage.uplodersite.com',
 };
-let articleId, viewStats;
+let articleId, viewStats, title;
 describe('Unit test for the Article controller', () => {
   before('Create token to validate routes, then create article', async () => {
     const userDetails = {
       email: 'yomizy@wizzy.com',
-      password: 'myPassword',
+      password: 'password',
     }
     let response = await chai.request(app).post('/api/v1/auth/login')
       .send(userDetails);
@@ -34,6 +32,7 @@ describe('Unit test for the Article controller', () => {
       .set('x-access-token', myToken).send(articleDetails);
     articleId = response.body.articleCreated.id;
     viewStats = response.body.articleCreated.viewStats;
+    title = response.body.articleCreated.title;
   });
   describe('Test that all methods of the article controller class are available', () => {
     it('should check if createArticle exists', () => {
@@ -63,7 +62,7 @@ describe('Unit test for the Article controller', () => {
   });
   describe('unit test for update view stat helper method', () => {
     it('should test for the update view stat method', async () => {
-      const article = await helperMethods.updateViewStat(articleId, viewStats);
+      const article = await helperMethods.updateViewStat(articleId, viewStats, title);
       expect(article[1][0].dataValues.viewStats).to.eql(1);
     });
   });

@@ -1,13 +1,12 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/app';
-import models from '../../src/models';
+import models from '../../src/models'
 import faker from 'faker';
 
 chai.use(chaiHttp);
 const { expect } = chai;
 const { Article } = models;
-let userId;
 
 describe('Integration tests for the article controller', () => {
   let myToken, userId, articleId, comment, childComment;
@@ -286,20 +285,20 @@ describe('Integration tests for the article controller', () => {
       expect(response.body.success).to.equal(true);
     });
   })
-  describe('Test for specific article', ()=> {
+  describe('Test for specific article', () => {
     before('Getting specific article', async () => {
       comment = await chai.request(app).post(`/api/v1/articles/${articleId}/comments`).
-                set('x-access-token', myToken).send({ commentText: faker.lorem.sentence(5,7) });
+        set('x-access-token', myToken).send({ commentText: faker.lorem.sentence(5, 7) });
       await chai.request(app).put(`/api/v1/articles/comments/${comment.body.commentCreated.id}`).
-                set('x-access-token', myToken).send({ commentText: faker.lorem.sentence(5,7) });
+        set('x-access-token', myToken).send({ commentText: faker.lorem.sentence(5, 7) });
       childComment = await chai.request(app).post(`/api/v1/comments/${comment.body.commentCreated.id}/childcomments`).
-                set('x-access-token', myToken).send({ commentText: faker.lorem.sentence(5,7) });
+        set('x-access-token', myToken).send({ commentText: faker.lorem.sentence(5, 7) });
       await chai.request(app).put(`/api/v1/articles/comments/childComments/${childComment.body.childCommentCreated.id}`).
-                set('x-access-token', myToken).send({ commentText: faker.lorem.sentence(5,7) });
+        set('x-access-token', myToken).send({ commentText: faker.lorem.sentence(5, 7) });
     });
     it('should get a specific article by Id', async () => {
       const response = await chai.request(app).get(`/api/v1/articles/${articleId}`)
-      .set('x-access-token', myToken);
+        .set('x-access-token', myToken);
       expect(response.status).to.equal(200);
       expect(response.body.success).to.equal(true);
       expect(response.body.article.Comments).to.be.an('array');
@@ -314,7 +313,7 @@ describe('Integration tests for the article controller', () => {
     });
     it('should reject request with invalid article Id', async () => {
       const response = await chai.request(app).get(`/api/v1/articles/${comment.body.commentCreated.id}`)
-      .set('x-access-token', myToken);
+        .set('x-access-token', myToken);
       expect(response.status).to.equal(404);
       expect(response.body.success).to.equal(false);
       expect(response.body).to.have.property('message');

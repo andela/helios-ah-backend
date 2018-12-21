@@ -192,7 +192,7 @@ class ArticleController {
         }
       });
       if (article) {
-        await helperMethod.updateViewStat(article.id, article.viewStats);
+        await helperMethod.updateViewStat(article.id, article.viewStats, article.title);
         res.status(200).json({
           success: true,
           article,

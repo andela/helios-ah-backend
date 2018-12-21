@@ -40,10 +40,11 @@ const requestSuccessful = (res, message) => res.status(200).json({
 /**
  * A method that updates the value of the reading stats column
  * @param {string} articleId - id of article
- * @param {integer} stat - current view stat of article
+ * @param {integer} stat - current view stat of article,
+ * @param {string} title - article title
  * @returns {function} - update method
  */
-const updateViewStat = async (articleId, stat) => {
+const updateViewStat = async (articleId, stat, title) => {
   const options = {
     hooks: false,
     where: {
@@ -52,7 +53,8 @@ const updateViewStat = async (articleId, stat) => {
     returning: true
   };
   return Article.update({
-    viewStats: stat + 1
+    viewStats: stat + 1,
+    title
   }, options);
 };
 
