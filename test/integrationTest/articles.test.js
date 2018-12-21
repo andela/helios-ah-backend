@@ -299,6 +299,7 @@ describe('Integration tests for the article controller', () => {
     it('should get a specific article by Id', async () => {
       const response = await chai.request(app).get(`/api/v1/articles/${articleId}`)
       .set('x-access-token', myToken);
+      console.log('response body ===>', response.body);
       expect(response.status).to.equal(200);
       expect(response.body.success).to.equal(true);
       expect(response.body.article.Comments).to.be.an('array');

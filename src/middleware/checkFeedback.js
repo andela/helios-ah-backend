@@ -1,4 +1,5 @@
 import models from '../models';
+import { helperMethods } from '../utilities';
 
 const {
   Likes,
@@ -13,13 +14,11 @@ const {
  * @returns {object} returns an output
  */
 const findOneData = async (req, table) => {
-  const user = req.decoded;
-  const report = await table.findOne({
-    where: {
-      userId: user.id,
-      articleId: req.params.articleId,
-    }
-  });
+  const options = {
+    where: req.params
+  };
+  options.where.userId = req.decoded.id;
+  const report = await table.findOne(options);
   return report;
 };
 
@@ -107,6 +106,41 @@ class checkFeedback {
       });
     }
     next();
+  }
+
+  /**
+   * function checks if feedback table contains a previous Like
+   * @function checkCommentLiked
+   * @description checks if article exists on the database
+   * @param {object} req - response
+   * @param {object} res - Request Object
+   * @param {object} next - UUID
+   * @returns {object} - message from server
+   */
+  static async checkLikedCommentExist(req, res, next) {
+    const likes = await findOneData(req, Likes);
+    if (!likes) {
+      return next();
+    }
+    res.status(409).json({
+      success: false,
+      message: 'Comment already liked'
+    });
+  }
+
+  /**
+   * function checks if feedback table contains a previous Like
+   * @function checkCommentLiked
+   * @description checks if article exists on the database
+   * @param {object} req - response
+   * @param {object} res - Request Object
+   * @param {object} next - UUID
+   * @returns {object} - message from server
+   */
+  static async verifyLikeStatus(req, res, next) {
+    const like = await findOneData(req, Likes);
+    return (!like) ? helperMethods
+      .notFoundError(res, 'like status to be updated not found') : next();
   }
 }
 

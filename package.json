@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
+  "engines": {
+    "node": "10.14.2"
+  },
   "scripts": {
     "start": "nodemon ./src/app.js --exec babel-node",
     "test": "export NODE_ENV=test && npm run undo:migration && npm run migrate && npm run seeder && nyc --reporter=html --reporter=text mocha --exit --require babel-register --require babel-polyfill ./test/index.js",
