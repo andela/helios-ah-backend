@@ -49,6 +49,7 @@ class ArticleController {
     titled '${title}'`;
 
         req.io.emit('inAppNotifications', { notificationText });
+
         await NotificationUtil
           .setMultipleAppNotifications(
             followers[0].followers,

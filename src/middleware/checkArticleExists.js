@@ -20,14 +20,16 @@ const checkArticleExists = async (req, res, next) => {
   try {
     const { articleId } = await req.params;
     const article = await Article
-      .findByPk(articleId,
+      .findByPk(
+        articleId,
         {
           include:
           {
             model: Users,
             attributes: ['email']
           }
-        });
+        }
+      );
 
     if (article) {
       req.article = article;

@@ -1,8 +1,8 @@
 
 
 export default {
-  up: (queryInterface, Sequelize) => queryInterface.createTable('Notifications',
-    {
+  up: (queryInterface, Sequelize) => queryInterface
+    .createTable('Notifications', {
       id: {
         allowNull: false,
         primaryKey: true,

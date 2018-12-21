@@ -38,12 +38,15 @@ class LikesController {
       });
       if (isLiked) {
         req.io.emit('inAppNotifications', `${notificationText}`);
+
         await NotificationController
           .setSingleAppNotification(req.user,
             notificationText);
+
         await NotificationController
           .setSingleEmailNotification(req.user,
             details);
+
         return res.status(201).json({
           success: true,
           message: 'Article liked successfully',
@@ -69,15 +72,18 @@ class LikesController {
       articleId,
       liked
     } = req.params;
+
     const user = req.decoded;
     try {
       const isLiked = await Likes.update({
         isLiked: liked || 'false'
-      }, {
-        where: {
-          userId: user.id,
-          articleId
-        }
+      },
+      {
+        where:
+      {
+        userId: user.id,
+        articleId
+      }
       });
       if (isLiked) {
         return res.status(200).json({

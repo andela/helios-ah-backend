@@ -125,14 +125,16 @@ class NotificationUtil {
    */
   static async updateNotificationStatus(options, user) {
     try {
-      return Users.update(options,
+      return Users.update(
+        options,
         {
           where:
               {
                 id: user.id
               },
           returning: true
-        });
+        }
+      );
     } catch (error) {
       throw error;
     }
