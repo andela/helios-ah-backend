@@ -49,12 +49,19 @@ class ArticleController {
     titled '${title}'`;
 
         req.io.emit('inAppNotifications', { notificationText });
+
         await NotificationUtil
-          .setMultipleAppNotifications(followers[0].followers,
-            notificationText);
+          .setMultipleAppNotifications(
+            followers[0].followers,
+            notificationText
+          );
+
         await NotificationUtil
-          .setMultipleEmailNotifications(followers[0].followers,
-            notificationText);
+          .setMultipleEmailNotifications(
+            followers[0].followers,
+            notificationText
+          );
+
         res.status(201).json({
           success: true,
           message: 'Article created successfully',
