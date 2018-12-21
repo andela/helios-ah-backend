@@ -114,7 +114,7 @@ class checkFeedback {
    * @description checks if article exists on the database
    * @param {object} req - response
    * @param {object} res - Request Object
-   * @param {object} next - UUID
+   * @param {object} next - callback function
    * @returns {object} - message from server
    */
   static async checkLikedCommentExist(req, res, next) {
