@@ -36,7 +36,6 @@ class SocialLogin {
           message: `Social login via ${obj.socialMedia} was successful`,
           id: userFound.id,
           username: userFound.username,
-          email: userFound.email,
           token,
         });
       }

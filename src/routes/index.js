@@ -227,7 +227,6 @@ const routes = (app) => {
   );
   app.get(
     '/api/v1/articles',
-    Authorization.checkToken,
     ArticleController.getArticles,
   );
   app.post(
