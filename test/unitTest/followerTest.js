@@ -18,6 +18,12 @@ const req = {
   decoded: {
     id: '3er44-r5tfrtg-t6'
   },
+  paramsUser: {
+    email: 'someEmail@wemail.com',
+  },
+  user: {
+    username: 'myUsername'
+  }
 };
 const res = {
   status() {

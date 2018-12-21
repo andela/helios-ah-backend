@@ -1,7 +1,7 @@
 import { Op } from 'sequelize';
 import models from '../models';
 
-const { Follower } = models;
+const { Follower, Users } = models;
 
 /**
  * @class Followers
@@ -105,6 +105,7 @@ class Followers {
     if (isPreviousFollowing) {
       await Followers
         .queryForUpdatingPreviousFollowing(true, userId, followerId);
+
       return res.status(200).json({
         success: true,
         message: 'You are now following this user'
@@ -155,6 +156,31 @@ class Followers {
       });
     }
     next();
+  }
+
+  /**
+   * @description find all followers of a particular user
+   *
+   * @param {function} id the id of the user being followed
+   *
+   * @returns  {JSON} Returns a JSON object
+   */
+  static async getFollowers(id) {
+    try {
+      return await Users.findAll({
+        where: {
+          id
+        },
+        include: [
+          {
+            model: Users,
+            as: 'followers',
+          }
+        ]
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 }
 

@@ -8,7 +8,8 @@ import {
   RatingsController,
   CommentController,
   SocialLoginController,
-  ReportController
+  ReportController,
+  NotificationController,
 } from '../controller';
 
 import {
@@ -23,7 +24,7 @@ import {
   Authorization,
   checkBookmarkExists,
   findDatabaseField,
-  checkFeedback
+  checkFeedback,
 } from '../middleware';
 
 /**
@@ -55,14 +56,39 @@ const routes = (app) => {
   app.post(
     '/api/v1/articles',
     Authorization.checkToken,
+    findDatabaseField.UserInToken,
     validateUserInputs.validateCreateArticle,
     ArticleController.createArticle
   );
   app.get(
+    '/api/v1/notifications/email',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    NotificationController.optIntoEmailNotifications
+  );
+  app.get(
+    '/api/v1/notifications/app',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    NotificationController.optIntoInAppNotifications
+  );
+  app.delete(
+    '/api/v1/notifications/email',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    NotificationController.optOutOfEmailNotifications
+  );
+  app.delete(
+    '/api/v1/notifications/app',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    NotificationController.optOutOfInAppNotifications
+  );
+  app.get(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
-    Authorization.uuidV4Validator,
     findDatabaseField.UserInToken,
+    Authorization.uuidV4Validator,
     findDatabaseField.UserInParams,
     follower.checkForSelfFollow,
     follower.checkForExistingFollowing,
@@ -191,6 +217,7 @@ const routes = (app) => {
   app.post(
     '/api/v1/articles/:articleId/likes',
     Authorization.checkToken,
+    findDatabaseField.UserInToken,
     checkArticleExists,
     ValidateArticle.checkArticleNotDraft,
     checkFeedback.checkLikesExist,
@@ -199,6 +226,7 @@ const routes = (app) => {
   app.put(
     '/api/v1/articles/:articleId/likes',
     Authorization.checkToken,
+    findDatabaseField.UserInToken,
     checkArticleExists,
     checkFeedback.checkLikesNotExist,
     LikesController.updateLikes

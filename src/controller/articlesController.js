@@ -1,5 +1,6 @@
 import models from '../models';
 import errorResponse from '../utilities/Error';
+import { follower, NotificationUtil } from '../utilities';
 
 const {
   Article,
@@ -10,6 +11,7 @@ const {
   ChildComments,
   ChildCommentHistory,
 } = models;
+
 
 /**
  * Class representing the Article controller
@@ -29,7 +31,9 @@ class ArticleController {
     const {
       title, body, description, image, isDraft
     } = req.body;
+
     try {
+      const followers = await follower.getFollowers(req.decoded.id);
       const articleCreated = await Article.create({
         title,
         body,
@@ -41,6 +45,22 @@ class ArticleController {
         isDraft: isDraft || 'true'
       });
       if (articleCreated) {
+        const notificationText = `${req.user.username} has published an article
+    titled '${title}'`;
+
+        req.io.emit('inAppNotifications', { notificationText });
+        await NotificationUtil
+          .setMultipleAppNotifications(
+            followers[0].followers,
+            notificationText
+          );
+
+        await NotificationUtil
+          .setMultipleEmailNotifications(
+            followers[0].followers,
+            notificationText
+          );
+
         res.status(201).json({
           success: true,
           message: 'Article created successfully',

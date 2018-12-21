@@ -1,5 +1,6 @@
 import models from '../models';
 import { helperMethods } from '../utilities';
+import NotificationController from '../utilities/Notification';
 
 const {
   Likes
@@ -13,7 +14,7 @@ const {
 class LikesController {
   /**
    * like an Article
-   * Route: POST: POST /api/v1/articles/:articleId/like
+   * Route: POST: /api/v1/articles/:articleId/like
    * @param {object} req - Request object
    * @param {object} res - Response object
    * @return {res} res - Response object
@@ -23,6 +24,12 @@ class LikesController {
       articleId
     } = req.params;
     const user = req.decoded;
+    const notificationText = `${req.user.username} likes your article`;
+    const details = {
+      email: req.article.User.email,
+      subject: 'Author\'s Haven - Email notification',
+      emailBody: `<p>${notificationText}</p>`
+    };
     try {
       const isLiked = await Likes.create({
         userId: user.id,
@@ -30,6 +37,13 @@ class LikesController {
         isLiked: 'true'
       });
       if (isLiked) {
+        req.io.emit('inAppNotifications', `${notificationText}`);
+        await NotificationController
+          .setSingleAppNotification(req.user,
+            notificationText);
+        await NotificationController
+          .setSingleEmailNotification(req.user,
+            details);
         return res.status(201).json({
           success: true,
           message: 'Article liked successfully',

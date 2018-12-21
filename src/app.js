@@ -5,12 +5,32 @@ import cors from 'cors';
 import logger from 'morgan';
 import passport from 'passport';
 import dotenv from 'dotenv';
+import socketIO from 'socket.io';
 import session from 'express-session';
 import './utilities/socialAuthStrategies';
 import routes from './routes';
 
 // Create global app object
 const app = express();
+
+// let's start our server...
+const server = app.listen(process.env.PORT || 4001, () => {
+  console.log(`Server is up and running on port ${server.address().port}...!`); //eslint-disable-line
+});
+
+const io = socketIO(server);
+
+io.on('connection', (socket) => {
+  socket.on('inAppNotifications', (data) => {
+    socket.emit('inAppNotifications', data);
+  });
+});
+
+const ioMiddleware = (req, res, next) => {
+  req.io = io;
+  next();
+};
+
 
 app.use(cors());
 dotenv.config();
@@ -31,6 +51,9 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(express.static('public'));
+
+app.use(ioMiddleware);
 
 routes(app);
 
@@ -73,10 +96,5 @@ if (app.get('env') === 'production') {
     next();
   });
 }
-
-// finally, let's start our server...
-const server = app.listen(process.env.PORT || 4001, () => {
-  console.log(`Server is up and running on port ${server.address().port}...!`); //eslint-disable-line
-});
 
 export default app;
