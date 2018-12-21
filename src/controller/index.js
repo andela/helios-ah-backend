@@ -3,6 +3,7 @@ import ArticleController from './articlesController';
 import LikesController from './likesController';
 import RatingsController from './ratingsController';
 import CommentController from './commentController';
+import SocialLoginController from './socialLoginController';
 import ReportController from './reportController';
 
 export {
@@ -11,5 +12,6 @@ export {
   LikesController,
   RatingsController,
   CommentController,
+  SocialLoginController,
   ReportController
 };

@@ -228,6 +228,7 @@ class ArticleController {
       });
       if (createBookmark) {
         res.status(201).json({
+          success: true,
           message: 'Article successfully bookmarked',
         });
       }

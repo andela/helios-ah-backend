@@ -7,13 +7,14 @@ import faker from 'faker';
 chai.use(chaiHttp);
 const { expect } = chai;
 const { Article } = models;
+let userId;
 
 describe('Integration tests for the article controller', () => {
   let myToken, userId, articleId, comment, childComment;
   before('Create token to validate routes', async () => {
     const userDetails = {
       email: 'yomizy@wizzy.com',
-      password: 'myPassword',
+      password: 'password',
     }
     const response = await chai.request(app).post('/api/v1/auth/login')
       .send(userDetails);
@@ -127,7 +128,7 @@ describe('Integration tests for the article controller', () => {
         .set('x-access-token', myToken).send(articleDetails);
       expect(response.status).to.equal(400);
       expect(response.body).to.have.property('message');
-      expect(response.body.message).to.equal('Title should not exceed 80 characters');
+      expect(response.body.message).to.equal('Title field accepts 2 - 80 characters');
     });
     it('should send an error message when description field is too long', async () => {
       const articleDetails = {
@@ -138,12 +139,13 @@ describe('Integration tests for the article controller', () => {
         body: 'so i saw a dog',
         title: 'narrative',
         image: 'https://someimage.uplodersite.com',
+        readTime: '2mins',
       };
       const response = await chai.request(app).post('/api/v1/articles')
         .set('x-access-token', myToken).send(articleDetails);
       expect(response.status).to.equal(400);
       expect(response.body).to.have.property('message');
-      expect(response.body.message).to.equal('Description field should not exceed 200 character');
+      expect(response.body.message).to.equal('Description field accepts 2 - 200 characters');
     });
     it('should send an error message when image field is not a URL',
       async () => {
@@ -187,7 +189,7 @@ describe('Integration tests for the article controller', () => {
         expect(response.status).to.equal(400);
         expect(response.body).to.have.property('message');
         expect(response.body.message)
-          .to.equal('Title should not exceed 80 characters');
+          .to.equal('Title field accepts 2 - 80 characters');
       });
     it('should send an error message when description field is too long',
       async () => {
@@ -205,7 +207,7 @@ describe('Integration tests for the article controller', () => {
         expect(response.status).to.equal(400);
         expect(response.body).to.have.property('message');
         expect(response.body.message)
-          .to.equal('Description field should not exceed 200 character');
+          .to.equal('Description field accepts 2 - 200 characters');
       });
     it('should get all articles', async () => {
       const response = await chai.request(app).get('/api/v1/articles')
