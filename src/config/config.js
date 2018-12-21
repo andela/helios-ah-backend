@@ -22,7 +22,7 @@ const databaseConfig = {
     dialect: 'postgres',
   },
   production: {
-    use_env_variable: 'DB_URL_PRODUCTION'
+    use_env_variable: 'DATABASE_URL'
   }
 };
 

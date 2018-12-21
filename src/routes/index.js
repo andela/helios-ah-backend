@@ -76,13 +76,17 @@ const routes = (app) => {
     findDatabaseField.UserInToken,
     findDatabaseField.UserInParams,
     follower.checkForSelfUnfollow,
-    UserController.unfollowUser,
-    ArticleController.getArticles
+    UserController.unfollowUser
   );
   app.get(
     '/api/v1/articles/user',
     Authorization.checkToken,
     ArticleController.getArticles
+  );
+  app.get(
+    '/api/v1/articles/:articleId',
+    Authorization.uuidV4Validator,
+    ArticleController.getArticle
   );
   app.put(
     '/api/v1/articles/:articleId',
