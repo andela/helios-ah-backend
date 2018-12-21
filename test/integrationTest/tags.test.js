@@ -17,7 +17,7 @@ describe('Integration tests for the tag controller', () => {
     const loginUser = await chai.request(app).post('/api/v1/auth/login')
       .send({
         email: 'yomizy@wizzy.com',
-        password: 'myPassword',
+        password: 'password',
       });
     const token = loginUser.body.userDetails.token;
     const firstArticle = await chai.request(app).post('/api/v1/articles')
