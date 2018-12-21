@@ -34,7 +34,7 @@ export default {
           key: 'id',
           as: 'childComments',
         }
-      },
+      }
     }),
   down: queryInterface => queryInterface.dropTable('ChildComments')
 };

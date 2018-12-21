@@ -9,3 +9,4 @@ import './sendEmail.test';
 import './followerTest';
 import './reportModel.test';
 import './articleController.test';
+import './likesModel.test';
