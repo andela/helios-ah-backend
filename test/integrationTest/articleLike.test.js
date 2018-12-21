@@ -1,7 +1,6 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/app';
-import authentication from "../../src/utilities/authentication";
 
 
 chai.use(chaiHttp);

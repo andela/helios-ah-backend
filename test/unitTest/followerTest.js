@@ -3,7 +3,6 @@ import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 import models from '../../src/models';
 import app from '../../src/app';
-import truncate from '../../src/utilities/truncate';
 import { follower } from '../../src/utilities';
 
 
