@@ -29,7 +29,7 @@ const rating = {
 
 const user = {
   email: 'yomizy@wizzy.com',
-  password: 'myPassword'
+  password: 'password'
 }
 let token;
 let newArticle;

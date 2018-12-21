@@ -5,8 +5,9 @@ import app from '../../src/app';
 import { UserController } from '../../src/controller';
 import { Authentication } from '../../src/utilities';
 
-chai.use(chaiHttp);
+ chai.use(chaiHttp);
 const { expect } = chai;
+
 describe('Integration tests for the user controller', () => {
   describe('Test general error handling and welcome message', () => {
     it('should send an error when there is an unforseen error', (done) => {
@@ -125,8 +126,8 @@ describe('Integration tests for the user controller', () => {
     });
     it('should return status code 404 and an object', async () => {
       const email = { email: 'emailNotFound@wfemail.com' }
-      const response = await chai.request(app).post('/api/v1/user/requests/password/reset')
-        .send(email);
+      const response = await chai.request(app)
+      .post('/api/v1/user/requests/password/reset').send(email);
       expect(response.status).to.deep.equal(404);
       expect(response.body.error).to.eql(
         'user not found'
@@ -138,7 +139,7 @@ describe('Integration tests for the user controller', () => {
     async () => {
       const userDetails = {
         email: 'yomizy@wizzy.com',
-        password: 'myPassword',
+        password: 'password',
       }
       const response = await chai.request(app).post('/api/v1/auth/login')
       .send(userDetails);

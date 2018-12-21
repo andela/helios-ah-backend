@@ -10,8 +10,8 @@ const articleModel = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         len: {
-          args: [3, 80],
-          msg: 'Title should not exceed 80 characters',
+          args: [2, 80],
+          msg: 'Title field accepts 2 - 80 characters',
         }
       }
     },
@@ -30,7 +30,7 @@ const articleModel = (sequelize, DataTypes) => {
       validate: {
         len: {
           args: [2, 200],
-          msg: 'Description field should not exceed 200 character',
+          msg: 'Description field accepts 2 - 200 characters',
         }
       }
     },
@@ -50,7 +50,16 @@ const articleModel = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     }
+  }, {
+    validate: {
+      checkForSpace() {
+        if (this.title.search(/[^\w\s\.\-\?#\$!']/g) !== -1) {
+          throw new Error('Title should contain letters, numbers, !""?');
+        }
+      }
+    },
   });
+
   Article.associate = (models) => {
     Article.belongsTo(models.Users, {
       foreignKey: 'userId',

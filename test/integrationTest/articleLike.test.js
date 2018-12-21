@@ -24,7 +24,7 @@ const draftArticle = {
 
 const user = {
   email: 'yomizy@wizzy.com',
-  password: 'myPassword'
+  password: 'password'
 }
 
 let token;
@@ -34,7 +34,6 @@ describe('Integration tests for the Like controller', () => {
     const response = await chai.request(app).post('/api/v1/auth/login')
     .send(user);
     token = response.body.userDetails.token;
-    console.log(token);
     newArticle = await chai.request(app).post('/api/v1/articles')
       .set('x-access-token', token).send(draftArticle);
   });
@@ -50,7 +49,7 @@ describe('Integration tests for the Like controller', () => {
   });
   describe('Test when article is not draft', () => {
     it('it should like if article is not draft', async () => {
-      const updateDratftStatus = await chai.request(app).put(`/api/v1/articles/${newArticle.body.articleCreated.id}`)
+      await chai.request(app).put(`/api/v1/articles/${newArticle.body.articleCreated.id}`)
         .set('x-access-token', token).send(article);
       const isLiked = await chai.request(app).post(`/api/v1/articles/${newArticle.body.articleCreated.id}/likes`)
         .set('x-access-token', token);

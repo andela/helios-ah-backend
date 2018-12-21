@@ -47,6 +47,8 @@ node_modules
 .env
 
 # editor package.back-up.json
+package.back-up.json
+
 # webstor files
 .idea
 

@@ -79,7 +79,7 @@ class Authorization {
     } else {
       try {
         const tokenVerified = await Auth.verifyToken(token);
-        if (tokenVerified) {
+        if (tokenVerified.success) {
           req.decoded = tokenVerified;
           next();
         } else {

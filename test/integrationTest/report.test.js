@@ -11,7 +11,7 @@ describe('Integration tests for report article', () => {
     let articleId;
     const authorDetails = {
         email: 'yomizy@wizzy.com',
-        password: 'myPassword'
+        password: 'password'
     }
     const reporterDetails = {
         password: 'password',

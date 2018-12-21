@@ -1,6 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/app';
+import { Authentication } from '../../src/utilities';
 import models from '../../src/models';
 
 chai.use(chaiHttp);
@@ -13,7 +14,7 @@ describe('Integration tests for comments controller', () => {
     before('Login a user before running tests', async () => {
         const userDetails = {
           email: 'yomizy@wizzy.com',
-          password: 'myPassword',
+          password: 'password',
         }
         const response = await chai.request(app).post('/api/v1/auth/login')
             .send(userDetails);
@@ -132,7 +133,7 @@ describe('Integration tests for comments controller', () => {
       before('create an article before running this test suite', async () => {
         const userDetails = {
           email: 'mike@myzone.com',
-          password: '12345',
+          password: 'password',
         }
         const response = await chai.request(app).post('/api/v1/auth/login')
             .send(userDetails);
