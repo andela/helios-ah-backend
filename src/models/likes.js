@@ -14,6 +14,42 @@ const likesModel = (sequelize, DataTypes) => {
         }
       }
     },
+    userId: {
+      type: DataTypes.UUIDV4,
+      validate: {
+        isUUID: {
+          args: 4,
+          msg: ':userId is not a valid uuid type'
+        }
+      }
+    },
+    articleId: {
+      type: DataTypes.UUIDV4,
+      validate: {
+        isUUID: {
+          args: 4,
+          msg: ':articleId is not a valid uuid type'
+        }
+      }
+    },
+    commentId: {
+      type: DataTypes.UUIDV4,
+      validate: {
+        isUUID: {
+          args: 4,
+          msg: ':commentId is not a valid uuid type'
+        }
+      }
+    },
+    childCommentId: {
+      type: DataTypes.UUIDV4,
+      validate: {
+        isUUID: {
+          args: 4,
+          msg: ':childCommentId is not a valid uuid type'
+        }
+      }
+    }
   });
   Likes.associate = (models) => {
     Likes.belongsTo(models.Users, {
@@ -22,6 +58,14 @@ const likesModel = (sequelize, DataTypes) => {
     });
     Likes.belongsTo(models.Article, {
       foreignKey: 'articleId',
+      onDelete: 'CASCADE'
+    });
+    Likes.belongsTo(models.Comments, {
+      foreignKey: 'commentId',
+      onDelete: 'CASCADE'
+    });
+    Likes.belongsTo(models.ChildComments, {
+      foreignKey: 'childCommentId',
       onDelete: 'CASCADE'
     });
   };

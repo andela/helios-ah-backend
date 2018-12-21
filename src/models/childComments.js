@@ -33,7 +33,7 @@ const ChildCommentModel = (sequelize, DataTypes) => {
           msg: ':commentId is not a valid uuid type'
         }
       }
-    },
+    }
   });
   ChildComments.associate = (models) => {
     ChildComments.belongsTo(models.Comments, {
@@ -47,6 +47,10 @@ const ChildCommentModel = (sequelize, DataTypes) => {
     ChildComments.hasMany(models.ChildCommentHistory, {
       foreignKey: 'childCommentId',
       onDelete: 'CASCADE'
+    });
+    ChildComments.hasMany(models.Likes, {
+      foreignKey: 'childCommentId',
+      as: 'Likes'
     });
   };
   return ChildComments;
