@@ -4,7 +4,7 @@
   "description": "A Social platform for the creative at heart",
   "main": "index.js",
   "engines": {
-    "node": "10.14.2",
+    "node": "10.14.2"
   },
   "scripts": {
     "start": "nodemon ./src/app.js --exec babel-node",
