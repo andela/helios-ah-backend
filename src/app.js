@@ -3,6 +3,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import logger from 'morgan';
+import path from 'path';
 import passport from 'passport';
 import dotenv from 'dotenv';
 import session from 'express-session';
@@ -23,6 +24,7 @@ if (app.get('env') !== 'test') {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(`${__dirname}/public`));
+app.use('/docs', express.static(path.resolve(`${__dirname}`, '../apiDocs')));
 app.use(session({
   secret: process.env.express_session_secrete,
   resave: false,

@@ -1,0 +1,1389 @@
+{
+  "openapi" : "3.0.0",
+  "info" : {
+    "version" : "v1",
+    "title" : "Authors-Haven",
+    "description" : "Create a community of like-minded authors to foster inspiration and innovation by leveraging the modern web",
+    "contact" : {
+      "name" : "Ademola Hussain",
+      "email" : "demola.hussainin@gmail.com",
+      "url" : "https://github.com/Daymorelah"
+    },
+    "license" : {
+      "name" : "MIT",
+      "url" : "https://github.com/Daymorelah/orderMeal/blob/development/LICENSE"
+    }
+  },
+  "servers" : [ {
+    "description" : "local server",
+    "url" : "http://localhost:4001/api/v1"
+  }, {
+    "description" : "Staging",
+    "url" : "https://helios-ah-backend-staging.herokuapp.com"
+  }, {
+    "description" : "Production server",
+    "url" : "https://helios-ah-backend.herokuapp.com/"
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "tags" : [ "Welcome" ],
+        "responses" : {
+          "200" : {
+            "description" : "Request completed successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "Message" : "Welcome to the Order-Meal API"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/signup" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "User registration",
+        "description" : "This endpoint starts the process of registering a user. It sends send a link to the email of the user so that the user can verify his/her email and complete his/her registration on confirmation of email address.",
+        "responses" : {
+          "200" : {
+            "description" : "Pre-registration process completed successfully.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "status" : "success",
+                    "message" : "An email has been sent to your email address. Please check your email to complete your registration"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "User details needed to start registration for a user",
+          "required" : true,
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "username", "password", "email", "firstName", "lastName" ],
+                "properties" : {
+                  "username" : {
+                    "type" : "string",
+                    "example" : "JohnDoe"
+                  },
+                  "password" : {
+                    "type" : "string",
+                    "example" : "password"
+                  },
+                  "email" : {
+                    "type" : "string",
+                    "format" : "email",
+                    "example" : "wemail@wemail.com"
+                  },
+                  "firstName" : {
+                    "type" : "string",
+                    "example" : "JohnDoe"
+                  },
+                  "lastName" : {
+                    "type" : "string",
+                    "example" : "JohnDoe"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/login" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "User login",
+        "description" : "This endpoint allows a registered user to login to use the app.",
+        "responses" : {
+          "201" : {
+            "description" : "User logged in successfully.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "User logged in succesfully",
+                    "userDetails" : {
+                      "id" : "5432334-5t656y-7uhy-78uj-h234gt6",
+                      "username" : "usernameEnteredByUSer",
+                      "role" : 1,
+                      "token" : "eyJhbGciOiJIVCJ9.eyJ1c2VySWQiOjExweHAiOj E1Mz.ogZKtEWCi6tcw_VvOGNNUQjhR_NA"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "401" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "User details needed to log a registered user into the app.",
+          "required" : true,
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "password", "email" ],
+                "properties" : {
+                  "password" : {
+                    "type" : "string",
+                    "example" : "password"
+                  },
+                  "email" : {
+                    "type" : "string",
+                    "format" : "email",
+                    "example" : "wemail@wemail.com"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/complete_reg" : {
+      "get" : {
+        "tags" : [ "Users", "Social login" ],
+        "summary" : "Complete a users registration",
+        "description" : "This end-point completes a user registration by asserting that the email used during the initial registration stage is actually owned by the user who registered.",
+        "responses" : {
+          "201" : {
+            "description" : "User completed registering successfully.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "User created succesfully",
+                    "id" : 3,
+                    "username" : "usernameEnteredByUSer",
+                    "token" : "eyJhbGciOiJIVCJ9.eyJ1c2VySWQiOjExweHAiOj E1Mz.ogZKtEWCi6tcw_VvOGNNUQjhR_NA"
+                  }
+                }
+              }
+            }
+          },
+          "401" : {
+            "$ref" : "#/components/responses/authenticationFailed"
+          },
+          "400" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/completeRegistrationToken"
+        } ]
+      }
+    },
+    "/articles" : {
+      "post" : {
+        "tags" : [ "Articles" ],
+        "summary" : "Creates an article",
+        "description" : "Allows a registered user to create an article",
+        "responses" : {
+          "201" : {
+            "description" : "Article created successfully.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "Article created succesfully",
+                    "articleCreated" : {
+                      "id" : "2343-345tr5-05-65-6545rt5",
+                      "body" : "some random text",
+                      "title" : "some title",
+                      "isDraft" : false
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "401" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "Article details needed to create an article.",
+          "required" : true,
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "title", "body", "description", "readTime", "image", "isDraft" ],
+                "properties" : {
+                  "title" : {
+                    "type" : "string",
+                    "example" : "my ice cream"
+                  },
+                  "body" : {
+                    "type" : "string",
+                    "example" : "girls love ice cream."
+                  },
+                  "description" : {
+                    "type" : "string",
+                    "example" : "Educational"
+                  },
+                  "readTime" : {
+                    "type" : "string",
+                    "example" : "2 mins"
+                  },
+                  "image" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "lbk.some.imageCloud.Store.com"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        } ]
+      },
+      "get" : {
+        "tags" : [ "Articles" ],
+        "summary" : "List all available articles",
+        "description" : "This end-point lists all available articles in the database",
+        "responses" : {
+          "200" : {
+            "description" : "Article retrieved successfully.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "articles" : "list of articles"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "parameters" : [ {
+          "name" : "page",
+          "in" : "query",
+          "required" : false,
+          "description" : "The page to display",
+          "schema" : {
+            "type" : "string",
+            "example" : "2"
+          }
+        }, {
+          "name" : "limit",
+          "in" : "query",
+          "required" : false,
+          "description" : "The page to display",
+          "schema" : {
+            "type" : "string",
+            "example" : "20"
+          }
+        } ]
+      }
+    },
+    "/profiles/{id}/follow" : {
+      "get" : {
+        "tags" : [ "User", "Follow-User" ],
+        "summary" : "Allows a user follow another user",
+        "description" : "This end-point allows a registered user to follow another registered user.",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Followee ID i.e the person to the followed.",
+          "required" : true,
+          "example" : "323e-4544-56b4-4549-343n3i",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "User completed registering successfully.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "You are now following this user."
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        }
+      },
+      "delete" : {
+        "tags" : [ "Users", "Unfollow-user" ],
+        "summary" : "Allows a user to unfollow another user",
+        "description" : "This end-point allows a registered user to unfollow another registered user.",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "description" : "Follower ID i.e the person to be unfollowed.",
+          "required" : true,
+          "example" : "323e-4544-564-454-3433",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "User completed registering successfully.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "You have unfollowed this user"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        }
+      }
+    },
+    "/articles/user" : {
+      "get" : {
+        "tags" : [ "Articles" ],
+        "summary" : "Get all articles.",
+        "description" : "This end-poit is a protected route that gets all available articles in the database.",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request to get all articles completed successfully.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "articles" : "An array of articles"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}" : {
+      "put" : {
+        "tags" : [ "Articles" ],
+        "summary" : "Update an article.",
+        "description" : "This protected route updates an article based on the ID of the article passed (articleId).",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "$ref" : "#/components/parameters/articleId"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request to update an article completed successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "Article updated successfully."
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "Article details needed to create an article.",
+          "required" : true,
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "title", "body", "description", "image", "isDraft" ],
+                "properties" : {
+                  "title" : {
+                    "type" : "string",
+                    "example" : "my ice cream"
+                  },
+                  "body" : {
+                    "type" : "string",
+                    "example" : "girls love ice cream."
+                  },
+                  "description" : {
+                    "type" : "string",
+                    "example" : "Educational"
+                  },
+                  "image" : {
+                    "type" : "string",
+                    "format" : "uri",
+                    "example" : "lbk.some.imageCloud.Store.com"
+                  },
+                  "isDraft" : {
+                    "type" : "boolean"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/authors" : {
+      "get" : {
+        "tags" : [ "Users" ],
+        "summary" : "Get all authors.",
+        "description" : "Returns a list of available authors in the app",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The request to get all authors completed successfully.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "authors" : "An array of articles"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}/comments" : {
+      "post" : {
+        "tags" : [ "Articles", "Comments" ],
+        "summary" : "Creates a comment to an article",
+        "description" : "This end-point allows a registered to create a comment to an article.",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "$ref" : "#/components/parameters/articleId"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "A comment to an article has been created",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "commentCreated" : "comments..."
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "Article details needed to create an article.",
+          "required" : true,
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "commentText", "articleId", "userId" ],
+                "properties" : {
+                  "commentText" : {
+                    "type" : "string",
+                    "example" : "some comment on article"
+                  },
+                  "aticleId" : {
+                    "type" : "string",
+                    "example" : "23434-er45tr-56yh-6554e43"
+                  },
+                  "userId" : {
+                    "type" : "string",
+                    "example" : "23434-er45tr-56yh-6554e43"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/articles/comments/{commentId}" : {
+      "put" : {
+        "tags" : [ "Comments", "Articles" ],
+        "summary" : "Update a comment to an article",
+        "description" : "This end-point allows a registered user to update his /her comment to an article.",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "name" : "commentId",
+          "in" : "path",
+          "description" : "The ID of the comment to update.",
+          "required" : true,
+          "example" : "23434-er45tr-56yh-6554e43",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The comment updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "updatedComment" : "some body text..."
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "The text used to update the comment",
+          "required" : true,
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "commentText" ],
+                "properties" : {
+                  "commentText" : {
+                    "type" : "string",
+                    "example" : "some comment...."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/articles/comments/childComments/{childCommentId}" : {
+      "put" : {
+        "tags" : [ "Articles", "Comments" ],
+        "summary" : "Update a child comment to a comment",
+        "description" : "This end-point allows a registered user to update his /her comment to a comment.",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "name" : "childCommentId",
+          "in" : "path",
+          "description" : "The ID of the child comment to update.",
+          "required" : true,
+          "example" : "23434-er45tr-56yh-6554e43",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "The comment updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "updatedComment" : "some body text..."
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "The text used to update the child comment",
+          "required" : true,
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "commentText" ],
+                "properties" : {
+                  "commentText" : {
+                    "type" : "string",
+                    "example" : "some comment...."
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/comments/{commentId}/childcomments" : {
+      "post" : {
+        "tags" : [ "Comments" ],
+        "summary" : "Creates a comment to a comment",
+        "description" : "This end-point allows a registered user to comment on another user's comment on an article.",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "name" : "commentId",
+          "in" : "path",
+          "description" : "ID of the comment to comment on",
+          "required" : true,
+          "example" : "234e45-345ty65-456yt5",
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "A child comment has been created successfully.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "childCommentCreated" : "some comments..."
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "comment details used to create a child comment",
+          "required" : true,
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "commentText", "commentId", "userId" ],
+                "properties" : {
+                  "commentText" : {
+                    "type" : "string",
+                    "example" : "some commentmade by user..."
+                  },
+                  "commentId" : {
+                    "type" : "string",
+                    "example" : "2345234-45tr5-6yt567y-t3445r5"
+                  },
+                  "userId" : {
+                    "type" : "string",
+                    "example" : "2345234-45tr5-6yt567y-t3445r5"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/requests/password/reset" : {
+      "post" : {
+        "tags" : [ "Users" ],
+        "summary" : "Sends a reset-password link to a user",
+        "description" : "This end-point sends a reset-password link to a user who wants to reset his/her password",
+        "responses" : {
+          "200" : {
+            "description" : "Password-reset link sent successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "success message"
+                  }
+                }
+              }
+            }
+          },
+          "404" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "Email to send the reset-password link to.",
+          "required" : true,
+          "content" : {
+            "application/www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "email" ],
+                "properties" : {
+                  "email" : {
+                    "type" : "string",
+                    "format" : "email",
+                    "example" : "wemail@eamil.com"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/change/password" : {
+      "put" : {
+        "tags" : [ "Users" ],
+        "summary" : "Changes a user's password",
+        "description" : "This end-point updates a registered user's password",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Password updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "success message"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "401" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "404" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          }
+        },
+        "requestBody" : {
+          "description" : "The new password used to update the existing password",
+          "required" : true,
+          "content" : {
+            "application/www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "password" ],
+                "properties" : {
+                  "password" : {
+                    "type" : "string",
+                    "example" : "mySecretPassword"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/role/{userId}" : {
+      "put" : {
+        "tags" : [ "Users", "Roles" ],
+        "summary" : "Updates a user's role",
+        "description" : "This end-point updates a registered user's role.",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "name" : "userId",
+          "in" : "path",
+          "required" : true,
+          "description" : "ID of the user whose role we want to update",
+          "schema" : {
+            "type" : "string"
+          },
+          "example" : "234e45-345ty65-456yt5"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "A user's role has been updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "some success message"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "The role to update a user to.",
+          "required" : true,
+          "content" : {
+            "application/x-form-www-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "roleId" ],
+                "properties" : {
+                  "roleId" : {
+                    "type" : "string",
+                    "example" : "2"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/social_fb" : {
+      "get" : {
+        "tags" : [ "Users" ],
+        "summary" : "Social login via facebook",
+        "description" : "This end-point authenticates a registered user via facebook.",
+        "responses" : {
+          "200" : {
+            "description" : "User has successfully logged in.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "succes" : true,
+                    "message" : "some success message",
+                    "id" : "234543-34r4-56y-t5654",
+                    "username" : "iceCream",
+                    "token" : "3rew345re3.456ytr56.ytr56ytr456trewr543"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        }
+      }
+    },
+    "/auth/social_ggl" : {
+      "get" : {
+        "tags" : [ "Users" ],
+        "summary" : "Social login via google",
+        "description" : "This end-point authenticates a registered user via google.",
+        "responses" : {
+          "200" : {
+            "description" : "User has successfully logged in.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "succes" : true,
+                    "message" : "some success message",
+                    "id" : "234543-34r4-56y-t5654",
+                    "username" : "iceCream",
+                    "token" : "3rew345re3.456ytr56.ytr56ytr456trewr543"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        }
+      }
+    },
+    "/auth/social_tw" : {
+      "get" : {
+        "tags" : [ "Users" ],
+        "summary" : "Social login via twitter",
+        "description" : "This end-point authenticates a registered user via twitter.",
+        "responses" : {
+          "200" : {
+            "description" : "User has successfully logged in.",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "succes" : true,
+                    "message" : "some success message",
+                    "id" : "234543-34r4-56y-t5654",
+                    "username" : "iceCream",
+                    "token" : "3rew345re3.456ytr56.ytr56ytr456trewr543"
+                  }
+                }
+              }
+            }
+          },
+          "400" : {
+            "$ref" : "#/components/responses/errorFromUser"
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}/likes" : {
+      "post" : {
+        "tags" : [ "Articles", "Likes" ],
+        "summary" : "Like an article",
+        "description" : "This end-point allows a registered user to like an article",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "$ref" : "#/components/parameters/articleId"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Article liked successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "some success message",
+                    "articleId" : "234543-45rter-67u5-4069yt6",
+                    "isLiked" : "true",
+                    "userId" : "234543-45rter-67u5-4069yt6"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Articles", "Likes" ],
+        "summary" : "Update like status for an article",
+        "description" : "This end-point allows a registered user to update the like status for an article.",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "$ref" : "#/components/parameters/articleId"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Article like status updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "some success message",
+                    "articleId" : "234543-45rter-67u5-4069yt6",
+                    "isLiked" : "false",
+                    "userId" : "234543-45rter-67u5-4069yt6"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        }
+      }
+    },
+    "/articles/{articleId}/ratings" : {
+      "post" : {
+        "tags" : [ "Articles", "Ratings" ],
+        "summary" : "Rate an article",
+        "description" : "This end-point allows a registered user to rate an article",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "$ref" : "#/components/parameters/articleId"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Article rated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "some success message",
+                    "articleId" : "234543-45rter-67u5-4069yt6",
+                    "rating" : "2",
+                    "userId" : "234543-45rter-67u5-4069yt6"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "Rating used to rate the article",
+          "required" : true,
+          "content" : {
+            "application/x-form-www-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "rating" ],
+                "properties" : {
+                  "rating" : {
+                    "type" : "string",
+                    "example" : "3"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put" : {
+        "tags" : [ "Articles", "Ratings" ],
+        "summary" : "Update the rating on an article",
+        "description" : "This end-point allows a registered user to update the rating on an article",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "$ref" : "#/components/parameters/articleId"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Article rating updated successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "some success message",
+                    "articleId" : "234543-45rter-67u5-4069yt6",
+                    "rating" : "3",
+                    "userId" : "234543-45rter-67u5-4069yt6"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "Rating used to update the rate on an article",
+          "required" : true,
+          "content" : {
+            "application/x-form-www-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "rating" ],
+                "properties" : {
+                  "rating" : {
+                    "type" : "string",
+                    "example" : "3"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/articles/{articleId}/bookmark" : {
+      "post" : {
+        "tags" : [ "Articles", "Bookmarks" ],
+        "summary" : "Bookmark an article",
+        "description" : "This end-point allows a registered user to bookmark an articles",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "$ref" : "#/components/parameters/articleId"
+        } ],
+        "responses" : {
+          "201" : {
+            "description" : "Request to bookmark an article completed successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "success message"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        },
+        "requestBody" : {
+          "description" : "name used to bookmark the article",
+          "required" : true,
+          "content" : {
+            "application/x-form-www-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "name" ],
+                "properties" : {
+                  "name" : {
+                    "type" : "string",
+                    "example" : "some name"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/articles/{articleId}/report" : {
+      "post" : {
+        "tags" : [ "Articles", "Report" ],
+        "summary" : "Reports an article.",
+        "description" : "This api end-point allows a registered user to report an article that the user feels inappropriate",
+        "parameters" : [ {
+          "$ref" : "#/components/parameters/authorizationToken"
+        }, {
+          "$ref" : "#/components/parameters/articleId"
+        } ],
+        "requestBody" : {
+          "description" : "Text containing why the article is being reported",
+          "content" : {
+            "application/x-form-www-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "required" : [ "reportComment" ],
+                "properties" : {
+                  "reportComment" : {
+                    "type" : "string",
+                    "example" : "some interesting text.."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "201" : {
+            "description" : "Request to report an article completed successfully",
+            "content" : {
+              "application/json" : {
+                "schema" : {
+                  "type" : "object",
+                  "example" : {
+                    "success" : true,
+                    "message" : "success message"
+                  }
+                }
+              }
+            }
+          },
+          "500" : {
+            "$ref" : "#/components/responses/internalServerError"
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "parameters" : {
+      "authorizationToken" : {
+        "name" : "x-access-token",
+        "in" : "header",
+        "required" : true,
+        "description" : "Token for authentication",
+        "schema" : {
+          "type" : "string",
+          "format" : "byte"
+        },
+        "style" : "simple"
+      },
+      "articleId" : {
+        "name" : "articleId",
+        "in" : "path",
+        "description" : "Particular article to query.",
+        "required" : true,
+        "example" : "234334-345t5-6y67-uy654",
+        "schema" : {
+          "type" : "string"
+        }
+      },
+      "completeRegistrationToken" : {
+        "name" : "token",
+        "in" : "path",
+        "description" : "Token used to verify a user's email",
+        "required" : true,
+        "schema" : {
+          "type" : "string",
+          "format" : "byte"
+        },
+        "style" : "simple"
+      }
+    },
+    "responses" : {
+      "internalServerError" : {
+        "description" : "Internal server error while processing the request",
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "type" : "object",
+              "example" : {
+                "success" : false,
+                "message" : "An error occured trying to process a request"
+              }
+            }
+          }
+        }
+      },
+      "authenticationFailed" : {
+        "description" : "Token sent by the user is not valid",
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "type" : "object",
+              "example" : {
+                "success" : false,
+                "message" : "Authentication fialed"
+              }
+            }
+          }
+        }
+      },
+      "resourceNotFound" : {
+        "description" : "Resource requested does not exist",
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "type" : "object",
+              "example" : {
+                "success" : false,
+                "message" : "Detail of the resource not found"
+              }
+            }
+          }
+        }
+      },
+      "errorFromUser" : {
+        "description" : "Operation failed due to fault from the user",
+        "content" : {
+          "application/json" : {
+            "schema" : {
+              "type" : "object",
+              "example" : {
+                "success" : false,
+                "message" : "Detail of the fault from user"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
