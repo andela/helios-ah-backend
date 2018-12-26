@@ -11,7 +11,7 @@
     "test": "export NODE_ENV=test && npm run undo:migration && npm run migrate && npm run undo:seeder && npm run seeder && export NODE_ENV=test && nyc --reporter=html --reporter=text mocha --exit --require babel-register --require babel-polyfill ./test/index.js",
     "coveralls": "nyc report --reporter=text-lcov | coveralls",
     "eslint": "./node_modules/eslint/bin/eslint.js './**/*.js'",
-    "heroku-postbuild": "npm run migration",
+    "heroku-postbuild": "export NODE_ENV=production && npm run migration",
     "nyc:report": "nyc report",
     "migrate": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate",
     "undo:migration": "./node_modules/.bin/babel-node ./node_modules/.bin/sequelize db:migrate:undo:all",
