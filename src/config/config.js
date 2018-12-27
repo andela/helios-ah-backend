@@ -11,6 +11,7 @@ const databaseConfig = {
     host: process.env.DB_HOST,
     operatorsAliases: false,
     dialect: 'postgres',
+    protocol: 'postgres'
   },
   test: {
     username: process.env.DB_USERNAME,
@@ -20,6 +21,7 @@ const databaseConfig = {
     host: process.env.DB_HOST,
     operatorsAliases: false,
     dialect: 'postgres',
+    protocol: 'postgres'
   },
   production: {
     use_env_variable: 'DATABASE_URL'
