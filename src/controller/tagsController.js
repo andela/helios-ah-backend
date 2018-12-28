@@ -70,7 +70,7 @@ class TagController {
     if (checkArticleTag) {
       return res.status(200).json({
         message: 'Tag already exist for the article',
-        success: true
+        success: true,
       });
     }
   }
@@ -91,7 +91,7 @@ class TagController {
     if (setArticleTag) {
       return res.status(201).json({
         message: 'Article was tagged',
-        success: true
+        success: true,
       });
     }
   }

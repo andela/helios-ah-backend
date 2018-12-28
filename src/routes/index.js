@@ -6,6 +6,7 @@ import {
   CommentController,
   TagController,
   ReportController,
+  HighlightController,
 } from '../controller';
 
 import {
@@ -218,6 +219,25 @@ const routes = (app) => {
     Authorization.checkToken,
     validateUserInputs.validateReport,
     ReportController.reportArticle
+  );
+  app.post(
+    '/api/v1/highlights/:articleId',
+    Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    validateUserInputs.validateCreateComment,
+    HighlightController.createHighlight
+  );
+  app.post(
+    '/api/v1/highlights/comment/:highlightId',
+    Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    validateUserInputs.validateCreateComment,
+    HighlightController.createHighlightComment
+  );
+  app.get(
+    '/api/v1/highlights/:articleId',
+    Authorization.uuidV4Validator,
+    HighlightController.getHighlights
   );
 };
 

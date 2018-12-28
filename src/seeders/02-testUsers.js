@@ -39,7 +39,7 @@ export default {
     lastName: 'Ajayi',
     email: 'jide@ajayi.com',
     roleId: 2,
-    password: 'myPassword',
+    password: 'password',
     username: 'jideajayi',
     isVerified: true,
     createdAt: new Date(Date.now()),

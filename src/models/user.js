@@ -143,6 +143,12 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'report'
     });
+    Users.hasMany(models.Highlights, {
+      foreignKey: 'userId',
+    });
+    Users.hasMany(models.HighlightComments, {
+      foreignKey: 'userId',
+    });
   };
   Users.prototype.verifyPassword = password => cryptData
     .decryptData(password, Users.password);

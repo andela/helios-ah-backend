@@ -77,6 +77,9 @@ const articleModel = (sequelize, DataTypes) => {
       foreignKey: 'articleId',
       as: 'report'
     });
+    Article.hasMany(models.Highlights, {
+      foreignKey: 'articleId',
+    });
   };
   return Article;
 };

@@ -5,3 +5,4 @@ import './sendEmail.test';
 import './followerTest';
 import './tags.test';
 import './reportModel.test';
+import './highlight.test';
