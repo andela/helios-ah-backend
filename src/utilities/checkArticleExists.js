@@ -16,14 +16,16 @@ const { Article, Users } = models;
 const checkArticleExists = async (articleId) => {
   try {
     const article = await Article
-      .findByPk(articleId,
+      .findByPk(
+        articleId,
         {
           include:
           {
             model: Users,
             attributes: ['email']
           }
-        });
+        }
+      );
     return article;
   } catch (error) {
     throw error;
