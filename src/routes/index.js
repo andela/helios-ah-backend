@@ -22,6 +22,7 @@ import {
   checkArticleExists,
   ValidateArticle,
   Authorization,
+  checkCommentExists,
   findDatabaseField,
   checkFeedback,
 } from '../middleware';
@@ -139,10 +140,40 @@ const routes = (app) => {
     CommentController.updateComment
   );
   app.post(
-    '/api/v1/comments/:commentId/childcomments',
+    '/api/v1/comments/:commentId/childComments',
     Authorization.checkToken,
     validateUserInputs.validateCreateComment,
     CommentController.createChildComment
+  );
+  app.post(
+    '/api/v1/comments/:commentId/likes',
+    Authorization.checkToken,
+    checkCommentExists,
+    checkFeedback.checkLikedCommentExist,
+    LikesController.likeComment
+  );
+  app.put(
+    '/api/v1/comments/:commentId/likes',
+    Authorization.checkToken,
+    validateUserInputs.validateLikeStatus,
+    checkCommentExists,
+    checkFeedback.verifyLikeStatus,
+    LikesController.updateCommentLike
+  );
+  app.post(
+    '/api/v1/childComments/:childCommentId/likes',
+    Authorization.checkToken,
+    checkCommentExists,
+    checkFeedback.checkLikedCommentExist,
+    LikesController.likeComment
+  );
+  app.put(
+    '/api/v1/childComments/:childCommentId/likes',
+    Authorization.checkToken,
+    validateUserInputs.validateLikeStatus,
+    checkCommentExists,
+    checkFeedback.verifyLikeStatus,
+    LikesController.updateCommentLike
   );
   app.post(
     '/api/v1/user/requests/password/reset',

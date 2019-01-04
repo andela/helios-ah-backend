@@ -27,6 +27,24 @@ export default {
         as: 'articleId'
       }
     },
+    commentId: {
+      type: Sequelize.UUID,
+      onDelete: 'CASCADE',
+      reference: {
+        model: 'Comments',
+        key: 'id',
+        as: 'commentId',
+      }
+    },
+    childCommentId: {
+      type: Sequelize.UUID,
+      onDelete: 'CASCADE',
+      reference: {
+        model: 'ChildComments',
+        key: 'id',
+        as: 'childCommentId'
+      }
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

@@ -207,6 +207,20 @@ class Validate {
       next();
     }
   }
+
+  /**
+   * @description validates the like field
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - Response object when query is invalid
+   * @memberof Validate
+   */
+  static validateLikeStatus(req, res, next) {
+    return (req.body.like === 'true' || req.body.like === 'false') ? next()
+      : allFieldsRequired(res, 'like is required and must be a boolean');
+  }
 }
 
 
