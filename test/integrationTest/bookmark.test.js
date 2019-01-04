@@ -39,6 +39,7 @@ describe('POST /api/v1/articles/:articleId/bookmark', () => {
           .post('/api/v1/articles')
           .send(articleDetails)
           .set('x-access-token', userToken);
+
         expect(res2.status).to.equal(201);
         expect(res2.body).to.have.property('message');
         expect(res2.body.message).to.equal('Article created successfully');

@@ -1,6 +1,9 @@
 import models from '../models';
 import errorResponse from '../utilities/Error';
-import { follower, NotificationUtil } from '../utilities';
+import {
+  follower, NotificationUtil, checkArticleExists, checkBookmarkExists,
+  uuidV4Validator, findDatabaseField
+} from '../utilities';
 
 const {
   Article,
@@ -237,11 +240,43 @@ class ArticleController {
   * @memberof ArticleController
  */
   static async bookmarkArticle(req, res) {
-    const name = req.body.name || req.article.dataValues.title;
     const userId = req.decoded.id;
     const { articleId } = req.params;
 
     try {
+      const userInToken = await findDatabaseField.UserInToken(userId);
+
+      if (!userInToken) {
+        return res.status(404).json({ message: 'User does not exist' });
+      }
+
+      const isValidId = await uuidV4Validator(articleId);
+
+      if (!isValidId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid Id'
+        });
+      }
+
+      const article = await checkArticleExists(articleId);
+      const bookmark = await checkBookmarkExists(userId, articleId);
+
+      if (!article) {
+        return res.status(404).json({
+          success: false,
+          message: 'Article does not exist'
+        });
+      }
+
+      if (bookmark) {
+        return res.status(409).json({
+          message: 'Bookmark already exists'
+        });
+      }
+
+      const name = req.body.name || article.dataValues.title;
+
       const createBookmark = await Bookmark.create({
         name, userId, articleId
       });

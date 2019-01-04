@@ -8,11 +8,12 @@ chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
 let followerToken;
-let decodedUserToken;
-let userToken;
+let decodedFolloweeToken;
+let decodedFollowerToken;
+let followeeToken;
 
 describe('DELETE /api/v1/profiles/:userId/follow', () => {
-  const loginDetails = {
+  const followeeDetails = {
     password: 'password',
     email: 'tonyboy@andela.com'
   };
@@ -28,9 +29,9 @@ describe('DELETE /api/v1/profiles/:userId/follow', () => {
         try {
           const res = await chai.request(app)
             .post('/api/v1/auth/login')
-            .send(loginDetails);
+            .send(followerDetails);
 
-            userToken = res.body.userDetails.token;
+            followerToken = res.body.userDetails.token;
           expect(res.status).to.equal(200);
           expect(res.body).to.have.property('success');
           expect(res.body).to.have.property('message');
@@ -38,7 +39,7 @@ describe('DELETE /api/v1/profiles/:userId/follow', () => {
 
           const res2 = await chai.request(app)
             .delete('/api/v1/profiles/23/follow')
-            .set('x-access-token', userToken);
+            .set('x-access-token', followerToken);
           expect(res2.status).to.equal(400);
           expect(res2.body).to.have.property('message');
           expect(res2.body.message).to.equal('Invalid Id');
@@ -51,17 +52,17 @@ describe('DELETE /api/v1/profiles/:userId/follow', () => {
         try {
           const res = await chai.request(app)
             .post('/api/v1/auth/login')
-            .send(loginDetails);
-          userToken = await res.body.userDetails.token;
+            .send(followerDetails);
+          followerToken = await res.body.userDetails.token;
           expect(res.status).to.equal(200);
           expect(res.body).to.have.property('success');
           expect(res.body).to.have.property('message');
           expect(res.body).to.have.property('userDetails');
 
-          decodedUserToken = authentication.verifyToken(userToken);
+          decodedFollowerToken = authentication.verifyToken(followerToken);
           const res2 = await chai.request(app)
-            .delete(`/api/v1/profiles/${decodedUserToken.id}/follow`)
-            .set('x-access-token', userToken);
+            .delete(`/api/v1/profiles/${decodedFollowerToken.id}/follow`)
+            .set('x-access-token', followerToken);
 
           expect(res2.status).to.equal(400);
           expect(res2.body).to.have.property('message');
@@ -77,8 +78,8 @@ describe('DELETE /api/v1/profiles/:userId/follow', () => {
       try {
         const res = await chai.request(app)
           .post('/api/v1/auth/login')
-          .send(loginDetails);
-        userToken = await res.body.userDetails.token;
+          .send(followerDetails);
+        followerToken = await res.body.userDetails.token;
         expect(res.status).to.equal(200);
         expect(res.body).to.have.property('success');
         expect(res.body).to.have.property('message');
@@ -86,16 +87,16 @@ describe('DELETE /api/v1/profiles/:userId/follow', () => {
 
         const res2 = await chai.request(app)
           .post('/api/v1/auth/login')
-          .send(followerDetails);
-        followerToken = await res2.body.userDetails.token;
-        expect(res.status).to.equal(200);
-        expect(res.body).to.have.property('success');
-        expect(res.body).to.have.property('message');
-        expect(res.body).to.have.property('userDetails');
+          .send(followeeDetails);
+        followeeToken = await res2.body.userDetails.token;
+        expect(res2.status).to.equal(200);
+        expect(res2.body).to.have.property('success');
+        expect(res2.body).to.have.property('message');
+        expect(res2.body).to.have.property('userDetails');
 
-        decodedUserToken = authentication.verifyToken(userToken);
+        decodedFolloweeToken = authentication.verifyToken(followeeToken);
         const res3 = await chai.request(app)
-          .delete(`/api/v1/profiles/${decodedUserToken.id}/follow`)
+          .delete(`/api/v1/profiles/${decodedFolloweeToken.id}/follow`)
           .set('x-access-token', followerToken);
         expect(res3.status).to.equal(400);
         expect(res3.body).to.have.property('message');
@@ -111,21 +112,30 @@ describe('DELETE /api/v1/profiles/:userId/follow', () => {
         try {
           const res = await chai.request(app)
             .post('/api/v1/auth/login')
-            .send(loginDetails);
-          userToken = await res.body.userDetails.token;
+            .send(followerDetails);
+          followerToken = await res.body.userDetails.token;
           expect(res.status).to.equal(200);
           expect(res.body).to.have.property('success');
           expect(res.body).to.have.property('message');
           expect(res.body).to.have.property('userDetails');
 
-          decodedUserToken = authentication.verifyToken(userToken);
           const res2 = await chai.request(app)
-            .delete(`/api/v1/profiles/${decodedUserToken.id.slice(0, -12)}${'0'
-              .repeat(12)}/follow`)
-            .set('x-access-token', userToken);
-          expect(res2.status).to.equal(404);
+          .post('/api/v1/auth/login')
+          .send(followeeDetails);
+          followeeToken = await res2.body.userDetails.token;
+          expect(res2.status).to.equal(200);
+          expect(res2.body).to.have.property('success');
           expect(res2.body).to.have.property('message');
-          expect(res2.body.message).to.equal('User does not exist');
+          expect(res2.body).to.have.property('userDetails');
+
+          decodedFolloweeToken = authentication.verifyToken(followeeToken);
+          const res3 = await chai.request(app)
+            .delete(`/api/v1/profiles/${decodedFolloweeToken.id.slice(0, -12)}${'0'
+              .repeat(12)}/follow`)
+            .set('x-access-token', followerToken);
+          expect(res3.status).to.equal(404);
+          expect(res3.body).to.have.property('message');
+          expect(res3.body.message).to.equal('User does not exist');
         } catch (err) {
           throw err;
         }
@@ -136,19 +146,28 @@ describe('DELETE /api/v1/profiles/:userId/follow', () => {
       try {
         const res = await chai.request(app)
           .post('/api/v1/auth/login')
-          .send(loginDetails);
-        userToken = await res.body.userDetails.token;
+          .send(followeeDetails);
+        followeeToken = await res.body.userDetails.token;
         expect(res.status).to.equal(200);
         expect(res.body).to.have.property('success');
         expect(res.body).to.have.property('message');
         expect(res.body).to.have.property('userDetails');
 
-        decodedUserToken = authentication.verifyToken(userToken);
         const res2 = await chai.request(app)
-          .delete(`/api/v1/profiles/${decodedUserToken.id}/follow`);
-        expect(res2.status).to.equal(401);
-        expect(res2.body).to.have.property('message');
-        expect(res2.body.message).to.equal('User not authorized');
+            .post('/api/v1/auth/login')
+            .send(followerDetails);
+          followerToken = await res2.body.userDetails.token;
+          expect(res2.status).to.equal(200);
+          expect(res2.body).to.have.property('success');
+          expect(res2.body).to.have.property('message');
+          expect(res2.body).to.have.property('userDetails');
+
+        decodedFolloweeToken = authentication.verifyToken(followeeToken);
+        const res3 = await chai.request(app)
+          .delete(`/api/v1/profiles/${decodedFolloweeToken.id}/follow`);
+        expect(res3.status).to.equal(401);
+        expect(res3.body).to.have.property('message');
+        expect(res3.body.message).to.equal('User not authorized');
       } catch (err) {
         throw err;
       }
@@ -159,8 +178,8 @@ describe('DELETE /api/v1/profiles/:userId/follow', () => {
       try {
         const res = await chai.request(app)
           .post('/api/v1/auth/login')
-          .send(loginDetails);
-        userToken = await res.body.userDetails.token;
+          .send(followeeDetails);
+        followeeToken = await res.body.userDetails.token;
         expect(res.status).to.equal(200);
         expect(res.body).to.have.property('success');
         expect(res.body).to.have.property('message');
@@ -175,9 +194,9 @@ describe('DELETE /api/v1/profiles/:userId/follow', () => {
         expect(res.body).to.have.property('message');
         expect(res.body).to.have.property('userDetails');
 
-        decodedUserToken = await authentication.verifyToken(userToken);
+        decodedFolloweeToken = await authentication.verifyToken(followeeToken);
         const res3 = await chai.request(app)
-          .get(`/api/v1/profiles/${decodedUserToken.id}/follow`)
+          .get(`/api/v1/profiles/${decodedFolloweeToken.id}/follow`)
           .set('x-access-token', followerToken);
 
         expect(res3.status).to.equal(200);
@@ -185,7 +204,7 @@ describe('DELETE /api/v1/profiles/:userId/follow', () => {
         expect(res3.body.message).to.equal('You are now following this user');
 
         const res4 = await chai.request(app)
-          .delete(`/api/v1/profiles/${decodedUserToken.id}/follow`)
+          .delete(`/api/v1/profiles/${decodedFolloweeToken.id}/follow`)
           .set('x-access-token', followerToken);
 
         expect(res4.status).to.equal(200);

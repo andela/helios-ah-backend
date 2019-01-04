@@ -22,7 +22,6 @@ import {
   checkArticleExists,
   ValidateArticle,
   Authorization,
-  checkBookmarkExists,
   findDatabaseField,
   checkFeedback,
 } from '../middleware';
@@ -87,20 +86,12 @@ const routes = (app) => {
   app.get(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
-    findDatabaseField.UserInToken,
-    Authorization.uuidV4Validator,
-    findDatabaseField.UserInParams,
     follower.checkForSelfFollow,
-    follower.checkForExistingFollowing,
-    follower.updatePreviousFollowing,
     UserController.followUser
   );
   app.delete(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
-    Authorization.uuidV4Validator,
-    findDatabaseField.UserInToken,
-    findDatabaseField.UserInParams,
     follower.checkForSelfUnfollow,
     UserController.unfollowUser
   );
@@ -251,10 +242,6 @@ const routes = (app) => {
   app.post(
     '/api/v1/articles/:articleId/bookmark',
     Authorization.checkToken,
-    findDatabaseField.UserInToken,
-    Authorization.uuidV4Validator,
-    checkArticleExists,
-    checkBookmarkExists,
     ArticleController.bookmarkArticle
   );
   app.get(

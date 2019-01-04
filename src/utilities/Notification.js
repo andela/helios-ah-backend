@@ -7,7 +7,6 @@ dotenv.config();
 
 const { Notification, Users } = models;
 
-
 /**
  * @description class for controlling notifications
  */
@@ -23,7 +22,7 @@ class NotificationUtil {
   static async setSingleAppNotification(user, text) {
     try {
       if (user.inAppNotification) {
-        Notification.create({
+        return Notification.create({
           userId: user.id,
           text
         });
@@ -43,12 +42,13 @@ class NotificationUtil {
    */
   static async setMultipleAppNotifications(userArray, text) {
     try {
-      models.sequelize.transaction(t => Promise.map(userArray, (user) => {
-        if (user.inAppNotification) {
-          return Notification
-            .create({ userId: user.id, text }, { transaction: t });
-        }
-      }));
+      return models.sequelize
+        .transaction(t => Promise.map(userArray, (user) => {
+          if (user.inAppNotification) {
+            return Notification
+              .create({ userId: user.id, text }, { transaction: t });
+          }
+        }));
     } catch (error) {
       throw error;
     }

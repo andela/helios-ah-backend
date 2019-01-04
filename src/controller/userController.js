@@ -1,8 +1,13 @@
-import followersUtil from '../utilities/followers';
 import models from '../models';
 import SendEmail from '../utilities/sendEmail';
 import NotificationController from '../utilities/Notification';
-import { helperMethods, Authentication } from '../utilities';
+import {
+  helperMethods,
+  Authentication,
+  findDatabaseField,
+  uuidV4Validator,
+  follower
+} from '../utilities';
 
 
 const { Users, sequelize, Follower } = models;
@@ -25,6 +30,7 @@ class UserController {
     const tokenCreated = await
     Authentication
       .getToken(userExist.dataValues, process.env.reg_token_expiry);
+
     if (tokenCreated) {
       const isEmailSent = await
       SendEmail.verifyEmail(userExist.email, tokenCreated);
@@ -148,29 +154,76 @@ class UserController {
   *
  */
   static async followUser(req, res) {
-    const userId = await req.params.id;
-    const followerId = await req.decoded.id;
-    const { email } = req.paramsUser;
-    const details = {
-      email,
-      subject: 'Author\'s Haven - Email notification',
-      emailBody: `<p>You are now being followed by ${req.user.username}</p>`
-    };
+    const userId = req.params.id;
+    const followerId = req.decoded.id;
+
     try {
+      const userInToken = await findDatabaseField.UserInToken(followerId);
+
+      if (!userInToken) {
+        return res.status(404).json({ message: 'User does not exist' });
+      }
+
+      const isValidId = await uuidV4Validator(userId);
+
+      if (!isValidId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid Id'
+        });
+      }
+
+      const doesUserInParamsExist = await findDatabaseField
+        .UserInParams(userId, res);
+
+      if (!doesUserInParamsExist) {
+        return res.status(404).json({ message: 'User does not exist' });
+      }
+
+      const checkForExistingFollowing = await follower
+        .queryForExistingFollowing(true, userId, followerId);
+
+      if (checkForExistingFollowing) {
+        return res.status(409).json({
+          success: false,
+          message: 'You are already following this user'
+        });
+      }
+
+      const isPreviousFollowing = await
+      follower.queryForExistingFollowing(false, userId, followerId);
+
+      if (isPreviousFollowing) {
+        await follower
+          .queryForUpdatingPreviousFollowing(true, userId, followerId);
+
+        return res.status(200).json({
+          success: true,
+          message: 'You are now following this user'
+        });
+      }
+
+      const { username, email } = doesUserInParamsExist;
+      const details = {
+        email,
+        subject: 'Author\'s Haven - Email notification',
+        emailBody: `<p>You are now being followed by ${username}</p>`
+      };
+
       const createFollower = await Follower.create({
         userId,
         followerId
       });
       const notificationText = `You are now being followed
-      by ${req.user.username}`;
+      by ${doesUserInParamsExist.username}`;
 
       if (createFollower) {
         req.io.emit('inAppNotifications', { notificationText });
         await NotificationController
-          .setSingleEmailNotification(req.paramsUser, details);
+          .setSingleEmailNotification(doesUserInParamsExist, details);
 
         await NotificationController
-          .setSingleAppNotification(req.paramsUser, notificationText);
+          .setSingleAppNotification(doesUserInParamsExist, notificationText);
 
 
         res.status(200).json({
@@ -193,24 +246,50 @@ class UserController {
   *
  */
   static async unfollowUser(req, res) {
-    const userId = await req.params.id;
-    const followerId = await req.decoded.id;
+    const userId = req.params.id;
+    const followerId = req.decoded.id;
 
-    const isExistingFollowing = await
-    followersUtil.queryForExistingFollowing(true, userId, followerId);
+    try {
+      const userInToken = await findDatabaseField.UserInToken(followerId);
 
-    if (isExistingFollowing) {
-      await followersUtil
-        .queryForUpdatingPreviousFollowing(false, userId, followerId);
-      res.status(200).json({
-        success: true,
-        message: 'You have unfollowed this user'
-      });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: 'You do not follow this user'
-      });
+      if (!userInToken) {
+        return res.status(404).json({ message: 'User does not exist' });
+      }
+
+      const isValidId = await uuidV4Validator(userId);
+
+      if (!isValidId) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid Id'
+        });
+      }
+
+      const doesUserInParamsExist = await findDatabaseField
+        .UserInParams(userId, res);
+
+      if (!doesUserInParamsExist) {
+        return res.status(404).json({ message: 'User does not exist' });
+      }
+
+      const isExistingFollowing = await
+      follower.queryForExistingFollowing(true, userId, followerId);
+
+      if (isExistingFollowing) {
+        await follower
+          .queryForUpdatingPreviousFollowing(false, userId, followerId);
+        res.status(200).json({
+          success: true,
+          message: 'You have unfollowed this user'
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: 'You do not follow this user'
+        });
+      }
+    } catch (error) {
+      throw error;
     }
   }
 

@@ -63,58 +63,6 @@ class Followers {
   }
 
   /**
-   * @description find if follower already follows user
-   *
-   * @param {object} req Http request
-   * @param {object} res Http response
-   * @param {function} next callback
-   *
-   * @returns  {JSON} Returns a JSON object
-   */
-  static async checkForExistingFollowing(req, res, next) {
-    const userId = await req.params.id;
-    const followerId = await req.decoded.id;
-    const isExistingFollowing = await
-    Followers.queryForExistingFollowing(true, userId, followerId);
-
-    if (isExistingFollowing) {
-      return res.status(409).json({
-        success: false,
-        message: 'You are already following this user'
-      });
-    }
-    next();
-  }
-
-  /**
-   * @description find if user has unfollowed user in the past
-   *
-   * @param {object} req Http request
-   * @param {object} res Http response
-   * @param {function} next callback
-   *
-   * @returns  {JSON} Returns a JSON object
-   */
-  static async updatePreviousFollowing(req, res, next) {
-    const userId = await req.params.id;
-    const followerId = await req.decoded.id;
-
-    const isPreviousFollowing = await
-    Followers.queryForExistingFollowing(false, userId, followerId);
-
-    if (isPreviousFollowing) {
-      await Followers
-        .queryForUpdatingPreviousFollowing(true, userId, followerId);
-
-      return res.status(200).json({
-        success: true,
-        message: 'You are now following this user'
-      });
-    }
-    next();
-  }
-
-  /**
    * @description checks to see if user is following self
    *
    * @param {object} req Http request

@@ -1,6 +1,6 @@
 import models from '../models';
 import { helperMethods } from '../utilities';
-import NotificationController from '../utilities/Notification';
+import NotificationUtil from '../utilities/Notification';
 
 const {
   Likes
@@ -40,13 +40,13 @@ class LikesController {
       if (isLiked) {
         req.io.emit('inAppNotifications', `${notificationText}`);
 
-        await NotificationController
+        await NotificationUtil
           .setSingleAppNotification(
             req.user,
             notificationText
           );
 
-        await NotificationController
+        await NotificationUtil
           .setSingleEmailNotification(
             req.user,
             details
@@ -73,6 +73,13 @@ class LikesController {
    * @return {res} res - Response object
    */
   static async updateLikes(req, res) {
+    const notificationText = `${req.user.username} likes your article`;
+    const details = {
+      email: req.article.User.email,
+      subject: 'Author\'s Haven - Email notification',
+      emailBody: `<p>${notificationText}</p>`
+    };
+
     const {
       articleId,
       liked
@@ -91,6 +98,20 @@ class LikesController {
       }
       });
       if (isLiked) {
+        req.io.emit('inAppNotifications', `${notificationText}`);
+
+        await NotificationUtil
+          .setSingleAppNotification(
+            req.user,
+            notificationText
+          );
+
+        await NotificationUtil
+          .setSingleEmailNotification(
+            req.user,
+            details
+          );
+
         return res.status(200).json({
           success: true,
           message: 'Article unliked successfully',
