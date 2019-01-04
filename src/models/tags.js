@@ -14,6 +14,11 @@ export default (sequelize, DataTypes) => {
           len: {
             args: [2, 20],
             msg: 'Name of tag should not exceed 20 characters'
+          },
+          isTag(value) {
+            if (!value.match(/^[\w\s\-]+$/i)) {
+              throw new Error(`${value} is not a valid Tag Name`);
+            }
           }
         }
       }

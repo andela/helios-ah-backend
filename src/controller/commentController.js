@@ -90,7 +90,7 @@ class CommentController {
 
   /**
   * Create a comment on another comment
-  * Route: POST: /comments/:commentId/childcomments
+  * Route: POST: /comments/:commentId/childComments
   * @param {object} req - Request object
   * @param {object} res - Response object
   * @return {res} res - Response object

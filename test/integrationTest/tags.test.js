@@ -25,7 +25,7 @@ describe('Integration tests for the tag controller', () => {
     const secondArticle = await chai.request(app).post('/api/v1/articles')
       .set('x-access-token', token).send(articleDetails);
     tagDetails = {
-      tagName: 'myTag',
+      tagName: ['myTag01', 'myTag02'],
       firstArticle: firstArticle.body.articleCreated.id,
       secondArticle: secondArticle.body.articleCreated.id,
       token
@@ -41,32 +41,6 @@ describe('Integration tests for the tag controller', () => {
     expect(response.status).to.equal(201);
     expect(response.body).to.have.property('message');
     expect(response.body.message).to.equal('Tag was created successfully');
-    expect(response.body).to.have.property('success');
-    expect(response.body.success).to.equal(true);
-  });
-
-  it('should tag an article to an existing tag name', async () => {
-    const response = await chai.request(app)
-      .post(`/api/v1/articles/tag/${tagDetails.secondArticle}`)
-      .set('x-access-token', tagDetails.token).send({
-        tagName: tagDetails.tagName,
-      });
-    expect(response.status).to.equal(201);
-    expect(response.body).to.have.property('message');
-    expect(response.body.message).to.equal('Article was tagged');
-    expect(response.body).to.have.property('success');
-    expect(response.body.success).to.equal(true);
-  });
-
-  it('should not tag an article that is already tagged', async () => {
-    const response = await chai.request(app)
-      .post(`/api/v1/articles/tag/${tagDetails.firstArticle}`)
-      .set('x-access-token', tagDetails.token).send({
-        tagName: tagDetails.tagName,
-      });
-    expect(response.status).to.equal(200);
-    expect(response.body).to.have.property('message');
-    expect(response.body.message).to.equal('Tag already exist for the article');
     expect(response.body).to.have.property('success');
     expect(response.body.success).to.equal(true);
   });
