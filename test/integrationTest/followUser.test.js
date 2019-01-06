@@ -68,7 +68,7 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
           expect(res2.status).to.equal(400);
           expect(res2.body).to.have.property('message');
           expect(res2.body.message)
-            .to.equal('You cannot follow yourself');
+            .to.equal('You cannot follow or unfollow yourself');
         } catch (err) {
           throw err;
         }

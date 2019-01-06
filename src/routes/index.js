@@ -25,7 +25,9 @@ import {
   findDatabaseField,
   checkFeedback,
   checkForSelfFollow,
-  checkForSelfUnfollow
+  validateBookmarkInput,
+  validateFollowUserInput,
+  validateUnfollowUserInput
 } from '../middleware';
 
 /**
@@ -89,12 +91,14 @@ const routes = (app) => {
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
     checkForSelfFollow,
+    validateFollowUserInput,
     UserController.followUser
   );
   app.delete(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
-    checkForSelfUnfollow,
+    checkForSelfFollow,
+    validateUnfollowUserInput,
     UserController.unfollowUser
   );
   app.get(
@@ -274,6 +278,7 @@ const routes = (app) => {
   app.post(
     '/api/v1/articles/:articleId/bookmark',
     Authorization.checkToken,
+    validateBookmarkInput,
     ArticleController.bookmarkArticle
   );
   app.get(

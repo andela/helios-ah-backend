@@ -77,11 +77,5 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
           await checkForSelfFollow(req, res, mySpy)
           expect(mySpy.calledOnce).to.equal(true);
         });
-        it('should return true if next callback is called for "checkForSelfUnfollow" method',
-        async() => { 
-          const mySpy = sinon.spy()
-          await checkForSelfUnfollow(req, res, mySpy)
-          expect(mySpy.calledOnce).to.equal(true);
-        });
     });
 });

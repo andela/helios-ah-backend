@@ -87,37 +87,39 @@ const msg = {
   subject: details.subject,
   to: details.email
 };
+
 describe('Notifications functions', () => {
+  let myNotificationSpy;
+  let myEmailSpy;
+
+  beforeEach(() => {
+    myNotificationSpy = sinon.spy(Notification, 'create')
+    myEmailSpy = sinon.spy(sendEmail, 'emailSender')
+  })
+
+  afterEach(() => {
+    myNotificationSpy.restore();
+    myEmailSpy.restore();
+  })
 
   const notificationText = 'You are now following this user'
 
   describe('Notification utilites', () => {
     it('it should create an in app notification', async () => {
-
-    const mySpy = sinon.spy(Notification, 'create');
-
     await notificationUtil.setSingleAppNotification(user1, `${notificationText}`)
-      sinon.assert.calledOnce(mySpy);
-      mySpy.restore();
+      sinon.assert.calledOnce(myNotificationSpy);
     });
     it('it should send an email notification', async () => {
-      const mySpy = sinon.spy(sendEmail, 'emailSender');
       await notificationUtil.setSingleEmailNotification(user1, details)
-        sinon.assert.calledOnce(mySpy);
-        mySpy.restore();
-
+        sinon.assert.calledOnce(myEmailSpy);
     });
     it('it should send multiple app notifications', async () => {
-      const mySpy = sinon.spy(Notification, 'create');
       await notificationUtil.setMultipleAppNotifications(userArray, `${notificationText}`)
-        sinon.assert.calledThrice(mySpy);
-        mySpy.restore();
+        sinon.assert.calledThrice(myNotificationSpy);
     });
     it('it should send multiple email notifications', async () => {
-      const mySpy = sinon.spy(sendEmail, 'emailSender');
       await notificationUtil.setMultipleEmailNotifications(userArray, details)
-        sinon.assert.calledThrice(mySpy);
-        mySpy.restore();
+        sinon.assert.calledThrice(myEmailSpy);
     });
     it('it should check if user email notification is on', async () => {
       expect(await notificationUtil.isUserEmailNotificationOn(user1)).to.equal(true);

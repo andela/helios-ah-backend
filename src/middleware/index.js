@@ -7,7 +7,9 @@ import findDatabaseField from './FindDatabaseField';
 import checkFeedback from './checkFeedback';
 import checkCommentExists from './checkCommentExists';
 import checkForSelfFollow from './checkForSelfFollow';
-import checkForSelfUnfollow from './checkForSelfUnfollow';
+import validateBookmarkInput from './validateBookmarkInput';
+import validateFollowUserInput from './validateFollowUserInput';
+import validateUnfollowUserInput from './validateUnfollowUserInput';
 
 export {
   userMiddleware,
@@ -19,5 +21,7 @@ export {
   findDatabaseField,
   checkFeedback,
   checkForSelfFollow,
-  checkForSelfUnfollow
+  validateBookmarkInput,
+  validateFollowUserInput,
+  validateUnfollowUserInput
 };

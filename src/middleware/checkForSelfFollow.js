@@ -15,7 +15,7 @@ const checkForSelfFollow = async (req, res, next) => {
   if (userId === followerId) {
     return res.status(400).json({
       success: false,
-      message: 'You cannot follow yourself'
+      message: 'You cannot follow or unfollow yourself'
     });
   }
   next();
