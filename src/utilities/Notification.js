@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 import Promise from 'bluebird';
 import models from '../models';
 import sendEmail from './sendEmail';
+import helperMethods from './helperMethods';
 
 dotenv.config();
 
@@ -16,10 +17,12 @@ class NotificationUtil {
    *
    * @param {Array} user - The user receiving the notification
    * @param {string} text - The text of the notification
+   * @param {Object} res - Http response
+
    *
    * @returns {object} sends database query result
    */
-  static async setSingleAppNotification(user, text) {
+  static async setSingleAppNotification(user, text, res) {
     try {
       if (user.inAppNotification) {
         return Notification.create({
@@ -28,7 +31,7 @@ class NotificationUtil {
         });
       }
     } catch (error) {
-      throw error;
+      helperMethods.serverError(res);
     }
   }
 
@@ -37,10 +40,11 @@ class NotificationUtil {
    *
    * @param {Array} userArray - The array of users
    * @param {string} text - The text of the notification
+   * @param {Object} res - Http response
    *
    * @returns {object} sends database query result
    */
-  static async setMultipleAppNotifications(userArray, text) {
+  static async setMultipleAppNotifications(userArray, text, res) {
     try {
       return models.sequelize
         .transaction(t => Promise.map(userArray, (user) => {
@@ -50,7 +54,7 @@ class NotificationUtil {
           }
         }));
     } catch (error) {
-      throw error;
+      helperMethods.serverError(res);
     }
   }
 
@@ -59,15 +63,16 @@ class NotificationUtil {
    *
    * @param {Array} user - The user being sent the notification
    * @param {Object} emailDetails - The object containing the email details
+   * @param {Object} res - Http response
    *
    * @returns {object} sends database query result
    */
-  static async setSingleEmailNotification(user, emailDetails) {
+  static async setSingleEmailNotification(user, emailDetails, res) {
     if (user.emailNotification) {
       try {
-        await sendEmail.emailSender(emailDetails);
+        return sendEmail.emailSender(emailDetails);
       } catch (error) {
-        throw error;
+        helperMethods.serverError(res);
       }
     }
   }
@@ -77,20 +82,25 @@ class NotificationUtil {
    *
    * @param {Array} userArray - The user being sent the notification
    * @param {Object} emailText - The body of the email
+   * @param {Object} res - Http response
    *
-   * @returns {null} null
+   * @returns {function} send email function
    */
-  static async setMultipleEmailNotifications(userArray, emailText) {
-    userArray.map(async (user) => {
-      if (user.emailNotification) {
-        const emailDetails = {
-          email: user.email,
-          subject: 'Author\'s Haven - Email notification',
-          emailBody: `${emailText}`
-        };
-        await sendEmail.emailSender(emailDetails);
-      }
-    });
+  static async setMultipleEmailNotifications(userArray, emailText, res) {
+    try {
+      userArray.map(async (user) => {
+        if (user.emailNotification) {
+          const emailDetails = {
+            email: user.email,
+            subject: 'Author\'s Haven - Email notification',
+            emailBody: `${emailText}`
+          };
+          return sendEmail.emailSender(emailDetails);
+        }
+      });
+    } catch (error) {
+      helperMethods.serverError(res);
+    }
   }
 
   /**
@@ -120,10 +130,11 @@ class NotificationUtil {
    *
    * @param {Object} options - contains type of notification and boolean
    * @param {Object} user - object containing user details
+   * @param {Object} res - Http response
    *
-   * @returns {object} database response
+   * @returns {object} response object
    */
-  static async updateNotificationStatus(options, user) {
+  static async updateNotificationStatus(options, user, res) {
     try {
       return Users.update(
         options,
@@ -136,7 +147,7 @@ class NotificationUtil {
         }
       );
     } catch (error) {
-      throw error;
+      helperMethods.serverError(res);
     }
   }
 }

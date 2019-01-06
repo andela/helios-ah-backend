@@ -113,7 +113,7 @@ let token;
 
         expect(res3.status).to.deep.equal(400);
         expect(res3.body).to.have.property('message');
-        expect(res3.body.message).to.equal('You are already subscribed for email notifications')
+        expect(res3.body.message).to.equal('You have already subscribed for email notifications')
 
       } catch (err) {
         throw err;
@@ -200,7 +200,7 @@ let token;
 
         expect(res3.status).to.deep.equal(400);
         expect(res3.body).to.have.property('message');
-        expect(res3.body.message).to.equal('You are not subscribed for email notifications')
+        expect(res3.body.message).to.equal('You have not subscribed for email notifications')
 
       } catch (err) {
         throw err;

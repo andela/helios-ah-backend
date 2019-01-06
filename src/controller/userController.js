@@ -220,11 +220,14 @@ class UserController {
       if (createFollower) {
         req.io.emit('inAppNotifications', { notificationText });
         await NotificationController
-          .setSingleEmailNotification(doesUserInParamsExist, details);
+          .setSingleEmailNotification(doesUserInParamsExist, details, res);
 
         await NotificationController
-          .setSingleAppNotification(doesUserInParamsExist, notificationText);
-
+          .setSingleAppNotification(
+            doesUserInParamsExist,
+            notificationText,
+            res
+          );
 
         res.status(200).json({
           success: true,

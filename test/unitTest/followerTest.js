@@ -3,6 +3,7 @@ import chaiHttp from 'chai-http';
 import sinon from 'sinon';
 import models from '../../src/models';
 import { follower } from '../../src/utilities';
+import { checkForSelfFollow, checkForSelfUnfollow } from '../../src/middleware';
 
 
 chai.should();
@@ -73,13 +74,13 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
       it('should return true if next callback is called for "checkForSelfFollow" method',
         async() => { 
           const mySpy = sinon.spy()
-          await follower.checkForSelfFollow(req, res, mySpy)
+          await checkForSelfFollow(req, res, mySpy)
           expect(mySpy.calledOnce).to.equal(true);
         });
         it('should return true if next callback is called for "checkForSelfUnfollow" method',
         async() => { 
           const mySpy = sinon.spy()
-          await follower.checkForSelfUnfollow(req, res, mySpy)
+          await checkForSelfUnfollow(req, res, mySpy)
           expect(mySpy.calledOnce).to.equal(true);
         });
     });

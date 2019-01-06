@@ -43,13 +43,15 @@ class LikesController {
         await NotificationUtil
           .setSingleAppNotification(
             req.user,
-            notificationText
+            notificationText,
+            res
           );
 
         await NotificationUtil
           .setSingleEmailNotification(
             req.user,
-            details
+            details,
+            res
           );
 
         return res.status(201).json({
@@ -103,13 +105,15 @@ class LikesController {
         await NotificationUtil
           .setSingleAppNotification(
             req.user,
-            notificationText
+            notificationText,
+            res
           );
 
         await NotificationUtil
           .setSingleEmailNotification(
             req.user,
-            details
+            details,
+            res
           );
 
         return res.status(200).json({

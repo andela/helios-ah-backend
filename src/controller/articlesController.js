@@ -56,13 +56,15 @@ class ArticleController {
         await NotificationUtil
           .setMultipleAppNotifications(
             followers[0].followers,
-            notificationText
+            notificationText,
+            res
           );
 
         await NotificationUtil
           .setMultipleEmailNotifications(
             followers[0].followers,
-            notificationText
+            notificationText,
+            res
           );
 
         res.status(201).json({

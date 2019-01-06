@@ -6,6 +6,8 @@ import checkBookmarkExists from './checkBookmarkExists';
 import findDatabaseField from './FindDatabaseField';
 import checkFeedback from './checkFeedback';
 import checkCommentExists from './checkCommentExists';
+import checkForSelfFollow from './checkForSelfFollow';
+import checkForSelfUnfollow from './checkForSelfUnfollow';
 
 export {
   userMiddleware,
@@ -15,5 +17,7 @@ export {
   checkBookmarkExists,
   checkCommentExists,
   findDatabaseField,
-  checkFeedback
+  checkFeedback,
+  checkForSelfFollow,
+  checkForSelfUnfollow
 };

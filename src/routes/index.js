@@ -14,7 +14,6 @@ import {
 
 import {
   validateUserInputs,
-  follower
 } from '../utilities';
 
 import {
@@ -25,6 +24,8 @@ import {
   checkCommentExists,
   findDatabaseField,
   checkFeedback,
+  checkForSelfFollow,
+  checkForSelfUnfollow
 } from '../middleware';
 
 /**
@@ -87,13 +88,13 @@ const routes = (app) => {
   app.get(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
-    follower.checkForSelfFollow,
+    checkForSelfFollow,
     UserController.followUser
   );
   app.delete(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
-    follower.checkForSelfUnfollow,
+    checkForSelfUnfollow,
     UserController.unfollowUser
   );
   app.get(
