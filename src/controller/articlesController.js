@@ -1,7 +1,8 @@
 import models from '../models';
 import errorResponse from '../utilities/Error';
 import {
-  follower, NotificationUtil,
+  follower,
+  NotificationUtil,
 } from '../utilities';
 
 const {
