@@ -89,55 +89,64 @@ const msg = {
 };
 
 describe('Notifications functions', () => {
-  let myNotificationSpy;
-  let myEmailSpy;
-
-  beforeEach(() => {
-    myNotificationSpy = sinon.spy(Notification, 'create')
-    myEmailSpy = sinon.spy(sendEmail, 'emailSender')
-  })
-
-  afterEach(() => {
-    myNotificationSpy.restore();
-    myEmailSpy.restore();
-  })
-
   const notificationText = 'You are now following this user'
-
-  describe('Notification utilites', () => {
-    it('it should create an in app notification', async () => {
-    await notificationUtil.setSingleAppNotification(user1, `${notificationText}`)
-      sinon.assert.calledOnce(myNotificationSpy);
-    });
+  describe('Notification email utilities', () => {
+    let myEmailSpy;
+    beforeEach(() => {
+      myEmailSpy = sinon.spy(sendEmail, 'emailSender')
+    })
+  
+    afterEach(() => {
+      sendEmail.emailSender.restore();
+    })
     it('it should send an email notification', async () => {
       await notificationUtil.setSingleEmailNotification(user1, details)
         sinon.assert.calledOnce(myEmailSpy);
-    });
-    it('it should send multiple app notifications', async () => {
-      await notificationUtil.setMultipleAppNotifications(userArray, `${notificationText}`)
-        sinon.assert.calledThrice(myNotificationSpy);
     });
     it('it should send multiple email notifications', async () => {
       await notificationUtil.setMultipleEmailNotifications(userArray, details)
         sinon.assert.calledThrice(myEmailSpy);
     });
-    it('it should check if user email notification is on', async () => {
-      expect(await notificationUtil.isUserEmailNotificationOn(user1)).to.equal(true);
-      expect(await notificationUtil.isUserEmailNotificationOn(user2)).to.equal(true);
-      expect(await notificationUtil.isUserEmailNotificationOn(user3)).to.equal(true);
-      expect(await notificationUtil.isUserEmailNotificationOn(user4)).to.equal(false);
-    });
-    it('it should check if user in app notification is on', async () => {
-      expect(await notificationUtil.isUserInAppNotificationOn(user1)).to.equal(true);
-      expect(await notificationUtil.isUserInAppNotificationOn(user2)).to.equal(true);
-      expect(await notificationUtil.isUserInAppNotificationOn(user3)).to.equal(true);
-      expect(await notificationUtil.isUserInAppNotificationOn(user4)).to.equal(false);
-    });
-    it('it should update notification status', async () => {
-      const mySpy = sinon.spy(Users, 'update');
-      await notificationUtil.updateNotificationStatus(options, user4)
-        sinon.assert.calledOnce(mySpy);
-        mySpy.restore();
-    });
   });
+
+    describe('Notification in-app utilities', () => {
+      let myNotificationSpy;
+      beforeEach(() => {
+        myNotificationSpy = sinon.spy(Notification, 'create')
+      })
+    
+      afterEach(() => {
+        Notification.create.restore();
+      })
+      it('it should create an in app notification', async () => {
+        await notificationUtil.setSingleAppNotification(user1, `${notificationText}`)
+          sinon.assert.calledOnce(myNotificationSpy);
+        });
+      it('it should send multiple app notifications', async () => {
+        await notificationUtil.setMultipleAppNotifications(userArray, `${notificationText}`)
+          sinon.assert.calledThrice(myNotificationSpy);
+      });
+    });
+
+    describe('User opting in and out of Notifications', () => {
+
+      it('it should check if user email notification is on', async () => {
+        expect(await notificationUtil.isUserEmailNotificationOn(user1)).to.equal(true);
+        expect(await notificationUtil.isUserEmailNotificationOn(user2)).to.equal(true);
+        expect(await notificationUtil.isUserEmailNotificationOn(user3)).to.equal(true);
+        expect(await notificationUtil.isUserEmailNotificationOn(user4)).to.equal(false);
+      });
+      it('it should check if user in app notification is on', async () => {
+        expect(await notificationUtil.isUserInAppNotificationOn(user1)).to.equal(true);
+        expect(await notificationUtil.isUserInAppNotificationOn(user2)).to.equal(true);
+        expect(await notificationUtil.isUserInAppNotificationOn(user3)).to.equal(true);
+        expect(await notificationUtil.isUserInAppNotificationOn(user4)).to.equal(false);
+      });
+      it('it should update notification status', async () => {
+        const mySpy = sinon.spy(Users, 'update');
+        await notificationUtil.updateNotificationStatus(options, user4)
+          sinon.assert.calledOnce(mySpy);
+          Users.update.restore();
+      });
+    });
 });

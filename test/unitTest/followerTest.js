@@ -50,7 +50,7 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
         await follower
         .queryForExistingFollowing(true, userId, followerId);
         expect(mySpy.calledOnce).to.equal(true);
-        mySpy.restore();
+        Follower.findOne.restore();
       });
   });
   describe('query for updating previous following', () => {
@@ -59,14 +59,14 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
         await follower
         .queryForUpdatingPreviousFollowing(true, userId, followerId);
         expect(mySpy.calledOnce).to.equal(true);
-        mySpy.restore();
+        Follower.update.restore();
     });
     it('it should get all followers', async () => {
       const mySpy = sinon.spy(Users, 'findAll')
         await follower
         .getFollowers(userId);
         expect(mySpy.calledOnce).to.equal(true);
-        mySpy.restore();
+        Users.findAll.restore();
     });
   });
 
