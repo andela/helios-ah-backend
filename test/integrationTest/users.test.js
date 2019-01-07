@@ -86,12 +86,12 @@ describe('Integration tests for the user controller', () => {
       const adminUser = await chai.request(app).post('/api/v1/auth/login')
       .send({
         email: 'jide@ajayi.com',
-        password: 'myPassword',
+        password: 'password',
       });
       const regularUser = await chai.request(app).post('/api/v1/auth/login')
       .send({
         email: 'yomizy@wizzy.com',
-        password: 'myPassword',
+        password: 'password',
       });
       details = {
         validAdminToken: adminUser.body.userDetails.token,

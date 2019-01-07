@@ -48,7 +48,7 @@ export default {
     lastName: 'Ajayi',
     email: 'jide@ajayi.com',
     roleId: 2,
-    password: 'password',
+    password: await init(),
     username: 'jideajayi',
     isVerified: true,
     createdAt: new Date(Date.now()),
