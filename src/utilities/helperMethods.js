@@ -16,6 +16,17 @@ const serverError = (res, message) => res.status(500).json({
 });
 
 /**
+ * A method used to send error 404
+ * @param {object} res - HTTP response object
+ * @param {String} message - The error message you want to set.
+ * @returns {object} res - The HTTP response object
+ */
+const notFoundError = (res, message) => res.status(404).json({
+  success: false,
+  message: message || 'resource not found',
+});
+
+/**
  * A method used to send sequelize validation error
  * @param {object} res - HTTP response object
  * @param {object} error - The error object from sequelize.
@@ -29,7 +40,7 @@ const sequelizeValidationError = (res, error) => res.status(400).json({
 /**
  * A method used to confirm that a request was successful
  * @param {object} res - HTTP response object
- * @param {string} message - Custom message we want to send to the fron-end
+ * @param {string} message - Custom message we want to send to the front-end
  * @returns {object} res - HTTP response object
  */
 const requestSuccessful = (res, message) => res.status(200).json({
@@ -74,6 +85,7 @@ const checkAcces = async (schema, itemId, userId) => {
 
 export default {
   serverError,
+  notFoundError,
   sequelizeValidationError,
   requestSuccessful,
   checkAcces,

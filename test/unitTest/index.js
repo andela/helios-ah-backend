@@ -1,8 +1,13 @@
 import './userController.test';
-import './userModel.test';
+import './authentication.test';
+import './sendEmail.test';
+import './articles.test';
+import './user.test';
+import './socialLogin.test';
 import './authentication.test';
 import './sendEmail.test';
 import './followerTest';
 import './tags.test';
 import './reportModel.test';
 import './highlight.test';
+import './likesModel.test';

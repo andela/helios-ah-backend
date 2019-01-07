@@ -1,3 +1,6 @@
+
+import passport from 'passport';
+
 import {
   UserController,
   ArticleController,
@@ -7,6 +10,7 @@ import {
   TagController,
   ReportController,
   HighlightController,
+  SocialLoginController,
 } from '../controller';
 
 import {
@@ -20,6 +24,7 @@ import {
   ValidateArticle,
   Authorization,
   checkBookmarkExists,
+  checkCommentExists,
   findDatabaseField,
   checkFeedback
 } from '../middleware';
@@ -37,6 +42,7 @@ const routes = (app) => {
   });
   app.get(
     '/api/v1/auth/complete_reg/',
+    Authorization.checkToken,
     UserController.completeRegistration
   );
   app.post(
@@ -87,13 +93,17 @@ const routes = (app) => {
     findDatabaseField.UserInToken,
     findDatabaseField.UserInParams,
     follower.checkForSelfUnfollow,
-    UserController.unfollowUser,
-    ArticleController.getArticles
+    UserController.unfollowUser
   );
   app.get(
     '/api/v1/articles/user',
     Authorization.checkToken,
     ArticleController.getArticles
+  );
+  app.get(
+    '/api/v1/articles/:articleId',
+    Authorization.uuidV4Validator,
+    ArticleController.getArticle
   );
   app.put(
     '/api/v1/articles/:articleId',
@@ -128,19 +138,7 @@ const routes = (app) => {
     CommentController.updateComment
   );
   app.post(
-    '/api/v1/comments/:commentId/childcomments',
-    Authorization.checkToken,
-    validateUserInputs.validateCreateComment,
-    CommentController.createChildComment
-  );
-  app.post(
-    '/api/v1/articles/:articleId/comments',
-    Authorization.checkToken,
-    validateUserInputs.validateCreateComment,
-    CommentController.createComment
-  );
-  app.post(
-    '/api/v1/comments/:commentId/childcomments',
+    '/api/v1/comments/:commentId/childComments',
     Authorization.checkToken,
     validateUserInputs.validateCreateComment,
     CommentController.createChildComment
@@ -149,6 +147,36 @@ const routes = (app) => {
     '/api/v1/articles/tag/:articleId',
     Authorization.checkToken,
     TagController.createTag
+  );
+  app.post(
+    '/api/v1/comments/:commentId/likes',
+    Authorization.checkToken,
+    checkCommentExists,
+    checkFeedback.checkLikedCommentExist,
+    LikesController.likeComment
+  );
+  app.put(
+    '/api/v1/comments/:commentId/likes',
+    Authorization.checkToken,
+    validateUserInputs.validateLikeStatus,
+    checkCommentExists,
+    checkFeedback.verifyLikeStatus,
+    LikesController.updateCommentLike
+  );
+  app.post(
+    '/api/v1/childComments/:childCommentId/likes',
+    Authorization.checkToken,
+    checkCommentExists,
+    checkFeedback.checkLikedCommentExist,
+    LikesController.likeComment
+  );
+  app.put(
+    '/api/v1/childComments/:childCommentId/likes',
+    Authorization.checkToken,
+    validateUserInputs.validateLikeStatus,
+    checkCommentExists,
+    checkFeedback.verifyLikeStatus,
+    LikesController.updateCommentLike
   );
   app.post(
     '/api/v1/user/requests/password/reset',
@@ -167,6 +195,49 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleAuth,
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
+  );
+  app.get(
+    '/api/v1/auth/social_fb',
+    passport.authenticate('facebook', { session: false }),
+  );
+  app.get(
+    '/api/v1/auth/social_fb/callback',
+    passport.authenticate('facebook', {
+      failureRedirect: 'api/v1/social_login/failed',
+      session: false,
+    }),
+    SocialLoginController.facebookLogin,
+  );
+  app.get(
+    '/api/v1/auth/social_tw',
+    passport.authenticate('twitter', { session: false }),
+  );
+  app.get(
+    '/api/v1/auth/social_tw/callback',
+    passport
+      .authenticate('twitter', {
+        failureRedirect: 'api/v1/social_login/failed',
+        session: false,
+      }),
+    SocialLoginController.twitterLogin,
+  );
+  app.get(
+    '/api/v1/auth/social_ggl',
+    passport
+      .authenticate('google', { session: false, scope: ['profile', 'email'] }),
+  );
+  app.get(
+    '/api/v1/auth/social_ggl/callback',
+    passport.authenticate('google', {
+      failureRedirect: 'api/v1/social_login/failed',
+      session: false,
+      scope: ['profile'],
+    }),
+    SocialLoginController.googleLogin,
+  );
+  app.get(
+    'api/v1/social_login/failed',
+    SocialLoginController.socialLoginFailed
   );
   app.post(
     '/api/v1/articles/:articleId/likes',
@@ -211,7 +282,6 @@ const routes = (app) => {
   );
   app.get(
     '/api/v1/articles',
-    Authorization.checkToken,
     ArticleController.getArticles,
   );
   app.post(

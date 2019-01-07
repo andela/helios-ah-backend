@@ -3,12 +3,17 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import cors from 'cors';
 import logger from 'morgan';
+import passport from 'passport';
+import dotenv from 'dotenv';
+import session from 'express-session';
+import './utilities/socialAuthStrategies';
 import routes from './routes';
 
 // Create global app object
 const app = express();
 
 app.use(cors());
+dotenv.config();
 
 // Normal express config defaults
 if (app.get('env') !== 'test') {
@@ -18,7 +23,14 @@ if (app.get('env') !== 'test') {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(`${__dirname}/public`));
-
+app.use(session({
+  secret: process.env.express_session_secrete,
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false },
+}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 routes(app);
 

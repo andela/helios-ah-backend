@@ -78,7 +78,8 @@ export default (sequelize, DataTypes) => {
           len: [3, 20],
           isAlphanumeric: {
             args: true,
-            msg: 'Username must contain only alphanumeric',
+            msg: 'Username must contain only alphabet, numbers,'
+            + ' and characters  and must begin with an alphabet',
           }
         }
       },
@@ -150,7 +151,11 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
     });
   };
-  Users.prototype.verifyPassword = password => cryptData
-    .decryptData(password, Users.password);
+  // eslint-disable-next-line func-names
+  Users.prototype.verifyPassword = async function (clearPassword) {
+    const isPasswordCorrect = await cryptData
+      .decryptData(clearPassword, this.password);
+    return isPasswordCorrect;
+  };
   return Users;
 };

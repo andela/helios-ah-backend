@@ -1,6 +1,7 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/app';
+import { Authentication } from '../../src/utilities';
 import models from '../../src/models';
 
 chai.use(chaiHttp);
@@ -13,7 +14,7 @@ describe('Integration tests for comments controller', () => {
     before('Login a user before running tests', async () => {
         const userDetails = {
           email: 'yomizy@wizzy.com',
-          password: 'myPassword',
+          password: 'password',
         }
         const response = await chai.request(app).post('/api/v1/auth/login')
             .send(userDetails);
@@ -91,7 +92,7 @@ describe('Integration tests for comments controller', () => {
         });
         describe('Tests for creating a childcomment for a comment', () => {
             it('should create a childcomment for a comment', async () => {
-                const response = await chai.request(app).post(`/api/v1/comments/${commentId}/childcomments`).
+                const response = await chai.request(app).post(`/api/v1/comments/${commentId}/childComments`).
                     set('x-access-token', myToken).send(commentDetails);
                 expect(response.status).to.equal(201);
                 expect(response.body).to.have.property('childCommentCreated');
@@ -102,21 +103,21 @@ describe('Integration tests for comments controller', () => {
                 expect(response.body.childCommentCreated.commentText).to.equal('I like this article very much.');
             });
             it('should send an error message when the required body field is missing', async () => {
-                const response = await chai.request(app).post(`/api/v1/comments/${commentId}/childcomments`).
+                const response = await chai.request(app).post(`/api/v1/comments/${commentId}/childComments`).
                     set('x-access-token', myToken).send(emptyComment);
                 expect(response).to.have.status(400);
                 expect(response.body).to.have.property('message');
                 expect(response.body.message).to.deep.equal('commentText field is required');
             });
             it('should send an error message when the required commentId params is invalid', async () => {
-                const response = await chai.request(app).post(`/api/v1/comments/${9}/childcomments`).
+                const response = await chai.request(app).post(`/api/v1/comments/${9}/childComments`).
                     set('x-access-token', myToken).send(commentDetails);
                 expect(response).to.have.status(400);
                 expect(response.body).to.have.property('message');
                 expect(response.body.message).to.deep.equal(':commentId is not a valid uuid type');
             });
             it('should send an error message when body field is too long', async () => {
-                const response = await chai.request(app).post(`/api/v1/comments/${commentId}/childcomments`).
+                const response = await chai.request(app).post(`/api/v1/comments/${commentId}/childComments`).
                     set('x-access-token', myToken).send(largeCommentText);
                 expect(response.status).to.equal(400);
                 expect(response.body).to.have.property('success');
@@ -132,7 +133,7 @@ describe('Integration tests for comments controller', () => {
       before('create an article before running this test suite', async () => {
         const userDetails = {
           email: 'mike@myzone.com',
-          password: '12345',
+          password: 'password',
         }
         const response = await chai.request(app).post('/api/v1/auth/login')
             .send(userDetails);

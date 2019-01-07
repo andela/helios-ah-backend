@@ -4,7 +4,6 @@ import Authentication from './authentication';
 import sendEmail from './sendEmail';
 import helperMethods from './helperMethods';
 import follower from './followers';
-import findDatabaseField from './findDatabaseField';
 
 export {
   cryptData,
@@ -13,5 +12,4 @@ export {
   sendEmail,
   helperMethods,
   follower,
-  findDatabaseField,
 };
