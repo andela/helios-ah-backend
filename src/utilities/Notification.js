@@ -95,7 +95,7 @@ class NotificationUtil {
             subject: 'Author\'s Haven - Email notification',
             emailBody: `${emailText}`
           };
-          return sendEmail.emailSender(emailDetails);
+          await sendEmail.emailSender(emailDetails);
         }
       });
     } catch (error) {
