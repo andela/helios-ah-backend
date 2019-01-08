@@ -1,5 +1,5 @@
 import models from '../models';
-import { helperMethods } from '../utilities';
+import helperMethods from './helperMethods';
 
 const { Article, Users } = models;
 
@@ -9,16 +9,14 @@ const { Article, Users } = models;
  *
    *@description checks if article exists on the database
 
-   * @param {object} req - Request Object
-   * @param {object} res - Response Object
-   * @param {Function} next - callback function
+   * @param {string} articleId - id of article
+   * @param {string} res - Http response
    *
-   * @returns {object} - message from server
+   * @returns {object} - Http response
    */
 
-const checkArticleExists = async (req, res, next) => {
+const checkArticleExists = async (articleId, res) => {
   try {
-    const { articleId } = await req.params;
     const article = await Article
       .findByPk(
         articleId,
@@ -30,18 +28,15 @@ const checkArticleExists = async (req, res, next) => {
           }
         }
       );
-
-    if (article) {
-      req.article = article;
-      next();
-    } else {
-      return res.status(404).json({
+    if (!article) {
+      res.status(404).json({
         success: false,
         message: 'Article does not exist'
       });
     }
+    return article;
   } catch (error) {
-    return helperMethods.serverError(res);
+    helperMethods.serverError(res);
   }
 };
 export default checkArticleExists;

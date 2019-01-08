@@ -1,9 +1,9 @@
-
-module.exports = {
+export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Articles', {
     id: {
       allowNull: false,
       primaryKey: true,
+      defaultValue: Sequelize.UUIDV4,
       type: Sequelize.UUID,
     },
     title: {
