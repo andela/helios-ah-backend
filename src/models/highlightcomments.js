@@ -44,9 +44,6 @@ export default (sequelize, DataTypes) => {
     },
   });
   HighlightComments.associate = (models) => {
-    HighlightComments.belongsTo(models.Users, {
-      foreignKey: 'userId',
-    });
     HighlightComments.belongsTo(models.Highlights, {
       foreignKey: 'highlightId',
     });

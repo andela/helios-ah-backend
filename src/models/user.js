@@ -153,12 +153,6 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'report'
     });
-    Users.hasMany(models.Highlights, {
-      foreignKey: 'userId',
-    });
-    Users.hasMany(models.HighlightComments, {
-      foreignKey: 'userId',
-    });
     Users.hasMany(models.Notification, {
       foreignKey: 'userId',
       onDelete: 'CASCADE'

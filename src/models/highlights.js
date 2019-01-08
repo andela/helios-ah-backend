@@ -38,12 +38,6 @@ export default (sequelize, DataTypes) => {
     }
   });
   Highlights.associate = (models) => {
-    Highlights.belongsTo(models.Users, {
-      foreignKey: 'userId',
-    });
-    Highlights.belongsTo(models.Article, {
-      foreignKey: 'articleId',
-    });
     Highlights.hasMany(models.HighlightComments, {
       foreignKey: 'highlightId',
       as: 'comments'

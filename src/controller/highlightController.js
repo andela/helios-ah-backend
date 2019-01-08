@@ -21,20 +21,20 @@ class HighlightController {
     const { articleId } = req.params;
     const { commentText, comment } = req.body;
     const userId = req.decoded.id;
-    return sequelize.transaction(async (t) => {
+    return sequelize.transaction(async (trans) => {
       try {
         const newHighlight = await Highlights.create({
           articleId,
           text: commentText,
           userId,
-        }, { transaction: t });
+        }, { transaction: trans });
         if (comment) {
           const newComment = await HighlightController
             .newHighlightComment({
               comment,
               highlightId: newHighlight.id,
               userId,
-              transaction: { transaction: t },
+              transaction: { transaction: trans },
             }, res);
           if (newComment) {
             return newComment;
@@ -124,16 +124,20 @@ class HighlightController {
    * @memberof HighlightController
    */
   static async newHighlightComment(options, res) {
-    const highlightComment = await HighlightComments.create({
-      comment: options.comment,
-      highlightId: options.highlightId,
-      userId: options.userId,
-    }, options.transaction);
-    if (highlightComment) {
-      return res.status(201).json({
-        message: 'Highlight comment was created successfully',
-        success: true,
-      });
+    try {
+      const highlightComment = await HighlightComments.create({
+        comment: options.comment,
+        highlightId: options.highlightId,
+        userId: options.userId,
+      }, options.transaction);
+      if (highlightComment) {
+        return res.status(201).json({
+          message: 'Highlight comment was created successfully',
+          success: true,
+        });
+      }
+    } catch (error) {
+      return Error.handleErrorResponse(res, error);
     }
   }
 }
