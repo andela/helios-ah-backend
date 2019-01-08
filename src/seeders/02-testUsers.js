@@ -71,6 +71,8 @@ export default {
     password: await init(),
     username: 'jideajayi',
     isVerified: true,
+    emailNotification: true,
+    inAppNotification: true,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }], {}),
