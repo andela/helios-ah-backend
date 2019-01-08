@@ -1,8 +1,8 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import faker from 'faker';
 import app from '../../src/app';
-import models from '../../src/models';
+import models from '../../src/models'
+import faker from 'faker';
 import authentication from '../../src/utilities/authentication';
 
 chai.use(chaiHttp);

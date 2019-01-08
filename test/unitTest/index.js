@@ -5,6 +5,7 @@ import './articles.test';
 import './user.test';
 import './socialLogin.test';
 import './followerTest';
+import './tags.test';
 import './reportModel.test';
 import './notifications.test';
 import './bookmark.test';
