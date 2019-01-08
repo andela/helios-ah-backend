@@ -1,6 +1,6 @@
 export default {
-  up: (queryInterface, Sequelize) => queryInterface.createTable(
-    'HighlightComments', {
+  up: (queryInterface, Sequelize) => queryInterface
+    .createTable('HighlightComments', {
       id: {
         type: Sequelize.UUID,
         primaryKey: true,
@@ -33,7 +33,6 @@ export default {
         allowNull: false,
         type: Sequelize.DATE
       }
-    }
-  ),
+    }),
   down: queryInterface => queryInterface.dropTable('HighlightComments')
 };

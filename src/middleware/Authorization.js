@@ -108,7 +108,8 @@ class Authorization {
    */
   static async uuidV4Validator(req, res, next) {
     const id = req.params.id || req.params.userId || req.params.articleId
-    || req.params.commentId || req.params.childCommentId || req.params.highlightId;
+    || req.params.commentId || req.params.childCommentId
+    || req.params.highlightId;
     const uuidV4Regex = new RegExp(['^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-',
       '[89AB][0-9A-F]{3}-[0-9A-F]{12}$'].join(''), 'i');
     const result = await uuidV4Regex.test(id);
