@@ -289,7 +289,6 @@ class ArticleController {
         articleDeleted: articleDeleted[1],
       });
     } catch (error) {
-      console.log('error', error);
       helperMethods.serverError(res);
     }
   }
