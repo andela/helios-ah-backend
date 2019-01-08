@@ -70,7 +70,7 @@ class Authorization {
    */
   static async checkToken(req, res, next) {
     const token = req.body.token || req.query.token
-    || req.headers['x-access-token'];
+      || req.headers['x-access-token'];
     if (!token) {
       res.status(401).send({
         code: 401,
@@ -79,20 +79,18 @@ class Authorization {
     } else {
       try {
         const tokenVerified = await Auth.verifyToken(token);
+
         if (tokenVerified.success) {
           req.decoded = tokenVerified;
           next();
         } else {
           return res.status(401).send({
-            success: false,
+            code: 401,
             message: 'Authentication failed',
           });
         }
       } catch (error) {
-        return res.status(401).send({
-          success: false,
-          message: 'Authentication failed',
-        });
+        throw error;
       }
     }
   }
@@ -120,6 +118,29 @@ class Authorization {
       success: false,
       message: 'Invalid Id'
     });
+  }
+
+  /**
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - Response object containing an error due
+   * to unauthorized access
+   */
+  static async checkForUnAuthorisedUser(req, res, next) {
+    const queriedEntityId = req.article.userId || req.user.id;
+
+    if (queriedEntityId !== req.decoded.id) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not authorised to perform this action'
+      });
+    }
+    next();
   }
 }
 export default Authorization;

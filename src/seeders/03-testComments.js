@@ -33,5 +33,5 @@ export default {
     updatedAt: new Date(Date.now())
   }], {}),
 
-  down: queryInterface => queryInterface.bulkDelete('Users', null, {})
+  down: queryInterface => queryInterface.bulkDelete('Comments', null, {})
 };

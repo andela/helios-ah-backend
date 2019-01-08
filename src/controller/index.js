@@ -7,6 +7,7 @@ import TagController from './tagsController';
 import SocialLoginController from './socialLoginController';
 import ReportController from './reportController';
 import HighlightController from './highlightController';
+import NotificationController from './NotificationController';
 
 export {
   ArticleController,
@@ -15,7 +16,8 @@ export {
   TagController,
   LikesController,
   RatingsController,
-  ReportController,
   HighlightController,
   SocialLoginController,
+  ReportController,
+  NotificationController
 };

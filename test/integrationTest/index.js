@@ -9,5 +9,7 @@ import './articleLike.test';
 import './articleRating.test';
 import './report.test.js';
 import './highlight.test';
+import './emailNotifications.test';
+import './inAppNotifications.test';
 import './commentLike.test';
 import './childCommentLike.test';
