@@ -16,10 +16,26 @@ export default {
     roleId: 1,
     password: await init(),
     username: 'icecream',
+    emailNotification: true,
+    inAppNotification: true,
     isVerified: true,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }, {
+    id: 'c667aa9b-e5a1-4552-960b-8cc2a9c09ccb',
+    firstName: 'Tony',
+    lastName: 'Nwosu',
+    email: 'tonyboy@andela.com',
+    roleId: 1,
+    password: await init(),
+    username: 'Tonyboy',
+    isVerified: true,
+    emailNotification: false,
+    inAppNotification: false,
+    createdAt: new Date(Date.now()),
+    updatedAt: new Date(Date.now())
+  },
+  {
     id: 'e7eaef9b-c3d9-40fa-89e1-26eae190f1aa',
     firstName: 'Mike',
     lastName: 'Nugget',
@@ -27,6 +43,8 @@ export default {
     roleId: 1,
     password: await init(),
     username: 'shangai',
+    emailNotification: false,
+    inAppNotification: false,
     isVerified: true,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
@@ -40,6 +58,8 @@ export default {
     bio: 'Finds and report articles',
     roleId: 1,
     isVerified: true,
+    emailNotification: true,
+    inAppNotification: true,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }, {

@@ -58,6 +58,16 @@ export default {
         as: 'likes',
       }
     },
+    emailNotification: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      allowNull: false,
+    },
+    inAppNotification: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      allowNull: false,
+    },
     createdAt: {
       allowNull: false,
       type: Sequelize.DATE

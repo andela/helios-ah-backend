@@ -1,4 +1,3 @@
-
 import passport from 'passport';
 
 import {
@@ -8,13 +7,13 @@ import {
   RatingsController,
   CommentController,
   TagController,
-  ReportController,
   SocialLoginController,
+  ReportController,
+  NotificationController,
 } from '../controller';
 
 import {
   validateUserInputs,
-  follower
 } from '../utilities';
 
 import {
@@ -22,10 +21,13 @@ import {
   checkArticleExists,
   ValidateArticle,
   Authorization,
-  checkBookmarkExists,
   checkCommentExists,
   findDatabaseField,
-  checkFeedback
+  checkFeedback,
+  checkForSelfFollow,
+  validateBookmarkInput,
+  validateFollowUserInput,
+  validateUnfollowUserInput
 } from '../middleware';
 
 /**
@@ -57,41 +59,46 @@ const routes = (app) => {
   app.post(
     '/api/v1/articles',
     Authorization.checkToken,
+    findDatabaseField.UserInToken,
     validateUserInputs.validateCreateArticle,
     ArticleController.createArticle
   );
   app.get(
-    '/api/v1/articles',
+    '/api/v1/notifications/email',
     Authorization.checkToken,
-    ArticleController.getArticles
+    findDatabaseField.UserInToken,
+    NotificationController.optIntoEmailNotifications
   );
   app.get(
-    '/api/v1/articles/user',
+    '/api/v1/notifications/app',
     Authorization.checkToken,
-    ArticleController.getArticles
+    findDatabaseField.UserInToken,
+    NotificationController.optIntoInAppNotifications
   );
-  app.put(
-    '/api/v1/articles/:articleId',
-    validateUserInputs.validateCreateArticle
+  app.delete(
+    '/api/v1/notifications/email',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    NotificationController.optOutOfEmailNotifications
+  );
+  app.delete(
+    '/api/v1/notifications/app',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    NotificationController.optOutOfInAppNotifications
   );
   app.get(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
-    Authorization.uuidV4Validator,
-    findDatabaseField.UserInToken,
-    findDatabaseField.UserInParams,
-    follower.checkForSelfFollow,
-    follower.checkForExistingFollowing,
-    follower.updatePreviousFollowing,
+    checkForSelfFollow,
+    validateFollowUserInput,
     UserController.followUser
   );
   app.delete(
     '/api/v1/profiles/:id/follow',
     Authorization.checkToken,
-    Authorization.uuidV4Validator,
-    findDatabaseField.UserInToken,
-    findDatabaseField.UserInParams,
-    follower.checkForSelfUnfollow,
+    checkForSelfFollow,
+    validateUnfollowUserInput,
     UserController.unfollowUser
   );
   app.get(
@@ -241,6 +248,7 @@ const routes = (app) => {
   app.post(
     '/api/v1/articles/:articleId/likes',
     Authorization.checkToken,
+    findDatabaseField.UserInToken,
     checkArticleExists,
     ValidateArticle.checkArticleNotDraft,
     checkFeedback.checkLikesExist,
@@ -249,6 +257,7 @@ const routes = (app) => {
   app.put(
     '/api/v1/articles/:articleId/likes',
     Authorization.checkToken,
+    findDatabaseField.UserInToken,
     checkArticleExists,
     checkFeedback.checkLikesNotExist,
     LikesController.updateLikes
@@ -273,10 +282,7 @@ const routes = (app) => {
   app.post(
     '/api/v1/articles/:articleId/bookmark',
     Authorization.checkToken,
-    findDatabaseField.UserInToken,
-    Authorization.uuidV4Validator,
-    checkArticleExists,
-    checkBookmarkExists,
+    validateBookmarkInput,
     ArticleController.bookmarkArticle
   );
   app.get(
