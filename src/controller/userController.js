@@ -3,8 +3,7 @@ import SendEmail from '../utilities/sendEmail';
 import NotificationController from '../utilities/Notification';
 import {
   helperMethods,
-  Authentication,
-  follower
+  Authentication
 } from '../utilities';
 
 
