@@ -19,7 +19,7 @@ describe('POST /api/v1/articles/:articleId/bookmark', () => {
     userLoginResponse = await chai.request(app)
       .post('/api/v1/auth/login')
       .send(userDetails);
-      userToken = userLoginResponse.body.userDetails.token;
+    userToken = userLoginResponse.body.userDetails.token;
 
 
     const articleDetails = {
@@ -34,8 +34,8 @@ describe('POST /api/v1/articles/:articleId/bookmark', () => {
       .send(articleDetails)
       .set('x-access-token', userToken);
 
-    articleId = postArticleResponse.body.articleCreated.id
-  })
+    articleId = postArticleResponse.body.articleCreated.id;
+  });
   describe('UnAuthenticated User', () => {
     it('should throw an Error if no token is provided', async () => {
       try {
@@ -144,7 +144,7 @@ describe('POST /api/v1/articles/:articleId/bookmark', () => {
           title: 'The second best article',
           image: 'https://secondbestarticle.uplodersite.com',
         };
-    
+
         const postSecondArticleResponse = await chai.request(app)
           .post('/api/v1/articles')
           .send(secondTestArticleDetails)
@@ -152,7 +152,7 @@ describe('POST /api/v1/articles/:articleId/bookmark', () => {
         expect(postSecondArticleResponse.status).to.equal(201);
         expect(postSecondArticleResponse.body).to.have.property('message');
         expect(postSecondArticleResponse.body.message).to.equal('Article created successfully');
-        
+
         const secondArticleId = postSecondArticleResponse.body.articleCreated.id;
 
         const bookmarkResponse = await chai.request(app)

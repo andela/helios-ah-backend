@@ -1,6 +1,6 @@
 import models from '../models';
 
-const { Users } = models;
+const { Users, Article } = models;
 
 /**
  * @class FindDatabaseField
@@ -61,5 +61,29 @@ class FindDatabaseField {
     }
     res.status(404).json({ message: 'User does not exist' });
   }
+
+  /**
+   * @description find if article with articleId in params exists in database
+   *
+   * @param {object} req Http request
+   * @param {object} res Http response
+   * @param {function} next callback
+   *
+   * @returns  {JSON} Returns a JSON object
+   */
+  static async articleInParams(req, res, next) {
+    const id = req.params.articleId;
+    const queryResult = await Article.findByPk(id);
+    if (queryResult) {
+      req.article = await queryResult;
+      return next();
+    }
+    res.status(404).json({
+      success: false,
+      message: 'Article does not exist'
+    });
+  }
 }
+
+
 export default FindDatabaseField;

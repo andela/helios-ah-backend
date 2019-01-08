@@ -7,7 +7,7 @@ import './unfollowUser.test';
 import './users.test';
 import './articleLike.test';
 import './articleRating.test';
-import './report.test.js';
+import './report.test';
 import './highlight.test';
 import './emailNotifications.test';
 import './inAppNotifications.test';

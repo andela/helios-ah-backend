@@ -64,6 +64,15 @@ const routes = (app) => {
     validateUserInputs.validateCreateArticle,
     ArticleController.createArticle
   );
+  app.delete(
+    '/api/v1/articles/:articleId',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    Authorization.uuidV4Validator,
+    findDatabaseField.articleInParams,
+    Authorization.hasWriteAccess,
+    ArticleController.deleteArticle
+  );
   app.get(
     '/api/v1/notifications/email',
     Authorization.checkToken,
