@@ -31,6 +31,19 @@ const tooLongTitle = {
   userId: 'aa4aaa2c-c6ca-d5f5-b8b2-0b5c78ee2cb7',
   readTime: '2 mins', 
 };
+
+let res;
+res = {
+  status(){
+    return this;
+  },
+  json(obj){
+    return obj;
+  },
+  body: {
+    
+  },
+}
 const articleId = 'ced35c26-c919-47ec-bdfe-90bfaffe64d2'
 describe('Unit tests for the articles', () => {
   describe('Unit tests for the articles model', () => {
@@ -73,7 +86,7 @@ describe('Unit tests for the articles', () => {
         async () => {
           try{
             const mySpy = sinon.spy(Article, 'findByPk')
-            await checkArticleExists(articleId)
+            await checkArticleExists(articleId, res)
             expect(mySpy.calledOnce).to.equal(true);
           }catch(error) {
           throw error

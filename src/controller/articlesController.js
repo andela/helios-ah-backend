@@ -3,6 +3,7 @@ import errorResponse from '../utilities/Error';
 import {
   follower,
   NotificationUtil,
+  helperMethods,
 } from '../utilities';
 
 const {
@@ -258,7 +259,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      res.status(500).json({ error });
+      helperMethods.serverError(res);
     }
   }
 }

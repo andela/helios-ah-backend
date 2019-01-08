@@ -1,5 +1,6 @@
 import { Op } from 'sequelize';
 import models from '../models';
+import helperMethods from './helperMethods';
 
 const { Follower, Users } = models;
 
@@ -7,18 +8,31 @@ const { Follower, Users } = models;
  * @class Followers
  */
 class Followers {
+  // /**
+  //  * @description function that return an invalid unfollow request message
+  //  *
+  //  * @param {object} res Http response
+  //  *
+  //  * @returns {object} Http response
+  //  */
+  // static invalidFollowMessage(res) {
+
+  // }
+
   /**
    * @description query database to see if follower already follows user
    *
    * @param {boolean} bool isActive value of true or false
+   * @param {boolean} isFollowRoute finds out if route is follow user or not
    * @param {string} id1 userId
    * @param {string} id2 followerId
+   * @param {object} res Http response
    *
    * @returns {JSON} Returns a JSON object
    */
-  static async queryForExistingFollowing(bool, id1, id2) {
+  static async queryForExistingFollowing(bool, isFollowRoute, id1, id2, res) {
     try {
-      return Follower.findOne({
+      const isExistingFollowing = await Follower.findOne({
         where: {
           [Op.and]: [{ isActive: bool },
             { userId: id1 },
@@ -26,8 +40,28 @@ class Followers {
           ]
         }
       });
+      if (bool === true && isFollowRoute === true && isExistingFollowing) {
+        return res.status(409).json({
+          success: false,
+          message: 'You are already following this user'
+        });
+      }
+      if (bool === true && isFollowRoute === false && isExistingFollowing) {
+        return true;
+      }
+
+      if (bool === false && isFollowRoute === true && isExistingFollowing) {
+        return true;
+      }
+      if (bool === true && isFollowRoute === false && !isExistingFollowing) {
+        return res.status(400).json({
+          success: false,
+          message: 'You do not follow this user'
+        });
+      }
+      return false;
     } catch (error) {
-      throw error;
+      helperMethods.serverError(res);
     }
   }
 
@@ -37,12 +71,13 @@ class Followers {
    * @param {boolean} bool isActive value of true or false
    * @param {string} id1 userId
    * @param {string} id2 followerId
+   * @param {object} res Http response
    *
    * @returns {JSON} Returns a JSON object
    */
-  static async queryForUpdatingPreviousFollowing(bool, id1, id2) {
+  static async queryForUpdatingPreviousFollowing(bool, id1, id2, res) {
     try {
-      return Follower.update(
+      const query = await Follower.update(
         {
           isActive: bool
         },
@@ -57,8 +92,18 @@ class Followers {
           returning: true
         }
       );
+      if (query && bool === true) {
+        return res.status(200).json({
+          success: true,
+          message: 'You are now following this user'
+        });
+      }
+      if (query && bool === false) {
+        return true;
+      }
+      return false;
     } catch (error) {
-      return error;
+      helperMethods.serverError(res);
     }
   }
 

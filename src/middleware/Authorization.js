@@ -82,12 +82,13 @@ class Authorization {
 
         if (tokenVerified.success) {
           req.decoded = tokenVerified;
-          return next();
+          next();
+        } else {
+          return res.status(401).send({
+            code: 401,
+            message: 'Authentication failed',
+          });
         }
-        res.status(401).send({
-          code: 401,
-          message: 'Authentication failed',
-        });
       } catch (error) {
         throw error;
       }

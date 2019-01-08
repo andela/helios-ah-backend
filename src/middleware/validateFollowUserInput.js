@@ -1,7 +1,8 @@
 import {
   findDatabaseField,
   follower,
-  uuidV4Validator
+  uuidV4Validator,
+  helperMethods
 } from '../utilities';
 
 
@@ -20,53 +21,34 @@ const validateFollowUserInput = async (req, res, next) => {
   const followerId = req.decoded.id;
   const userId = req.params.id;
 
-  const userInToken = await findDatabaseField.UserInToken(followerId);
+  let isValidId, userInToken, userInParams, checkForExistingFollowing;
+  try {
+    userInToken = await findDatabaseField.UserInToken(followerId, res);
 
-  if (!userInToken) {
-    return res.status(404).json({ message: 'User does not exist' });
+    if (userInToken === true) {
+      isValidId = await uuidV4Validator(userId, res);
+    }
+    if (isValidId === true) {
+      userInParams = await findDatabaseField.UserInParams(userId, res);
+    }
+    if (userInParams) {
+      checkForExistingFollowing = await follower
+        .queryForExistingFollowing(true, true, userId, followerId, res);
+    }
+
+    if (checkForExistingFollowing === true) {
+      await follower
+        .queryForUpdatingPreviousFollowing(true, true, userId, followerId, res);
+    }
+
+    if (checkForExistingFollowing === false) {
+      req.user = userInParams;
+      next();
+    }
+  } catch (error) {
+    helperMethods.serverError(res);
   }
-
-  const isValidId = await uuidV4Validator(userId);
-
-  if (!isValidId) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid Id'
-    });
-  }
-
-  const userInParams = await findDatabaseField
-    .UserInParams(userId, res);
-
-  if (!userInParams) {
-    return res.status(404).json({ message: 'User does not exist' });
-  }
-
-  const checkForExistingFollowing = await follower
-    .queryForExistingFollowing(true, userId, followerId);
-
-  if (checkForExistingFollowing) {
-    return res.status(409).json({
-      success: false,
-      message: 'You are already following this user'
-    });
-  }
-
-  const isPreviousFollowing = await
-  follower.queryForExistingFollowing(false, userId, followerId);
-
-  if (isPreviousFollowing) {
-    await follower
-      .queryForUpdatingPreviousFollowing(true, userId, followerId);
-
-    return res.status(200).json({
-      success: true,
-      message: 'You are now following this user'
-    });
-  }
-
-  req.user = userInParams;
-  next();
 };
+
 
 export default validateFollowUserInput;

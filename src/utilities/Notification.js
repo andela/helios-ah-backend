@@ -70,7 +70,7 @@ class NotificationUtil {
   static async setSingleEmailNotification(user, emailDetails, res) {
     if (user.emailNotification) {
       try {
-        return sendEmail.emailSender(emailDetails);
+        await sendEmail.emailSender(emailDetails);
       } catch (error) {
         helperMethods.serverError(res);
       }
@@ -95,7 +95,7 @@ class NotificationUtil {
             subject: 'Author\'s Haven - Email notification',
             emailBody: `${emailText}`
           };
-          await sendEmail.emailSender(emailDetails);
+          return sendEmail.emailSender(emailDetails);
         }
       });
     } catch (error) {

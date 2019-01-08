@@ -202,21 +202,11 @@ class UserController {
   *
  */
   static async unfollowUser(req, res) {
-    const userId = req.params.id;
-    const followerId = req.decoded.id;
-
     try {
-      const isExistingFollowing = await
-      follower.queryForExistingFollowing(true, userId, followerId);
-
-      if (isExistingFollowing) {
-        await follower
-          .queryForUpdatingPreviousFollowing(false, userId, followerId);
-        res.status(200).json({
-          success: true,
-          message: 'You have unfollowed this user'
-        });
-      }
+      return res.status(200).json({
+        success: true,
+        message: 'You have unfollowed this user'
+      });
     } catch (error) {
       return helperMethods.serverError(res);
     }

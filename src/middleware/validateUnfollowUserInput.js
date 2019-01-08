@@ -1,7 +1,8 @@
 import {
   findDatabaseField,
   follower,
-  uuidV4Validator
+  uuidV4Validator,
+  helperMethods
 } from '../utilities';
 
 
@@ -20,39 +21,34 @@ const validateUnfollowUserInput = async (req, res, next) => {
   const followerId = req.decoded.id;
   const userId = req.params.id;
 
-  const userInToken = await findDatabaseField.UserInToken(followerId);
+  let isValidId, userInToken, userInParams, isExistingFollowing;
+  let updateFollowingStatus;
 
-  if (!userInToken) {
-    return res.status(404).json({ message: 'User does not exist' });
+  try {
+    userInToken = await findDatabaseField.UserInToken(followerId, res);
+
+    if (userInToken === true) {
+      isValidId = await uuidV4Validator(userId, res);
+    }
+    if (isValidId === true) {
+      userInParams = await findDatabaseField.UserInParams(userId, res);
+    }
+    if (userInParams) {
+      isExistingFollowing = await follower
+        .queryForExistingFollowing(true, false, userId, followerId, res);
+    }
+
+    if (isExistingFollowing === true) {
+      updateFollowingStatus = await follower
+        .queryForUpdatingPreviousFollowing(false, userId, followerId, res);
+    }
+
+    if (updateFollowingStatus === true) {
+      next();
+    }
+  } catch (error) {
+    helperMethods.serverError(res);
   }
-
-  const isValidId = await uuidV4Validator(userId);
-
-  if (!isValidId) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid Id'
-    });
-  }
-
-  const userInParams = await findDatabaseField
-    .UserInParams(userId, res);
-
-  if (!userInParams) {
-    return res.status(404).json({ message: 'User does not exist' });
-  }
-
-  const isExistingFollowing = await
-  follower.queryForExistingFollowing(true, userId, followerId);
-
-  if (!isExistingFollowing) {
-    return res.status(400).json({
-      success: false,
-      message: 'You do not follow this user'
-    });
-  }
-  req.user = userInParams;
-  next();
 };
 
 export default validateUnfollowUserInput;

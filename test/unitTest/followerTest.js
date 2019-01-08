@@ -48,7 +48,7 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
       it('should query for an existing following', async () => {
         const mySpy = sinon.spy(Follower, 'findOne')
         await follower
-        .queryForExistingFollowing(true, userId, followerId);
+        .queryForExistingFollowing(true, true, userId, followerId, res);
         expect(mySpy.calledOnce).to.equal(true);
         Follower.findOne.restore();
       });
@@ -57,7 +57,7 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
     it('should update the details of a previous following', async () => {
       const mySpy = sinon.spy(Follower, 'update')
         await follower
-        .queryForUpdatingPreviousFollowing(true, userId, followerId);
+        .queryForUpdatingPreviousFollowing(true, userId, followerId, res);
         expect(mySpy.calledOnce).to.equal(true);
         Follower.update.restore();
     });

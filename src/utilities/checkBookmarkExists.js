@@ -1,5 +1,6 @@
 import { Op } from 'sequelize';
 import models from '../models';
+import helperMethods from './helperMethods';
 
 const { Bookmark } = models;
 
@@ -15,7 +16,7 @@ const { Bookmark } = models;
    * @returns {object} - message from server
    */
 
-const checkBookmarkExists = async (userId, articleId) => {
+const checkBookmarkExists = async (userId, articleId, res) => {
   try {
     const bookmark = await Bookmark.findOne({
       where: {
@@ -25,9 +26,14 @@ const checkBookmarkExists = async (userId, articleId) => {
         ]
       }
     });
-    return bookmark;
+    if (bookmark) {
+      return res.status(409).json({
+        message: 'Bookmark already exists'
+      });
+    }
+    return false;
   } catch (error) {
-    throw error;
+    helperMethods.serverError(res);
   }
 };
 export default checkBookmarkExists;

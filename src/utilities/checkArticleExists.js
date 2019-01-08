@@ -1,4 +1,5 @@
 import models from '../models';
+import helperMethods from './helperMethods';
 
 const { Article, Users } = models;
 
@@ -9,11 +10,12 @@ const { Article, Users } = models;
    *@description checks if article exists on the database
 
    * @param {string} articleId - id of article
+   * @param {string} res - Http response
    *
-   * @returns {object} - message from server
+   * @returns {object} - Http response
    */
 
-const checkArticleExists = async (articleId) => {
+const checkArticleExists = async (articleId, res) => {
   try {
     const article = await Article
       .findByPk(
@@ -26,9 +28,15 @@ const checkArticleExists = async (articleId) => {
           }
         }
       );
+    if (!article) {
+      res.status(404).json({
+        success: false,
+        message: 'Article does not exist'
+      });
+    }
     return article;
   } catch (error) {
-    throw error;
+    helperMethods.serverError(res);
   }
 };
 export default checkArticleExists;

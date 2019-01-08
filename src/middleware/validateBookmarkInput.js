@@ -3,6 +3,7 @@ import {
   checkArticleExists,
   checkBookmarkExists,
   uuidV4Validator,
+  helperMethods
 } from '../utilities';
 
 
@@ -20,39 +21,27 @@ import {
 const validateBookmarkInput = async (req, res, next) => {
   const userId = req.decoded.id;
   const { articleId } = req.params;
+  let isValidId, article, bookmark, userInToken;
+  try {
+    userInToken = await findDatabaseField.UserInToken(userId, res);
 
-  const userInToken = await findDatabaseField.UserInToken(userId);
+    if (userInToken === true) {
+      isValidId = await uuidV4Validator(articleId, res);
+    }
+    if (isValidId === true) {
+      article = await checkArticleExists(articleId, res);
+    }
+    if (article) {
+      bookmark = await checkBookmarkExists(userId, articleId, res);
+    }
 
-  if (!userInToken) {
-    return res.status(404).json({ message: 'User does not exist' });
+    if (bookmark === false) {
+      req.article = article;
+      next();
+    }
+  } catch (error) {
+    helperMethods.serverError(res);
   }
-
-  const isValidId = await uuidV4Validator(articleId);
-
-  if (!isValidId) {
-    return res.status(400).json({
-      success: false,
-      message: 'Invalid Id'
-    });
-  }
-
-  const article = await checkArticleExists(articleId);
-  const bookmark = await checkBookmarkExists(userId, articleId);
-
-  if (!article) {
-    return res.status(404).json({
-      success: false,
-      message: 'Article does not exist'
-    });
-  }
-
-  if (bookmark) {
-    return res.status(409).json({
-      message: 'Bookmark already exists'
-    });
-  }
-  req.article = article;
-  next();
 };
 
 export default validateBookmarkInput;
