@@ -41,41 +41,41 @@ const sameUserId = {
   },
 };
 const userId = 'dccd8ee7-a832-bc98-4a8e-ca116c5fff0a';
-const followerId = 'dccd8ee7-a832-4a8e-bc98-ca116c5fff0a'
+const followerId = 'dccd8ee7-a832-4a8e-bc98-ca116c5fff0a';
 
 describe('GET /api/v1/profiles/:userId/follow', () => {
   describe('follower utils querying methods', () => {
-      it('should query for an existing following', async () => {
-        const mySpy = sinon.spy(Follower, 'findOne')
-        await follower
+    it('should query for an existing following', async () => {
+      const mySpy = sinon.spy(Follower, 'findOne');
+      await follower
         .queryForExistingFollowing(true, true, userId, followerId, res);
-        expect(mySpy.calledOnce).to.equal(true);
-        Follower.findOne.restore();
-      });
+      expect(mySpy.calledOnce).to.equal(true);
+      Follower.findOne.restore();
+    });
   });
   describe('query for updating previous following', () => {
     it('should update the details of a previous following', async () => {
-      const mySpy = sinon.spy(Follower, 'update')
-        await follower
+      const mySpy = sinon.spy(Follower, 'update');
+      await follower
         .queryForUpdatingPreviousFollowing(true, userId, followerId, res);
-        expect(mySpy.calledOnce).to.equal(true);
-        Follower.update.restore();
+      expect(mySpy.calledOnce).to.equal(true);
+      Follower.update.restore();
     });
     it('it should get all followers', async () => {
-      const mySpy = sinon.spy(Users, 'findAll')
-        await follower
+      const mySpy = sinon.spy(Users, 'findAll');
+      await follower
         .getFollowers(userId);
-        expect(mySpy.calledOnce).to.equal(true);
-        Users.findAll.restore();
+      expect(mySpy.calledOnce).to.equal(true);
+      Users.findAll.restore();
     });
   });
 
   describe('unit tests for follower utils middleware', () => {
-      it('should return true if next callback is called for "checkForSelfFollow" method',
-        async() => { 
-          const mySpy = sinon.spy()
-          await checkForSelfFollow(req, res, mySpy)
-          expect(mySpy.calledOnce).to.equal(true);
-        });
-    });
+    it('should return true if next callback is called for "checkForSelfFollow" method',
+      async () => {
+        const mySpy = sinon.spy();
+        await checkForSelfFollow(req, res, mySpy);
+        expect(mySpy.calledOnce).to.equal(true);
+      });
+  });
 });
