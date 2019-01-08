@@ -9,11 +9,11 @@ chai.use(chaiHttp);
 const { expect } = chai;
 const { Comments } = models;
 
-let data = {
+const data = {
   id: 'ec0d84a1-4195-4a98-b46c-5976e1839a06',
   role: 1,
   username: 'john134'
-}
+};
 
 describe('Unit tests for the authentication helper methods', () => {
   describe('valid token should be generated', () => {
@@ -35,39 +35,39 @@ describe('Unit tests for the authentication helper methods', () => {
   });
 
   describe('Access test', () => {
-      let data, myToken, comment;
+    let data, myToken, comment;
 
-        before('Create a user before running tests', async () => {
-          const userDetails = {
-            email: 'yomizy@wizzy.com',
-            password: 'password',
-          };
-          const commentDetails = {
-            commentText: 'I like this article very much.'
-          };
-          const response = await chai.request(app).post('/api/v1/auth/login')
-              .send(userDetails);
-          myToken = response.body.userDetails.token;
-          const articleDetails = {
-            title: 'Dont trian a dragon',
-            body: 'do you want toß die?',
-            description: 'training a dragon is risjy',
-            image: 'https://someimage.uplodersite.com',
-          };
-          data = await chai.request(app).post('/api/v1/articles')
-            .set('x-access-token', myToken).send(articleDetails);
-          comment = await chai.request(app).post(`/api/v1/articles/${data.body.articleCreated.id}/comments`)
-            .set('x-access-token', myToken).send(commentDetails);
-        });
+    before('Create a user before running tests', async () => {
+      const userDetails = {
+        email: 'yomizy@wizzy.com',
+        password: 'password',
+      };
+      const commentDetails = {
+        commentText: 'I like this article very much.'
+      };
+      const response = await chai.request(app).post('/api/v1/auth/login')
+        .send(userDetails);
+      myToken = response.body.userDetails.token;
+      const articleDetails = {
+        title: 'Dont trian a dragon',
+        body: 'do you want toß die?',
+        description: 'training a dragon is risjy',
+        image: 'https://someimage.uplodersite.com',
+      };
+      data = await chai.request(app).post('/api/v1/articles')
+        .set('x-access-token', myToken).send(articleDetails);
+      comment = await chai.request(app).post(`/api/v1/articles/${data.body.articleCreated.id}/comments`)
+        .set('x-access-token', myToken).send(commentDetails);
+    });
 
-      it('it should give access to authorized user', async () => {
-        const myAccess = await Access.checkAcces('COMMENT', comment.body.commentCreated.id, data.body.articleCreated.userId);
-        expect(myAccess).to.equal(1);
-      });
+    it('it should give access to authorized user', async () => {
+      const myAccess = await Access.checkAcces('COMMENT', comment.body.commentCreated.id, data.body.articleCreated.userId);
+      expect(myAccess).to.equal(1);
+    });
 
-      it('it should deny access to unathorized user', async () => {
-        const myAccess = await Access.checkAcces('COMMENT', comment.body.commentCreated.id, 'e7eaef9b-c3d9-40fa-89e1-26eae190f1aa');
-        expect(myAccess).to.equal(0);
-      });
+    it('it should deny access to unathorized user', async () => {
+      const myAccess = await Access.checkAcces('COMMENT', comment.body.commentCreated.id, 'e7eaef9b-c3d9-40fa-89e1-26eae190f1aa');
+      expect(myAccess).to.equal(0);
+    });
   });
 });

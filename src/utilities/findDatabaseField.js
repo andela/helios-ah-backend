@@ -11,7 +11,6 @@ class FindDatabaseField {
    * @description query for user in database
    *
    * @param {object} id userId
-   * @param {object} res http response
    *
    * @returns  {JSON} Returns a JSON object
    */

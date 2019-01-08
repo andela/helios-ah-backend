@@ -10,7 +10,7 @@ const { expect } = chai;
 let followerToken;
 let followeeToken;
 let decodedFolloweeToken;
-let decodedFollowerToken
+let decodedFollowerToken;
 
 describe('GET /api/v1/profiles/:userId/follow', () => {
   const followeeDetails = {
@@ -25,29 +25,29 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
 
   describe('Bad request', () => {
     it('should throw an Error if the userId is not of type UUIDV4',
-    async () => {
-      try {
-        const res = await chai.request(app)
-          .post('/api/v1/auth/login')
-          .send(followerDetails);
+      async () => {
+        try {
+          const res = await chai.request(app)
+            .post('/api/v1/auth/login')
+            .send(followerDetails);
 
           followerToken = res.body.userDetails.token;
-        expect(res.status).to.equal(200);
-        expect(res.body).to.have.property('success');
-        expect(res.body).to.have.property('message');
-        expect(res.body).to.have.property('userDetails');
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('success');
+          expect(res.body).to.have.property('message');
+          expect(res.body).to.have.property('userDetails');
 
-        const res2 = await chai.request(app)
-          .get('/api/v1/profiles/23/follow')
-          .set('x-access-token', followerToken);
+          const res2 = await chai.request(app)
+            .get('/api/v1/profiles/23/follow')
+            .set('x-access-token', followerToken);
 
-        expect(res2.status).to.equal(400);
-        expect(res2.body).to.have.property('message');
-        expect(res2.body.message).to.equal('Invalid Id');
-      } catch (err) {
-        throw err;
-      }
-    });
+          expect(res2.status).to.equal(400);
+          expect(res2.body).to.have.property('message');
+          expect(res2.body.message).to.equal('Invalid Id');
+        } catch (err) {
+          throw err;
+        }
+      });
     it('should throw an Error if user tries to follow himself/herself',
       async () => {
         try {
@@ -90,7 +90,7 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
           const res2 = await chai.request(app)
             .post('/api/v1/auth/login')
             .send(followeeDetails);
-          const followeeToken = await res.body.userDetails.token;
+          followeeToken = await res.body.userDetails.token;
           expect(res2.status).to.equal(200);
           expect(res2.body).to.have.property('success');
           expect(res2.body).to.have.property('message');
@@ -122,9 +122,9 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
         expect(res.body).to.have.property('userDetails');
 
         const res2 = await chai.request(app)
-        .post('/api/v1/auth/login')
-        .send(followeeDetails);
-        const followeeToken = await res.body.userDetails.token;
+          .post('/api/v1/auth/login')
+          .send(followeeDetails);
+        followeeToken = await res.body.userDetails.token;
         expect(res2.status).to.equal(200);
         expect(res2.body).to.have.property('success');
         expect(res2.body).to.have.property('message');
@@ -142,56 +142,56 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
     });
   });
   describe('Duplicate follow', () => {
-    it('should throw an Error if user is already being followed by follower', 
-    async() => {
-      const followeeLogin = {
-        password: 'password',
-        email: 'yomizy@wizzy.com'
-      };
-      const followerLogin = {
-        password: 'password',
-        email: 'tonyboy@andela.com'
-      }
-      try {
-        const res = await chai.request(app)
-          .post('/api/v1/auth/login')
-          .send(followeeLogin);
+    it('should throw an Error if user is already being followed by follower',
+      async () => {
+        const followeeLogin = {
+          password: 'password',
+          email: 'yomizy@wizzy.com'
+        };
+        const followerLogin = {
+          password: 'password',
+          email: 'tonyboy@andela.com'
+        };
+        try {
+          const res = await chai.request(app)
+            .post('/api/v1/auth/login')
+            .send(followeeLogin);
 
-        const followeeToken = await res.body.userDetails.token;
-        const decodedFolloweeToken = authentication.verifyToken(followeeToken);
+          followeeToken = await res.body.userDetails.token;
+          decodedFolloweeToken = authentication.verifyToken(followeeToken);
 
-        expect(res.status).to.equal(200);
-        expect(res.body).to.have.property('success');
-        expect(res.body).to.have.property('message');
-        expect(res.body).to.have.property('userDetails');;
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('success');
+          expect(res.body).to.have.property('message');
+          expect(res.body).to.have.property('userDetails');
 
-        const res2 = await chai.request(app)
-          .post('/api/v1/auth/login')
-          .send(followerLogin);
-        const followerToken = await res2.body.userDetails.token;
-        expect(res.status).to.equal(200);
-        expect(res.body).to.have.property('success');
-        expect(res.body).to.have.property('message');
-        expect(res.body).to.have.property('userDetails');
+          const res2 = await chai.request(app)
+            .post('/api/v1/auth/login')
+            .send(followerLogin);
+          followerToken = await res2.body.userDetails.token;
+          expect(res.status).to.equal(200);
+          expect(res.body).to.have.property('success');
+          expect(res.body).to.have.property('message');
+          expect(res.body).to.have.property('userDetails');
 
-        const res3 = await chai.request(app)
-        .get(`/api/v1/profiles/${decodedFolloweeToken.id}/follow`)
-        .set('x-access-token', followerToken);
+          const res3 = await chai.request(app)
+            .get(`/api/v1/profiles/${decodedFolloweeToken.id}/follow`)
+            .set('x-access-token', followerToken);
 
-      expect(res3.status).to.equal(200);
-      expect(res3.body).to.have.property('message');
-      expect(res3.body.message).to.equal('You are now following this user');
+          expect(res3.status).to.equal(200);
+          expect(res3.body).to.have.property('message');
+          expect(res3.body.message).to.equal('You are now following this user');
 
-        const res4 = await chai.request(app)
-          .get(`/api/v1/profiles/${decodedFolloweeToken.id}/follow`)
-          .set('x-access-token', followerToken);
-        expect(res4.status).to.equal(409);
-        expect(res4.body).to.have.property('message');
-        expect(res4.body.message).to.equal('You are already following this user');
-      } catch (err) {
-        throw err;
-      }
-    }) 
+          const res4 = await chai.request(app)
+            .get(`/api/v1/profiles/${decodedFolloweeToken.id}/follow`)
+            .set('x-access-token', followerToken);
+          expect(res4.status).to.equal(409);
+          expect(res4.body).to.have.property('message');
+          expect(res4.body.message).to.equal('You are already following this user');
+        } catch (err) {
+          throw err;
+        }
+      });
   });
   describe('Successful follow', () => {
     it('should be successful when a user follows another', async () => {
@@ -202,7 +202,7 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
       const followeeLogin = {
         password: 'password',
         email: 'janedoereporter@wemail.com'
-      }
+      };
       try {
         const res = await chai.request(app)
           .post('/api/v1/auth/login')
@@ -236,4 +236,3 @@ describe('GET /api/v1/profiles/:userId/follow', () => {
     });
   });
 });
-
