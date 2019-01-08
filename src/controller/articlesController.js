@@ -150,6 +150,7 @@ class ArticleController {
 
     if (req.originalUrl === '/api/v1/articles/user') {
       options.where = {
+        isDraft: false,
         userId: req.decoded.id,
       };
     } else {

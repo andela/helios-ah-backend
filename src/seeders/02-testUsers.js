@@ -7,7 +7,7 @@ const init = async () => {
   return password;
 };
 
-module.exports = {
+export default {
   up: async queryInterface => queryInterface.bulkInsert('Users', [{
     id: 'dccd8ee7-bc98-4a8e-a832-ca116c5fff0a',
     firstName: 'John',
@@ -57,6 +57,19 @@ module.exports = {
     lastName: 'DoeReporter',
     bio: 'Finds and report articles',
     roleId: 1,
+    isVerified: true,
+    emailNotification: true,
+    inAppNotification: true,
+    createdAt: new Date(Date.now()),
+    updatedAt: new Date(Date.now())
+  }, {
+    id: '315cdb56-fad1-4712-81c8-d82ccdbc8b5a',
+    firstName: 'Jide',
+    lastName: 'Ajayi',
+    email: 'jide@ajayi.com',
+    roleId: 2,
+    password: await init(),
+    username: 'jideajayi',
     isVerified: true,
     emailNotification: true,
     inAppNotification: true,

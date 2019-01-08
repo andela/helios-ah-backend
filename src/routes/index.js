@@ -1,4 +1,3 @@
-
 import passport from 'passport';
 
 import {
@@ -7,6 +6,7 @@ import {
   LikesController,
   RatingsController,
   CommentController,
+  TagController,
   SocialLoginController,
   ReportController,
   NotificationController,
@@ -120,7 +120,6 @@ const routes = (app) => {
   app.get(
     '/api/v1/authors',
     Authorization.checkToken,
-    UserController.getAuthors
   );
   app.post(
     '/api/v1/articles/:articleId/comments',
@@ -179,6 +178,11 @@ const routes = (app) => {
     checkCommentExists,
     checkFeedback.verifyLikeStatus,
     LikesController.updateCommentLike
+  );
+  app.post(
+    '/api/v1/articles/tag/:articleId',
+    Authorization.checkToken,
+    TagController.createTag
   );
   app.post(
     '/api/v1/user/requests/password/reset',

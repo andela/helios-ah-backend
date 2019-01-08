@@ -1,7 +1,6 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
 import app from '../../src/app';
-import { UserController } from '../../src/controller';
 import models from '../../src/models'
 import faker from 'faker';
 

@@ -30,7 +30,7 @@ const res = {
   },
   json(obj) {
     return obj;
-  } 
+  }
 };
 const sameUserId = {
   params: {
