@@ -1,8 +1,11 @@
-
-import followersUtil from '../utilities/followers';
 import models from '../models';
 import SendEmail from '../utilities/sendEmail';
-import { helperMethods, Authentication } from '../utilities';
+import NotificationController from '../utilities/Notification';
+import {
+  helperMethods,
+  Authentication
+} from '../utilities';
+
 
 const { Users, sequelize, Follower } = models;
 const { Op } = sequelize.Sequelize;
@@ -24,6 +27,7 @@ class UserController {
     const tokenCreated = await
     Authentication
       .getToken(userExist.dataValues, process.env.reg_token_expiry);
+
     if (tokenCreated) {
       const isEmailSent = await
       SendEmail.verifyEmail(userExist.email, tokenCreated);
@@ -147,15 +151,36 @@ class UserController {
   *
  */
   static async followUser(req, res) {
-    const userId = await req.params.id;
-    const followerId = await req.decoded.id;
+    const userId = req.params.id;
+    const followerId = req.decoded.id;
 
     try {
+      const { username, email } = req.user;
+      const details = {
+        email,
+        subject: 'Author\'s Haven - Email notification',
+        emailBody: `<p>You are now being followed by ${username}</p>`
+      };
+
       const createFollower = await Follower.create({
         userId,
         followerId
       });
+      const notificationText = `You are now being followed
+      by ${username}`;
+
       if (createFollower) {
+        req.io.emit('inAppNotifications', { notificationText });
+        await NotificationController
+          .setSingleEmailNotification(req.user, details, res);
+
+        await NotificationController
+          .setSingleAppNotification(
+            req.user,
+            notificationText,
+            res
+          );
+
         res.status(200).json({
           success: true,
           message: 'You are now following this user'
@@ -176,24 +201,13 @@ class UserController {
   *
  */
   static async unfollowUser(req, res) {
-    const userId = await req.params.id;
-    const followerId = await req.decoded.id;
-
-    const isExistingFollowing = await
-    followersUtil.queryForExistingFollowing(true, userId, followerId);
-
-    if (isExistingFollowing) {
-      await followersUtil
-        .queryForUpdatingPreviousFollowing(false, userId, followerId);
-      res.status(200).json({
+    try {
+      return res.status(200).json({
         success: true,
         message: 'You have unfollowed this user'
       });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: 'You do not follow this user'
-      });
+    } catch (error) {
+      return helperMethods.serverError(res);
     }
   }
 

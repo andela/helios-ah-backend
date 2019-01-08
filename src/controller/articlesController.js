@@ -1,5 +1,10 @@
 import models from '../models';
 import errorResponse from '../utilities/Error';
+import {
+  follower,
+  NotificationUtil,
+  helperMethods,
+} from '../utilities';
 
 const {
   Article,
@@ -10,6 +15,7 @@ const {
   ChildComments,
   ChildCommentHistory,
 } = models;
+
 
 /**
  * Class representing the Article controller
@@ -29,7 +35,9 @@ class ArticleController {
     const {
       title, body, description, image, isDraft
     } = req.body;
+
     try {
+      const followers = await follower.getFollowers(req.decoded.id);
       const articleCreated = await Article.create({
         title,
         body,
@@ -41,6 +49,25 @@ class ArticleController {
         isDraft: isDraft || 'true'
       });
       if (articleCreated) {
+        const notificationText = `${req.user.username} has published an article
+    titled '${title}'`;
+
+        req.io.emit('inAppNotifications', { notificationText });
+
+        await NotificationUtil
+          .setMultipleAppNotifications(
+            followers[0].followers,
+            notificationText,
+            res
+          );
+
+        await NotificationUtil
+          .setMultipleEmailNotifications(
+            followers[0].followers,
+            notificationText,
+            res
+          );
+
         res.status(201).json({
           success: true,
           message: 'Article created successfully',
@@ -216,11 +243,12 @@ class ArticleController {
   * @memberof ArticleController
  */
   static async bookmarkArticle(req, res) {
-    const name = req.body.name || req.article.dataValues.title;
     const userId = req.decoded.id;
     const { articleId } = req.params;
 
     try {
+      const name = req.body.name || req.article.title;
+
       const createBookmark = await Bookmark.create({
         name, userId, articleId
       });
@@ -231,7 +259,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      res.status(500).json({ error });
+      helperMethods.serverError(res);
     }
   }
 }

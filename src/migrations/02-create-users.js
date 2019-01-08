@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   up: (queryInterface, Sequelize) => queryInterface.createTable('Users', {
     id: {
       primaryKey: true,
@@ -57,6 +57,16 @@ module.exports = {
         key: 'userId',
         as: 'likes',
       }
+    },
+    emailNotification: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      allowNull: false,
+    },
+    inAppNotification: {
+      type: Sequelize.BOOLEAN,
+      defaultValue: true,
+      allowNull: false,
     },
     createdAt: {
       allowNull: false,

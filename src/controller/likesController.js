@@ -1,5 +1,6 @@
 import models from '../models';
 import { helperMethods } from '../utilities';
+import NotificationUtil from '../utilities/Notification';
 
 const {
   Likes
@@ -13,7 +14,7 @@ const {
 class LikesController {
   /**
    * like an Article
-   * Route: POST: POST /api/v1/articles/:articleId/like
+   * Route: POST: /api/v1/articles/:articleId/like
    * @param {object} req - Request object
    * @param {object} res - Response object
    * @return {res} res - Response object
@@ -23,13 +24,36 @@ class LikesController {
       articleId
     } = req.params;
     const user = req.decoded;
+    const notificationText = `${req.user.username} likes your article`;
+    const details = {
+      email: req.article.User.email,
+      subject: 'Author\'s Haven - Email notification',
+      emailBody: `<p>${notificationText}</p>`
+    };
     try {
       const isLiked = await Likes.create({
         userId: user.id,
         articleId,
         isLiked: 'true'
       });
+
       if (isLiked) {
+        req.io.emit('inAppNotifications', `${notificationText}`);
+
+        await NotificationUtil
+          .setSingleAppNotification(
+            req.user,
+            notificationText,
+            res
+          );
+
+        await NotificationUtil
+          .setSingleEmailNotification(
+            req.user,
+            details,
+            res
+          );
+
         return res.status(201).json({
           success: true,
           message: 'Article liked successfully',
@@ -51,21 +75,47 @@ class LikesController {
    * @return {res} res - Response object
    */
   static async updateLikes(req, res) {
+    const notificationText = `${req.user.username} likes your article`;
+    const details = {
+      email: req.article.User.email,
+      subject: 'Author\'s Haven - Email notification',
+      emailBody: `<p>${notificationText}</p>`
+    };
+
     const {
       articleId,
       liked
     } = req.params;
+
     const user = req.decoded;
     try {
       const isLiked = await Likes.update({
         isLiked: liked || 'false'
-      }, {
-        where: {
-          userId: user.id,
-          articleId
-        }
+      },
+      {
+        where:
+      {
+        userId: user.id,
+        articleId
+      }
       });
       if (isLiked) {
+        req.io.emit('inAppNotifications', `${notificationText}`);
+
+        await NotificationUtil
+          .setSingleAppNotification(
+            req.user,
+            notificationText,
+            res
+          );
+
+        await NotificationUtil
+          .setSingleEmailNotification(
+            req.user,
+            details,
+            res
+          );
+
         return res.status(200).json({
           success: true,
           message: 'Article unliked successfully',
