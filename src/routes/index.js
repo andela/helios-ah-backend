@@ -1,4 +1,3 @@
-
 import passport from 'passport';
 
 import {
@@ -185,6 +184,11 @@ const routes = (app) => {
     checkCommentExists,
     checkFeedback.verifyLikeStatus,
     LikesController.updateCommentLike
+  );
+  app.post(
+    '/api/v1/articles/tag/:articleId',
+    Authorization.checkToken,
+    TagController.createTag
   );
   app.post(
     '/api/v1/user/requests/password/reset',
