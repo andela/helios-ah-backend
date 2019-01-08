@@ -1,19 +1,35 @@
 
+import passport from 'passport';
+
 import {
   UserController,
   ArticleController,
-  CommentController
+  LikesController,
+  RatingsController,
+  CommentController,
+  SocialLoginController,
+  ReportController,
+  NotificationController,
 } from '../controller';
 
 import {
   validateUserInputs,
-  follower
 } from '../utilities';
-import Authorization from '../middlewares/Authorization';
-import userMiddleware from '../middlewares/User';
-import checkArticleExists from '../middlewares/checkArticleExists';
-import checkBookmarkExists from '../middlewares/checkBookmarkExists';
-import findDatabaseField from '../middlewares/FindDatabaseField';
+
+import {
+  userMiddleware,
+  checkArticleExists,
+  ValidateArticle,
+  Authorization,
+  checkCommentExists,
+  findDatabaseField,
+  checkFeedback,
+  checkForSelfFollow,
+  validateBookmarkInput,
+  validateFollowUserInput,
+  validateUnfollowUserInput
+} from '../middleware';
+
 /**
  * Handles request
  * @param {object} app - An instance of the express module
@@ -25,14 +41,25 @@ const routes = (app) => {
       message: 'Welcome to the Authors-Haven API'
     });
   });
+  app.get(
+    '/api/v1/auth/complete_reg/',
+    Authorization.checkToken,
+    UserController.completeRegistration
+  );
   app.post(
     '/api/v1/auth/signup',
     validateUserInputs.validateSignup,
     UserController.userSignup
   );
   app.post(
+    '/api/v1/auth/login',
+    validateUserInputs.validateLogin,
+    UserController.userLogin
+  );
+  app.post(
     '/api/v1/articles',
     Authorization.checkToken,
+    findDatabaseField.UserInToken,
     validateUserInputs.validateCreateArticle,
     ArticleController.createArticle
   );
@@ -40,41 +67,63 @@ const routes = (app) => {
     '/api/v1/articles/:articleId',
     Authorization.checkToken,
     findDatabaseField.UserInToken,
-    validateUserInputs.uuidV4Validator,
+    Authorization.uuidV4Validator,
     findDatabaseField.articleInParams,
-    Authorization.checkForUnAuthorisedUser,
+    Authorization.hasWriteAccess,
     ArticleController.deleteArticle
   );
   app.get(
-    '/api/v1/profiles/:id/follow',
-    validateUserInputs.uuidV4Validator,
+    '/api/v1/notifications/email',
     Authorization.checkToken,
     findDatabaseField.UserInToken,
-    findDatabaseField.UserInParams,
-    follower.checkForSelfFollow,
-    follower.checkForExistingFollowing,
-    follower.updatePreviousFollowing,
+    NotificationController.optIntoEmailNotifications
+  );
+  app.get(
+    '/api/v1/notifications/app',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    NotificationController.optIntoInAppNotifications
+  );
+  app.delete(
+    '/api/v1/notifications/email',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    NotificationController.optOutOfEmailNotifications
+  );
+  app.delete(
+    '/api/v1/notifications/app',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    NotificationController.optOutOfInAppNotifications
+  );
+  app.get(
+    '/api/v1/profiles/:id/follow',
+    Authorization.checkToken,
+    checkForSelfFollow,
+    validateFollowUserInput,
     UserController.followUser
   );
   app.delete(
     '/api/v1/profiles/:id/follow',
-    validateUserInputs.uuidV4Validator,
     Authorization.checkToken,
-    findDatabaseField.UserInToken,
-    findDatabaseField.UserInParams,
-    follower.checkForSelfUnfollow,
-    UserController.unfollowUser,
-    ArticleController.getArticles
+    checkForSelfFollow,
+    validateUnfollowUserInput,
+    UserController.unfollowUser
   );
   app.get(
     '/api/v1/articles/user',
     Authorization.checkToken,
     ArticleController.getArticles
   );
+  app.get(
+    '/api/v1/articles/:articleId',
+    Authorization.uuidV4Validator,
+    ArticleController.getArticle
+  );
   app.put(
     '/api/v1/articles/:articleId',
-    validateUserInputs.validateCreateArticle,
     Authorization.checkToken,
+    validateUserInputs.validateCreateArticle,
     ArticleController.updateArticle
   );
   app.get(
@@ -84,15 +133,61 @@ const routes = (app) => {
   );
   app.post(
     '/api/v1/articles/:articleId/comments',
-    validateUserInputs.validateCreateComment,
     Authorization.checkToken,
+    validateUserInputs.validateCreateComment,
     CommentController.createComment
   );
-  app.post(
-    '/api/v1/comments/:commentId/childcomments',
-    validateUserInputs.validateCreateComment,
+  app.put(
+    '/api/v1/articles/comments/:commentId',
     Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    Authorization.hasWriteAccess,
+    validateUserInputs.validateCreateComment,
+    CommentController.updateComment
+  );
+  app.put(
+    '/api/v1/articles/comments/childComments/:childCommentId',
+    Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    Authorization.hasWriteAccess,
+    validateUserInputs.validateCreateComment,
+    CommentController.updateComment
+  );
+  app.post(
+    '/api/v1/comments/:commentId/childComments',
+    Authorization.checkToken,
+    validateUserInputs.validateCreateComment,
     CommentController.createChildComment
+  );
+  app.post(
+    '/api/v1/comments/:commentId/likes',
+    Authorization.checkToken,
+    checkCommentExists,
+    checkFeedback.checkLikedCommentExist,
+    LikesController.likeComment
+  );
+  app.put(
+    '/api/v1/comments/:commentId/likes',
+    Authorization.checkToken,
+    validateUserInputs.validateLikeStatus,
+    checkCommentExists,
+    checkFeedback.verifyLikeStatus,
+    LikesController.updateCommentLike
+  );
+  app.post(
+    '/api/v1/childComments/:childCommentId/likes',
+    Authorization.checkToken,
+    checkCommentExists,
+    checkFeedback.checkLikedCommentExist,
+    LikesController.likeComment
+  );
+  app.put(
+    '/api/v1/childComments/:childCommentId/likes',
+    Authorization.checkToken,
+    validateUserInputs.validateLikeStatus,
+    checkCommentExists,
+    checkFeedback.verifyLikeStatus,
+    LikesController.updateCommentLike
   );
   app.post(
     '/api/v1/user/requests/password/reset',
@@ -101,8 +196,8 @@ const routes = (app) => {
   );
   app.put(
     '/api/v1/change/password',
-    userMiddleware.getUserByMail,
     Authorization.checkToken,
+    userMiddleware.getUserByMail,
     UserController.resetPassword
   );
   app.put(
@@ -112,19 +207,98 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
   );
+  app.get(
+    '/api/v1/auth/social_fb',
+    passport.authenticate('facebook', { session: false }),
+  );
+  app.get(
+    '/api/v1/auth/social_fb/callback',
+    passport.authenticate('facebook', {
+      failureRedirect: 'api/v1/social_login/failed',
+      session: false,
+    }),
+    SocialLoginController.facebookLogin,
+  );
+  app.get(
+    '/api/v1/auth/social_tw',
+    passport.authenticate('twitter', { session: false }),
+  );
+  app.get(
+    '/api/v1/auth/social_tw/callback',
+    passport
+      .authenticate('twitter', {
+        failureRedirect: 'api/v1/social_login/failed',
+        session: false,
+      }),
+    SocialLoginController.twitterLogin,
+  );
+  app.get(
+    '/api/v1/auth/social_ggl',
+    passport
+      .authenticate('google', { session: false, scope: ['profile', 'email'] }),
+  );
+  app.get(
+    '/api/v1/auth/social_ggl/callback',
+    passport.authenticate('google', {
+      failureRedirect: 'api/v1/social_login/failed',
+      session: false,
+      scope: ['profile'],
+    }),
+    SocialLoginController.googleLogin,
+  );
+  app.get(
+    'api/v1/social_login/failed',
+    SocialLoginController.socialLoginFailed
+  );
+  app.post(
+    '/api/v1/articles/:articleId/likes',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    checkArticleExists,
+    ValidateArticle.checkArticleNotDraft,
+    checkFeedback.checkLikesExist,
+    LikesController.likeArticle
+  );
+  app.put(
+    '/api/v1/articles/:articleId/likes',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    checkArticleExists,
+    checkFeedback.checkLikesNotExist,
+    LikesController.updateLikes
+  );
+  app.post(
+    '/api/v1/articles/:articleId/ratings',
+    Authorization.checkToken,
+    checkArticleExists,
+    ValidateArticle.checkArticleNotDraft,
+    checkFeedback.checkRatingExist,
+    validateUserInputs.validateRating,
+    RatingsController.rateArticle
+  );
+  app.put(
+    '/api/v1/articles/:articleId/ratings',
+    Authorization.checkToken,
+    checkArticleExists,
+    checkFeedback.checkRatingNotExist,
+    validateUserInputs.validateRating,
+    RatingsController.updateRating
+  );
   app.post(
     '/api/v1/articles/:articleId/bookmark',
     Authorization.checkToken,
-    findDatabaseField.UserInToken,
-    validateUserInputs.uuidV4Validator,
-    checkArticleExists,
-    checkBookmarkExists,
+    validateBookmarkInput,
     ArticleController.bookmarkArticle
   );
   app.get(
     '/api/v1/articles',
-    Authorization.checkToken,
     ArticleController.getArticles,
+  );
+  app.post(
+    '/api/v1/articles/:articleId/report',
+    Authorization.checkToken,
+    validateUserInputs.validateReport,
+    ReportController.reportArticle
   );
 };
 

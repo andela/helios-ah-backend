@@ -1,4 +1,3 @@
-
 const articleModel = (sequelize, DataTypes) => {
   const Article = sequelize.define('Article', {
     id: {
@@ -11,8 +10,8 @@ const articleModel = (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         len: {
-          args: [3, 80],
-          msg: 'Title should not exceed 80 characters',
+          args: [2, 80],
+          msg: 'Title field accepts 2 - 80 characters',
         }
       }
     },
@@ -24,7 +23,7 @@ const articleModel = (sequelize, DataTypes) => {
     isDeleted: {
       type: DataTypes.BOOLEAN,
       allowNull: false,
-      defaultValue: false
+      defaultValue: false,
     },
     body: {
       type: DataTypes.TEXT,
@@ -36,9 +35,13 @@ const articleModel = (sequelize, DataTypes) => {
       validate: {
         len: {
           args: [2, 200],
-          msg: 'Description field should not exceed 200 character',
+          msg: 'Description field accepts 2 - 200 characters',
         }
       }
+    },
+    readTime: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
     image: {
       type: DataTypes.STRING,
@@ -52,16 +55,42 @@ const articleModel = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     }
+  }, {
+    validate: {
+      checkForSpace() {
+        if (this.title) {
+          if (this.title.search(/[^\w\s\.\-\?#\$!']/g) !== -1) {
+            throw new Error('Title should contain letters, numbers, !""?');
+          }
+        }
+      }
+    },
   });
+
   Article.associate = (models) => {
     Article.belongsTo(models.Users, {
       foreignKey: 'userId',
-      onDelete: 'CASCADE',
+    });
+    Article.hasMany(models.Ratings, {
+      foreignKey: 'articleId',
+      as: 'Ratings'
+    });
+    Article.hasMany(models.Likes, {
+      foreignKey: 'articleId',
+      as: 'Likes'
     });
     Article.belongsToMany(models.Users, {
       as: 'article',
       through: 'Bookmark',
       foreignKey: 'articleId'
+    });
+    Article.hasMany(models.Report, {
+      foreignKey: 'articleId',
+      as: 'report'
+    });
+    Article.hasMany(models.Comments, {
+      foreignKey: 'articleId',
+      as: 'Comments'
     });
   };
   return Article;

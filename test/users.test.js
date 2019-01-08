@@ -6,7 +6,7 @@ import sinon from 'sinon';
 import faker from 'faker';
 import sinonChai from 'sinon-chai';
 import models from '../src/models';
-import Authenticate from '../src/middlewares/Authorization';
+import Authenticate from '../src/middleware/Authorization';
 import truncate from '../src/utilities/truncate';
 import { authentication } from '../src/utilities';
 
@@ -22,7 +22,7 @@ const { Users } = models;
 
 describe('Integration tests for the user controller', () => {
   beforeEach(async () => {
-    await truncate();
+     await truncate();
   });
   describe('Test general error handling and welcome message', () => {
     it('should send an error when there is an unforseen error', (done) => {

@@ -1,7 +1,21 @@
 import models from '../models';
-import Error from '../utilities/Error';
+import errorResponse from '../utilities/Error';
+import {
+  follower,
+  NotificationUtil,
+  helperMethods,
+} from '../utilities';
 
-const { Article, Bookmark } = models;
+const {
+  Article,
+  Users,
+  Bookmark,
+  Comments,
+  CommentHistory,
+  ChildComments,
+  ChildCommentHistory,
+} = models;
+
 
 /**
  * Class representing the Article controller
@@ -19,17 +33,41 @@ class ArticleController {
  */
   static async createArticle(req, res) {
     const {
-      title, body, description, image
+      title, body, description, image, isDraft
     } = req.body;
+
     try {
+      const followers = await follower.getFollowers(req.decoded.id);
       const articleCreated = await Article.create({
         title,
         body,
         description,
+        readTime: (body.split(' ').length < 200) ? 'less than 1min'
+          : `about ${Math.round(body.split(' ').length / 200)}min`,
         image,
         userId: req.decoded.id,
+        isDraft: isDraft || 'true'
       });
       if (articleCreated) {
+        const notificationText = `${req.user.username} has published an article
+    titled '${title}'`;
+
+        req.io.emit('inAppNotifications', { notificationText });
+
+        await NotificationUtil
+          .setMultipleAppNotifications(
+            followers[0].followers,
+            notificationText,
+            res
+          );
+
+        await NotificationUtil
+          .setMultipleEmailNotifications(
+            followers[0].followers,
+            notificationText,
+            res
+          );
+
         res.status(201).json({
           success: true,
           message: 'Article created successfully',
@@ -37,7 +75,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      Error.handleErrorResponse(res, error);
+      errorResponse.handleErrorResponse(res, error);
     }
   }
 
@@ -51,7 +89,7 @@ class ArticleController {
  */
   static async updateArticle(req, res) {
     const {
-      title, body, description, image
+      title, body, description, image, isDraft
     } = req.body;
     const options = {
       where: {
@@ -65,6 +103,7 @@ class ArticleController {
         body,
         description,
         image,
+        isDraft: isDraft || 'true'
       }, options);
       if (articleUpdated[0] === 1) {
         res.status(200).json({
@@ -79,7 +118,7 @@ class ArticleController {
         });
       }
     } catch (error) {
-      Error.handleErrorResponse(res, error);
+      errorResponse.handleErrorResponse(res, error);
     }
   }
 
@@ -134,6 +173,67 @@ class ArticleController {
   }
 
   /**
+  * Get a specific Article
+  * Route: POST: /articles
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof ArticleController
+ */
+  static async getArticle(req, res) {
+    try {
+      const article = await Article.findOne({
+        include: [
+          {
+            model: Comments,
+            as: 'Comments',
+            include: [
+              {
+                model: Users,
+                attributes: ['firstName', 'lastName', 'username'],
+              },
+              {
+                model: CommentHistory,
+                attributes: { exclude: ['userId', 'commentId'] }
+              }, {
+                model: ChildComments,
+                include: [
+                  {
+                    model: Users,
+                    attributes: ['firstName', 'lastName', 'username'],
+                  },
+                  {
+                    model: ChildCommentHistory,
+                    attributes: { exclude: ['userId', 'childCommentId'] }
+                  }
+                ],
+                attributes: { exclude: ['userId', 'commentId'] }
+              }
+            ],
+            attributes: { exclude: ['userId', 'articleId'] }
+          }
+        ],
+        where: {
+          id: req.params.articleId,
+        }
+      });
+      if (article) {
+        res.status(200).json({
+          success: true,
+          article,
+        });
+      } else {
+        res.status(404).json({
+          success: false,
+          message: 'Invalid article Id',
+        });
+      }
+    } catch (error) {
+      errorResponse.handleErrorResponse(res, error);
+    }
+  }
+
+  /**
   * @description Bookmark an Article
   *
   * @param {object} req - Request object
@@ -143,21 +243,23 @@ class ArticleController {
   * @memberof ArticleController
  */
   static async bookmarkArticle(req, res) {
-    const name = req.body.name || req.article.dataValues.title;
     const userId = req.decoded.id;
     const { articleId } = req.params;
 
     try {
+      const name = req.body.name || req.article.title;
+
       const createBookmark = await Bookmark.create({
         name, userId, articleId
       });
       if (createBookmark) {
         res.status(201).json({
+          success: true,
           message: 'Article successfully bookmarked',
         });
       }
     } catch (error) {
-      res.status(500).json({ error });
+      helperMethods.serverError(res);
     }
   }
 
@@ -187,7 +289,8 @@ class ArticleController {
         articleDeleted: articleDeleted[1],
       });
     } catch (error) {
-      Error.handleErrorResponse(res, error);
+      console.log('error', error);
+      helperMethods.serverError(res);
     }
   }
 }

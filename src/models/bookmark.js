@@ -1,5 +1,5 @@
-const bookmarkModel = (sequelize, DataTypes) => {
-  const bookmark = sequelize.define('Bookmark', {
+const BookmarkModel = (sequelize, DataTypes) => {
+  const Bookmark = sequelize.define('Bookmark', {
     id: {
       type: DataTypes.UUID,
       primaryKey: true,
@@ -13,12 +13,14 @@ const bookmarkModel = (sequelize, DataTypes) => {
     articleId: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      allowNull: false
+      allowNull: false,
+      onDelete: 'CASCADE',
     },
     userId: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
+      onDelete: 'CASCADE',
     },
     isActive: {
       type: DataTypes.BOOLEAN,
@@ -26,6 +28,6 @@ const bookmarkModel = (sequelize, DataTypes) => {
       allowNull: false
     }
   });
-  return bookmark;
+  return Bookmark;
 };
-export default bookmarkModel;
+export default BookmarkModel;

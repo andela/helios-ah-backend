@@ -5,7 +5,7 @@ dotenv.config();
 
 /**
  * scrambles string data
- * @param {*} token - input string data
+ * @param {string} token - input string data
  * @returns {output} - scrambled data
  */
 function reverseToken(token) {
@@ -31,8 +31,7 @@ class Authentication {
         role: data.role,
         username: data.username
       },
-      process.env.SECRET,
-      {
+      process.env.SECRET, {
         expiresIn: time || 86400 // expires in 1 day
       }
     );
@@ -42,7 +41,7 @@ class Authentication {
 
   /**
    * verify a token validity
-   * @param {*} input - token input
+   * @param {string} input - token input
    * @returns {req} - populate the request with the decrypted content
    */
   static verifyToken(input) {

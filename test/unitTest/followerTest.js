@@ -1,140 +1,81 @@
 import chai from 'chai';
 import chaiHttp from 'chai-http';
-import jwt from 'jsonwebtoken';
-import app from '../../src/app';
-import truncate from '../../src/utilities/truncate';
-import followersUtil from '../../src/utilities/followers';
+import sinon from 'sinon';
+import models from '../../src/models';
+import { follower } from '../../src/utilities';
+import { checkForSelfFollow, checkForSelfUnfollow } from '../../src/middleware';
 
 
 chai.should();
 chai.use(chaiHttp);
 const { expect } = chai;
-let followerToken;
-let decodedUserToken;
-let decodedFollowerToken;
-let userToken;
+const { Follower, Users } = models;
+const req = {
+  params: {
+    ide: '343-r4345rer43'
+  },
+  decoded: {
+    id: '3er44-r5tfrtg-t6'
+  },
+  paramsUser: {
+    email: 'someEmail@wemail.com',
+  },
+  user: {
+    username: 'myUsername'
+  }
+};
+const res = {
+  status() {
+    return this;
+  },
+  json(obj) {
+    return obj;
+  }
+};
+const sameUserId = {
+  params: {
+    id: '343-r4345rer43'
+  },
+  decoded: {
+    id: '343-r4345rer43'
+  },
+};
+const userId = 'dccd8ee7-a832-bc98-4a8e-ca116c5fff0a';
+const followerId = 'dccd8ee7-a832-4a8e-bc98-ca116c5fff0a';
 
 describe('GET /api/v1/profiles/:userId/follow', () => {
-  const userDetails = {
-    username: 'JohDoe1',
-    password: 'testPassword',
-    email: 'johndoe1@wemail.com',
-    firstName: 'John',
-    lastName: 'Doe',
-    bio: 'RIP John Doe',
-  };
-
-  const followerDetails = {
-    username: 'follower',
-    password: 'testPassword',
-    email: 'follower@wemail.com',
-    firstName: 'Follow',
-    lastName: 'Follow',
-    bio: 'I like to follow people',
-  };
-
-  beforeEach(async () => {
-    await truncate();
-  });
   describe('follower utils querying methods', () => {
-    describe('query for existing following', () => {
-      it('should show the details of an existing following', async () => {
-        try {
-          const res = await chai.request(app)
-            .post('/api/v1/auth/signup')
-            .send(userDetails);
-          userToken = await res.body.token;
-          expect(res.status).to.equal(201);
-          expect(res.body).to.have.property('token');
-
-          const res2 = await chai.request(app)
-            .post('/api/v1/auth/signup')
-            .send(followerDetails);
-          followerToken = await res2.body.token;
-          expect(res.status).to.equal(201);
-          expect(res.body).to.have.property('token');
-
-          decodedUserToken = jwt.decode(userToken.split('').reverse().join(''));
-          decodedFollowerToken = jwt.decode(
-            followerToken.split('').reverse().join('')
-          );
-
-          const res3 = await chai.request(app)
-            .get(`/api/v1/profiles/${decodedUserToken.id}/follow`)
-            .set('x-access-token', followerToken);
-
-          expect(res3.status).to.equal(200);
-          expect(res3.body).to.have.property('message');
-          expect(res3.body.message).to.equal('You are now following this user');
-
-          const res4 = await followersUtil
-            .queryForExistingFollowing(
-              true, decodedUserToken.id, decodedFollowerToken.id
-            );
-
-          expect(res4).to.have.property('dataValues');
-          expect(res4.dataValues).to.have.property('isActive');
-          expect(res4.dataValues.isActive).to.equal(true);
-
-          expect(res4.dataValues).to.have.property('followerId');
-          expect(res4.dataValues.followerId)
-            .to.equal(`${decodedFollowerToken.id}`);
-
-          expect(res4.dataValues).to.have.property('userId');
-          expect(res4.dataValues.userId).to.equal(`${decodedUserToken.id}`);
-        } catch (err) {
-          throw err;
-        }
-      });
+    it('should query for an existing following', async () => {
+      const mySpy = sinon.spy(Follower, 'findOne');
+      await follower
+        .queryForExistingFollowing(true, true, userId, followerId, res);
+      expect(mySpy.calledOnce).to.equal(true);
+      Follower.findOne.restore();
     });
   });
   describe('query for updating previous following', () => {
     it('should update the details of a previous following', async () => {
-      try {
-        const res = await chai.request(app)
-          .post('/api/v1/auth/signup')
-          .send(userDetails);
-        userToken = await res.body.token;
-        expect(res.status).to.equal(201);
-        expect(res.body).to.have.property('token');
-
-        const res2 = await chai.request(app)
-          .post('/api/v1/auth/signup')
-          .send(followerDetails);
-        followerToken = await res2.body.token;
-        expect(res.status).to.equal(201);
-        expect(res.body).to.have.property('token');
-
-        decodedUserToken = jwt.decode(userToken.split('').reverse().join(''));
-        decodedFollowerToken = jwt.decode(
-          followerToken.split('').reverse().join('')
-        );
-
-        const res3 = await chai.request(app)
-          .get(`/api/v1/profiles/${decodedUserToken.id}/follow`)
-          .set('x-access-token', followerToken);
-
-        expect(res3.status).to.equal(200);
-        expect(res3.body).to.have.property('message');
-        expect(res3.body.message).to.equal('You are now following this user');
-
-        const res4 = await followersUtil
-          .queryForUpdatingPreviousFollowing(
-            false, decodedUserToken.id, decodedFollowerToken.id
-          );
-        expect(res4[1][0]).to.have.property('dataValues');
-        expect(res4[1][0].dataValues).to.have.property('isActive');
-        expect(res4[1][0].dataValues.isActive).to.equal(false);
-
-        expect(res4[1][0].dataValues).to.have.property('followerId');
-        expect(res4[1][0].dataValues.followerId)
-          .to.equal(`${decodedFollowerToken.id}`);
-
-        expect(res4[1][0].dataValues).to.have.property('userId');
-        expect(res4[1][0].dataValues.userId).to.equal(`${decodedUserToken.id}`);
-      } catch (err) {
-        throw err;
-      }
+      const mySpy = sinon.spy(Follower, 'update');
+      await follower
+        .queryForUpdatingPreviousFollowing(true, userId, followerId, res);
+      expect(mySpy.calledOnce).to.equal(true);
+      Follower.update.restore();
     });
+    it('it should get all followers', async () => {
+      const mySpy = sinon.spy(Users, 'findAll');
+      await follower
+        .getFollowers(userId);
+      expect(mySpy.calledOnce).to.equal(true);
+      Users.findAll.restore();
+    });
+  });
+
+  describe('unit tests for follower utils middleware', () => {
+    it('should return true if next callback is called for "checkForSelfFollow" method',
+      async () => {
+        const mySpy = sinon.spy();
+        await checkForSelfFollow(req, res, mySpy);
+        expect(mySpy.calledOnce).to.equal(true);
+      });
   });
 });

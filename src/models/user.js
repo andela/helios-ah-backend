@@ -1,4 +1,4 @@
-import crypter from '../utilities/cryptData';
+import cryptData from '../utilities/cryptData';
 
 export default (sequelize, DataTypes) => {
   const Users = sequelize.define(
@@ -70,6 +70,16 @@ export default (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false
       },
+      emailNotification: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+      },
+      inAppNotification: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false,
+      },
       username: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -78,17 +88,18 @@ export default (sequelize, DataTypes) => {
           len: [3, 20],
           isAlphanumeric: {
             args: true,
-            msg: 'Username must contain only alphanumeric',
+            msg: 'Username must contain only alphabet, numbers,'
+            + ' and characters  and must begin with an alphabet',
           }
         }
       },
     }, {
       hooks: {
         beforeUpdate: async (user) => {
-          user.password = await crypter.encryptData(user.password);
+          user.password = await cryptData.encryptData(user.password);
         },
         beforeCreate: async (user) => {
-          user.password = await crypter.encryptData(user.password);
+          user.password = await cryptData.encryptData(user.password);
         }
       }
     }
@@ -99,22 +110,21 @@ export default (sequelize, DataTypes) => {
     });
     Users.hasMany(models.Article, {
       foreignKey: 'userId',
-      as: 'articles',
+      as: 'articles'
     });
-    Users.belongsToMany(models.Users, {
-      as: 'Follow',
-      through: {
-        model: 'Follower',
-      },
+
+    Users.belongsToMany(Users, {
+      as: 'followers',
       foreignKey: 'userId',
+      through: 'Follower'
     });
-    Users.belongsToMany(models.Users, {
-      as: 'Following',
-      through: {
-        model: 'Follower'
-      },
-      foreignKey: 'followerId'
+
+    Users.belongsToMany(Users, {
+      as: 'followings',
+      foreignKey: 'followerId',
+      through: 'Follower'
     });
+
     Users.hasMany(models.Comments, {
       foreignKey: 'userId',
       as: 'comments'
@@ -123,14 +133,36 @@ export default (sequelize, DataTypes) => {
       foreignKey: 'userId',
       as: 'childComments'
     });
-    Users.belongsTo(models.roles, {
+    Users.belongsTo(models.Roles, {
       foreignKey: 'roleId'
+    });
+    Users.hasMany(models.Likes, {
+      foreignKey: 'articleId',
+      as: 'likes'
+    });
+    Users.hasMany(models.Ratings, {
+      foreignKey: 'articleId',
+      as: 'ratings'
     });
     Users.belongsToMany(models.Article, {
       as: 'reader',
       through: 'Bookmark',
       foreignKey: 'userId'
     });
+    Users.hasMany(models.Report, {
+      foreignKey: 'userId',
+      as: 'report'
+    });
+    Users.hasMany(models.Notification, {
+      foreignKey: 'userId',
+      onDelete: 'CASCADE'
+    });
+  };
+  // eslint-disable-next-line func-names
+  Users.prototype.verifyPassword = async function (clearPassword) {
+    const isPasswordCorrect = await cryptData
+      .decryptData(clearPassword, this.password);
+    return isPasswordCorrect;
   };
   return Users;
 };

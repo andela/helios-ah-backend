@@ -9,19 +9,13 @@ const followerModel = (sequelize, DataTypes) => {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
-      references: {
-        key: 'id',
-        model: 'Users'
-      }
+      onDelete: 'CASCADE',
     },
     userId: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
       allowNull: false,
-      references: {
-        key: 'id',
-        model: 'Users'
-      }
+      onDelete: 'CASCADE',
     },
     isActive: {
       type: DataTypes.BOOLEAN,

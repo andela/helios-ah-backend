@@ -1,12 +1,14 @@
-import { authentication } from '../utilities';
-import followersUtil from '../utilities/followers';
 import models from '../models';
 import SendEmail from '../utilities/sendEmail';
-import Authentication from '../utilities/authentication';
+import NotificationController from '../utilities/Notification';
+import {
+  helperMethods,
+  Authentication
+} from '../utilities';
+
 
 const { Users, sequelize, Follower } = models;
 const { Op } = sequelize.Sequelize;
-let resetLink, token;
 
 /**
  * Class representing the user controller
@@ -14,6 +16,25 @@ let resetLink, token;
  * @description users controller
  */
 class UserController {
+  /**
+   * This method creates a temporary token and then
+   * sends an email to the user.
+   * @param {object} userExist - An object containing details of the
+   * user we want to send an email to.
+   * @returns {boolean} isEmailSent - Tells if email was actually sent
+   */
+  static async createTokenAndSendEmail(userExist) {
+    const tokenCreated = await
+    Authentication
+      .getToken(userExist.dataValues, process.env.reg_token_expiry);
+
+    if (tokenCreated) {
+      const isEmailSent = await
+      SendEmail.verifyEmail(userExist.email, tokenCreated);
+      return isEmailSent;
+    }
+  }
+
   /**
   * Sign up a user
   * Route: POST: /auth/signup
@@ -27,6 +48,28 @@ class UserController {
       username, password, email, firstName, lastName, bio
     } = req.body;
     try {
+      const userExist = await Users.findOne({ where: { email, } });
+      if (userExist) {
+        if (userExist.isVerified === false) {
+          const isEmailSent = await
+          UserController.createTokenAndSendEmail(userExist);
+          if (isEmailSent) {
+            return helperMethods
+              .requestSuccessful(res, 'You had started the registration '
+              + 'process earlier. '
+              + 'An email has been sent to your email address. '
+              + 'Please check your email to complete your registration.');
+          }
+          return helperMethods
+            .serverError(res, 'Your registration could not be completed.'
+            + ' Please try again');
+        }
+        if (userExist.isVerified === true) {
+          return helperMethods
+            .requestSuccessful(res, 'You are a registered user on '
+            + 'this platform. Please proceed to login');
+        }
+      }
       const userCreated = await Users.create({
         username,
         password,
@@ -36,21 +79,64 @@ class UserController {
         bio,
       });
       if (userCreated) {
-        const tokenCreated = await authentication.getToken(userCreated);
-        res.status(201).send({
-          success: true,
-          message: `User ${userCreated.username} created successfully`,
-          id: userCreated.id,
-          username: userCreated.username,
-          email: userCreated.email,
-          token: tokenCreated,
-        });
+        const isEmailSent = await
+        UserController.createTokenAndSendEmail(userCreated);
+        if (isEmailSent) {
+          return helperMethods
+            .requestSuccessful(res, 'An email has been sent to your '
+            + 'email address. Please check your email to complete '
+            + 'your registration');
+        }
+        return helperMethods
+          .serverError(res, 'Your registration could not be completed.'
+          + 'Please try again');
       }
     } catch (error) {
-      res.status(500).send({
-        success: false,
-        message: 'Internal server error',
-      });
+      if (error.errors) {
+        return helperMethods.sequelizeValidationError(res, error);
+      }
+      return helperMethods.serverError(res);
+    }
+  }
+
+  /**
+  * Complete user registration
+  * Route: GET: /auth/complete_reg/
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof UserController
+ */
+  static async completeRegistration(req, res) {
+    try {
+      const foundUser = await Users.findByPk(req.decoded.id);
+      if (foundUser) {
+        const userUpdated = await foundUser.update({
+          isVerified: true || foundUser.isVerified,
+        }, { hooks: false });
+        if (userUpdated) {
+          const isEmailSent = await
+          SendEmail.confirmRegistrationComplete(userUpdated.email);
+          if (isEmailSent) {
+            const tokenCreated = await Authentication.getToken(userUpdated);
+            return res.status(201).json({
+              success: true,
+              message: `User ${userUpdated.username} created successfully`,
+              id: userUpdated.id,
+              username: userUpdated.username,
+              token: tokenCreated,
+            });
+          }
+        }
+      }
+      return helperMethods
+        .serverError(res, 'Could not complete your registration. '
+        + 'Please re-register.');
+    } catch (error) {
+      if (error.errors) {
+        return helperMethods.sequelizeValidationError(res, error);
+      }
+      return helperMethods.serverError(res);
     }
   }
 
@@ -65,22 +151,43 @@ class UserController {
   *
  */
   static async followUser(req, res) {
-    const userId = await req.params.id;
-    const followerId = await req.decoded.id;
+    const userId = req.params.id;
+    const followerId = req.decoded.id;
 
     try {
+      const { username, email } = req.user;
+      const details = {
+        email,
+        subject: 'Author\'s Haven - Email notification',
+        emailBody: `<p>You are now being followed by ${username}</p>`
+      };
+
       const createFollower = await Follower.create({
         userId,
         followerId
       });
+      const notificationText = `You are now being followed
+      by ${username}`;
+
       if (createFollower) {
+        req.io.emit('inAppNotifications', { notificationText });
+        await NotificationController
+          .setSingleEmailNotification(req.user, details, res);
+
+        await NotificationController
+          .setSingleAppNotification(
+            req.user,
+            notificationText,
+            res
+          );
+
         res.status(200).json({
           success: true,
           message: 'You are now following this user'
         });
       }
     } catch (error) {
-      res.status(500).send(error);
+      return helperMethods.serverError(res);
     }
   }
 
@@ -94,24 +201,13 @@ class UserController {
   *
  */
   static async unfollowUser(req, res) {
-    const userId = await req.params.id;
-    const followerId = await req.decoded.id;
-
-    const isExistingFollowing = await
-    followersUtil.queryForExistingFollowing(true, userId, followerId);
-
-    if (isExistingFollowing) {
-      await followersUtil
-        .queryForUpdatingPreviousFollowing(false, userId, followerId);
-      res.status(200).json({
+    try {
+      return res.status(200).json({
         success: true,
         message: 'You have unfollowed this user'
       });
-    } else {
-      res.status(400).json({
-        success: false,
-        message: 'You do not follow this user'
-      });
+    } catch (error) {
+      return helperMethods.serverError(res);
     }
   }
 
@@ -171,10 +267,7 @@ class UserController {
         authors,
       });
     } catch (error) {
-      res.status(500).json({
-        success: false,
-        message: 'Internal server error',
-      });
+      return helperMethods.serverError(res);
     }
   }
 
@@ -182,12 +275,12 @@ class UserController {
    * User request password reset
    * Route: POST: /api/v1/user/requests/password/reset
    * @param {object} req - Request Object
-   * @param {object} res - Response Objec
+   * @param {object} res - Response Object
    * @returns {res} res - Response Object
    * @memberof UserController
    */
   static async requestResetPassword(req, res) {
-    let resetLinkURL;
+    let resetLinkURL, token, resetLink;
     if (process.env.NODE_ENV !== 'production') {
       resetLinkURL = process.env.LOCAL_BASE_URL;
     } else {
@@ -211,21 +304,28 @@ class UserController {
           subject: 'Request to reset password',
           email: req.body.email
         };
-        await SendEmail.emailSender(details);
-        return res.status(200).send({
-          status: 'success',
-          message: 'check your mail for instructions on how to reset password'
-        });
+        const isEmailSent = await SendEmail.emailSender(details);
+        if (isEmailSent) {
+          return res.status(200).send({
+            status: 'success',
+            message: 'check your mail for instructions on how to reset password'
+          });
+        }
+        if (!isEmailSent) {
+          return res.status(500).send({
+            status: 'error',
+            message:
+            'Internal server error while sending you an email. '
+            + 'Please try again.'
+          });
+        }
       }
       return res.status(404).send({
         status: 'error',
         error: 'User with email not found'
       });
     } catch (error) {
-      return res.status(500).send({
-        status: 'error',
-        error: 'Internal Server Error'
-      });
+      return helperMethods.serverError(res);
     }
   }
 
@@ -240,7 +340,7 @@ class UserController {
   static async resetPassword(req, res) {
     if (req.foundUser) {
       const payload = await Authentication.verifyToken(req.query.token);
-      if (payload) {
+      if (payload.success) {
         const user = await Users.findByPk(payload.id);
         if (!req.body.password) {
           return res.status(400).send({
@@ -289,16 +389,74 @@ class UserController {
         }
       );
       if (userUpdated[0] === 1) {
-        res.status(200).send({
+        return res.status(200).json({
           message: 'User role was updated successfully',
           success: true
         });
       }
     } catch (error) {
-      res.status(500).send({
-        message: 'Internal server error',
-        success: false
+      if (error.errors) {
+        return res.status(400).json({
+          message: error.errors[0].message
+        });
+      }
+      return helperMethods.serverError(res);
+    }
+  }
+
+  /**
+   * User Login
+   * Route: POST: auth/login
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @return {res} res - Response object
+   * @memberof UserController
+   */
+  static async userLogin(req, res) {
+    const { email, password } = req.body;
+    try {
+      const userFound = await Users.findOne({ where: { email, } });
+      if (!userFound) {
+        return res.status(400).json({
+          success: false,
+          message: 'Email or password does not exist',
+        });
+      }
+      if (userFound.isVerified === false) {
+        return res.status(401).json({
+          success: false,
+          message: 'You had started the registration process already. '
+          + 'Please check your email to complete your registration.'
+        });
+      }
+      const isPasswordCorrect = await userFound.verifyPassword(password);
+      if (userFound && isPasswordCorrect) {
+        const tokenCreated = await Authentication.getToken({
+          id: userFound.id,
+          username: userFound.username,
+          role: userFound.role,
+        });
+        if (tokenCreated) {
+          const userDetails = {
+            id: userFound.id,
+            username: userFound.username,
+            role: userFound.roleId,
+            token: tokenCreated,
+          };
+          return res.status(200).json({
+            success: true,
+            message: 'Login successful',
+            userDetails,
+          });
+        }
+        return helperMethods.serverError(res);
+      }
+      return res.status(400).send({
+        success: false,
+        message: 'Email or password does not exist',
       });
+    } catch (error) {
+      return helperMethods.serverError(res);
     }
   }
 }
