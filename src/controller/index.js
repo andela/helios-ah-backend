@@ -6,6 +6,7 @@ import CommentController from './commentController';
 import TagController from './tagsController';
 import SocialLoginController from './socialLoginController';
 import ReportController from './reportController';
+import HighlightController from './highlightController';
 import NotificationController from './NotificationController';
 import ShareArticleController from './shareArticleController';
 
@@ -16,6 +17,7 @@ export {
   TagController,
   LikesController,
   RatingsController,
+  HighlightController,
   SocialLoginController,
   ReportController,
   NotificationController,
