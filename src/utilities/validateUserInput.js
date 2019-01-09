@@ -1,3 +1,5 @@
+import isIdValid from './isValidId';
+
 /**
  * Trims input values from user
  * @param {object} objectWithValuesToTrim - request body to trim
@@ -220,6 +222,31 @@ class Validate {
   static validateLikeStatus(req, res, next) {
     return (req.body.like === 'true' || req.body.like === 'false') ? next()
       : allFieldsRequired(res, 'like is required and must be a boolean');
+  }
+
+  /**
+   * *
+   * @param {object} req - HTTP request object
+   * @param {object} res - HTTP response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - HTTP response object
+   * @memberof Validate
+   */
+  static async validateShareArticle(req, res, next) {
+    req.body = trimValues(req.body);
+    const {
+      articleId,
+      title,
+      author,
+      email
+    } = req.body;
+    if (articleId && title && author && email) {
+      const isArticleIdValid = await isIdValid(articleId, res);
+      if (isArticleIdValid === true) next();
+    } else {
+      allFieldsRequired(res);
+    }
   }
 }
 

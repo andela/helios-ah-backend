@@ -10,6 +10,7 @@ import {
   SocialLoginController,
   ReportController,
   NotificationController,
+  ShareArticleController,
 } from '../controller';
 
 import {
@@ -303,6 +304,12 @@ const routes = (app) => {
     Authorization.checkToken,
     validateUserInputs.validateReport,
     ReportController.reportArticle
+  );
+  app.post(
+    '/api/v1/articles/share',
+    Authorization.checkToken,
+    validateUserInputs.validateShareArticle,
+    ShareArticleController.ShareArticleViaEmail,
   );
 };
 

@@ -12,3 +12,4 @@ import './emailNotifications.test';
 import './inAppNotifications.test';
 import './commentLike.test';
 import './childCommentLike.test';
+import './shareArticle.test';
