@@ -1,5 +1,5 @@
 
-module.exports = {
+export default {
   up: queryInterface => queryInterface.bulkInsert('ChildComments', [{
     id: '09808443-8e79-49e5-acca-5a42ff6b425d',
     commentText: 'I love this article. Very cool stuff',
@@ -33,5 +33,5 @@ module.exports = {
     updatedAt: new Date(Date.now())
   }], {}),
 
-  down: queryInterface => queryInterface.bulkDelete('Users', null, {})
+  down: queryInterface => queryInterface.bulkDelete('ChildComments', null, {})
 };
