@@ -18,18 +18,11 @@ class ShareArticle {
   * @memberof ShareArticle
  */
   static async ShareArticleViaEmail(req, res) {
-    const {
-      articleId,
-      title,
-      author,
-      email
-    } = req.body;
-    const articleURL = `${process.env.shareArticleURL}/${articleId}`;
     const shareDetails = {
-      articleURL,
-      email,
-      title,
-      author,
+      articleURL: `${process.env.shareArticleURL}/${req.body.articleId}`,
+      email: req.body.email,
+      title: req.body.title,
+      author: req.body.author,
     };
     try {
       const isEmailSent = await sendEmail.shareArticle(shareDetails);

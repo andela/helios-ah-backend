@@ -316,7 +316,7 @@ const routes = (app) => {
     Authorization.checkToken,
     validateUserInputs.validateShareArticle,
     ShareArticleController.ShareArticleViaEmail,
-    );
+  );
   app.post(
     '/api/v1/highlights/:articleId',
     Authorization.checkToken,
