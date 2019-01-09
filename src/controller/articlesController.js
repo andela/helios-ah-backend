@@ -1,5 +1,7 @@
+import { Op } from 'sequelize';
 import models from '../models';
 import errorResponse from '../utilities/Error';
+import helperMethod from '../utilities/helperMethods';
 import {
   follower,
   NotificationUtil,
@@ -12,6 +14,8 @@ const {
   Bookmark,
   Comments,
   CommentHistory,
+  Tags,
+  ArticleTag,
   ChildComments,
   ChildCommentHistory,
 } = models;
@@ -147,6 +151,58 @@ class ArticleController {
       limit: paginate.limit,
       offset,
     };
+    if (req.query.author) {
+      options.include = [
+        {
+          model: Users,
+          attributes: ['firstName', 'lastName'],
+          where: {
+            [Op.or]: [
+              {
+                firstName: {
+                  [Op.iLike]: `%${req.query.author}%`
+                }
+              },
+              {
+                lastName: {
+                  [Op.iLike]: `%${req.query.author}%`
+                }
+              }
+            ]
+          }
+        }
+      ];
+    } else if (req.query.tag) {
+      const foundTag = await Tags.findOne({
+        where: {
+          tagName: {
+            [Op.iLike]: `%${req.query.tag}%`
+          }
+        }
+      });
+      if (!foundTag) {
+        return res.status(404).send({
+          success: false,
+          message: `No article tagged ${req.query.tag} found.`
+        });
+      }
+      const tagId = foundTag.dataValues.id;
+      const article = await ArticleTag.findAll({
+        attributes: [],
+        include: [
+          {
+            model: Article,
+          }
+        ],
+        where: {
+          tagId,
+        }
+      });
+      return res.status(200).json({
+        success: true,
+        article
+      });
+    }
 
     if (req.originalUrl === '/api/v1/articles/user') {
       options.where = {
@@ -161,6 +217,12 @@ class ArticleController {
 
     try {
       const articles = await Article.findAll(options);
+      if (req.query.author && !articles[0]) {
+        return res.status(200).send({
+          success: false,
+          message: `No article published by ${req.query.author}`
+        });
+      }
       res.status(200).json({
         success: true,
         articles,
@@ -219,6 +281,11 @@ class ArticleController {
         }
       });
       if (article) {
+        await helperMethod.updateViewStat(
+          article.id,
+          article.viewStats,
+          article.title
+        );
         res.status(200).json({
           success: true,
           article,

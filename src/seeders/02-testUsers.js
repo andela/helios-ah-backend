@@ -1,7 +1,5 @@
 import { cryptData } from '../utilities';
 
-// let password;
-
 const init = async () => {
   const password = await cryptData.encryptData('password');
   return password;
