@@ -19,7 +19,7 @@ class ShareArticle {
  */
   static async ShareArticleViaEmail(req, res) {
     const shareDetails = {
-      articleURL: `${process.env.shareArticleURL}/${req.body.articleId}`,
+      articleURL: `${process.env.SHARE_ARTICLE_URL}/${req.body.articleId}`,
       email: req.body.email,
       title: req.body.title,
       author: req.body.author,

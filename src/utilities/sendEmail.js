@@ -18,8 +18,8 @@ class SendEmail {
       subject: `${shareDetails.title} - Authors Haven`,
       emailBody: `<p>An article from Authors Haven was shared with you.</p>
       <div>
-        Article Title: ${shareDetails.title}
-        Article Author: ${shareDetails.author}
+        Title: ${shareDetails.title}
+        Author: ${shareDetails.author}
       </div>
       <p>Click this <a href="${shareDetails.articleURL}">link</a> 
       to view the article</p>`
