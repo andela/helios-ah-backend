@@ -354,9 +354,7 @@ describe('Integration tests for the article controller', () => {
 
           const unauthorisedUserToken = await unauthorisedUserLoginResponse
             .body.userDetails.token;
-
-          console.log('unauthorisedUserToken', unauthorisedUserToken);
-
+            
           const postArticleResponse = await chai.request(app)
             .post('/api/v1/articles')
             .send(articleDetails)

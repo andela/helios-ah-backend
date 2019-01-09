@@ -8,6 +8,7 @@ import './followerTest';
 import './tags.test';
 import './reportModel.test';
 import './articleController.test';
+import './highlight.test';
 import './notifications.test';
 import './bookmark.test';
 import './likesModel.test';
