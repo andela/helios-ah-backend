@@ -8,6 +8,7 @@ import SocialLoginController from './socialLoginController';
 import ReportController from './reportController';
 import HighlightController from './highlightController';
 import NotificationController from './NotificationController';
+import ShareArticleController from './shareArticleController';
 
 export {
   ArticleController,
@@ -19,5 +20,6 @@ export {
   HighlightController,
   SocialLoginController,
   ReportController,
-  NotificationController
+  NotificationController,
+  ShareArticleController,
 };

@@ -8,11 +8,29 @@ dotenv.config();
  */
 class SendEmail {
   /**
-   *
+   * @param {object} shareDetails - email address to send the message to
+   * @returns {boolean} specifies if the email was sent successfully
+   * after registration
+   */
+  static shareArticle(shareDetails) {
+    const details = {
+      email: shareDetails.email,
+      subject: `${shareDetails.title} - Authors Haven`,
+      emailBody: `<p>An article from Authors Haven was shared with you.</p>
+      <div>
+        Title: ${shareDetails.title}
+        Author: ${shareDetails.author}
+      </div>
+      <p>Click this <a href="${shareDetails.articleURL}">link</a> 
+      to view the article</p>`
+    };
+    return SendEmail.emailSender(details);
+  }
+
+  /**
    * @param {string} email - email address to send the message to
    * @param {string} token - Token generated during signup
-   * @returns {boolean} sends a verification email to user
-   * after registration
+   * @returns {boolean} specifies if the email was sent successfully
    */
   static verifyEmail(email, token) {
     const details = {
@@ -32,7 +50,7 @@ class SendEmail {
    * This function sends an email on verification of email address
    * @param {string} email - email address to send the message to
    * @param {string} token - Token generated during signup
-   * @returns {boolean} sends a verification email to user
+   * @returns {boolean} specifies if a verification email was sent to user
    * after registration
   */
   static confirmRegistrationComplete(email) {

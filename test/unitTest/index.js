@@ -12,3 +12,4 @@ import './highlight.test';
 import './notifications.test';
 import './bookmark.test';
 import './likesModel.test';
+import './sharArticle.test';
