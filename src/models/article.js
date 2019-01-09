@@ -18,7 +18,12 @@ const articleModel = (sequelize, DataTypes) => {
     userId: {
       type: DataTypes.UUID,
       defaultValue: DataTypes.UUIDV4,
-      onDelete: 'CASCADE',
+      onDelete: 'CASCADE'
+    },
+    isDeleted: {
+      type: DataTypes.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
     },
     body: {
       type: DataTypes.TEXT,
@@ -49,12 +54,19 @@ const articleModel = (sequelize, DataTypes) => {
     isDraft: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
+    },
+    viewStats: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false
     }
   }, {
     validate: {
       checkForSpace() {
-        if (this.title.search(/[^\w\s\.\-\?#\$!']/g) !== -1) {
-          throw new Error('Title should contain letters, numbers, !""?');
+        if (this.title) {
+          if (this.title.search(/[^\w\s\.\-\?#\$!']/g) !== -1) {
+            throw new Error('Title should contain letters, numbers, !""?');
+          }
         }
       }
     },

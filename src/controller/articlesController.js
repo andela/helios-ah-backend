@@ -1,6 +1,7 @@
 import { Op } from 'sequelize';
 import models from '../models';
 import errorResponse from '../utilities/Error';
+import helperMethod from '../utilities/helperMethods';
 import {
   follower,
   NotificationUtil,
@@ -280,6 +281,11 @@ class ArticleController {
         }
       });
       if (article) {
+        await helperMethod.updateViewStat(
+          article.id,
+          article.viewStats,
+          article.title
+        );
         res.status(200).json({
           success: true,
           article,
@@ -320,6 +326,36 @@ class ArticleController {
           message: 'Article successfully bookmarked',
         });
       }
+    } catch (error) {
+      helperMethods.serverError(res);
+    }
+  }
+
+  /**
+  * @description Delete an Article
+  *
+  * @param {object} req - Request Object
+  * @param {object} res - Response Object
+  *
+  * @return {obejct} database response
+  * @memberof ArticleController
+  */
+  static async deleteArticle(req, res) {
+    const options = {
+      where: {
+        id: req.params.articleId
+      },
+      returning: true,
+    };
+    try {
+      const articleDeleted = await Article.update({
+        isDeleted: true
+      }, options);
+      res.status(200).json({
+        success: true,
+        message: 'Article deleted successfully',
+        articleDeleted: articleDeleted[1],
+      });
     } catch (error) {
       helperMethods.serverError(res);
     }

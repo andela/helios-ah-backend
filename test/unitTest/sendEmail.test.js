@@ -21,6 +21,7 @@ import sinon from 'sinon';
     const stubSendMethod = sinon.stub(sendGrid, 'send').returns(true);
     const response = await SendEmail.emailSender(details);
     expect(response).to.equal(true);
+    sinon.assert.calledOnce(stubSendMethod);
     stubSendMethod.restore();
   });
   
@@ -29,6 +30,20 @@ import sinon from 'sinon';
     const response = await 
     SendEmail.confirmRegistrationComplete('jideajayi11@gmail.com');
     expect(response).to.equal(true);
+    sinon.assert.calledOnce(stubSendMethod);
+    stubSendMethod.restore();
+  });
+  it('should share an article with someone via email', async () => {
+    const shareDetails = {
+      articleURL: 'qwewerdeded',
+      email: "wderrf",
+      title: 'wertrdfdc',
+      author: 'wewewede',
+    };
+    const stubSendMethod = sinon.stub(SendEmail, 'emailSender').returns(true);
+    const response = await SendEmail.shareArticle(shareDetails);
+    expect(response).to.equal(true);
+    sinon.assert.calledOnce(stubSendMethod);
     stubSendMethod.restore();
   });
 });

@@ -1,5 +1,5 @@
 
-module.exports = {
+export default {
   up: queryInterface => queryInterface.bulkInsert('Likes', [{
     id: 'ddcc3a94-9451-4026-b861-b06d7ee0cbf7',
     userId: 'dccd8ee7-bc98-4a8e-a832-ca116c5fff0a',
@@ -33,5 +33,5 @@ module.exports = {
     updatedAt: new Date(Date.now())
   }], {}),
 
-  down: queryInterface => queryInterface.bulkDelete('Users', null, {})
+  down: queryInterface => queryInterface.bulkDelete('Likes', null, {})
 };

@@ -25,9 +25,19 @@ export default {
     image: {
       type: Sequelize.STRING,
     },
+    isDeleted: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: false
+    },
     isDraft: {
       type: Sequelize.BOOLEAN,
       defaultValue: true,
+    },
+    viewStats: {
+      type: Sequelize.INTEGER,
+      defaultValue: 0,
+      allowNull: false
     },
     userId: {
       type: Sequelize.UUID,

@@ -7,9 +7,11 @@ import {
   RatingsController,
   CommentController,
   TagController,
+  HighlightController,
   SocialLoginController,
   ReportController,
   NotificationController,
+  ShareArticleController,
 } from '../controller';
 
 import {
@@ -62,6 +64,15 @@ const routes = (app) => {
     findDatabaseField.UserInToken,
     validateUserInputs.validateCreateArticle,
     ArticleController.createArticle
+  );
+  app.delete(
+    '/api/v1/articles/:articleId',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    Authorization.uuidV4Validator,
+    findDatabaseField.articleInParams,
+    Authorization.hasWriteAccess,
+    ArticleController.deleteArticle
   );
   app.get(
     '/api/v1/notifications/email',
@@ -148,6 +159,11 @@ const routes = (app) => {
     Authorization.checkToken,
     validateUserInputs.validateCreateComment,
     CommentController.createChildComment
+  );
+  app.post(
+    '/api/v1/articles/tag/:articleId',
+    Authorization.checkToken,
+    TagController.createTag
   );
   app.post(
     '/api/v1/comments/:commentId/likes',
@@ -294,6 +310,31 @@ const routes = (app) => {
     Authorization.checkToken,
     validateUserInputs.validateReport,
     ReportController.reportArticle
+  );
+  app.post(
+    '/api/v1/articles/share',
+    Authorization.checkToken,
+    validateUserInputs.validateShareArticle,
+    ShareArticleController.ShareArticleViaEmail,
+  );
+  app.post(
+    '/api/v1/highlights/:articleId',
+    Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    validateUserInputs.validateCreateComment,
+    HighlightController.createHighlight
+  );
+  app.post(
+    '/api/v1/highlights/comment/:highlightId',
+    Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    validateUserInputs.validateCreateComment,
+    HighlightController.createHighlightComment
+  );
+  app.get(
+    '/api/v1/highlights/:articleId',
+    Authorization.uuidV4Validator,
+    HighlightController.getHighlights
   );
 };
 
