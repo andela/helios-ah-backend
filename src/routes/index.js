@@ -7,6 +7,7 @@ import {
   RatingsController,
   CommentController,
   TagController,
+  HighlightController,
   SocialLoginController,
   ReportController,
   NotificationController,
@@ -159,6 +160,11 @@ const routes = (app) => {
     CommentController.createChildComment
   );
   app.post(
+    '/api/v1/articles/tag/:articleId',
+    Authorization.checkToken,
+    TagController.createTag
+  );
+  app.post(
     '/api/v1/comments/:commentId/likes',
     Authorization.checkToken,
     checkCommentExists,
@@ -303,6 +309,25 @@ const routes = (app) => {
     Authorization.checkToken,
     validateUserInputs.validateReport,
     ReportController.reportArticle
+  );
+  app.post(
+    '/api/v1/highlights/:articleId',
+    Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    validateUserInputs.validateCreateComment,
+    HighlightController.createHighlight
+  );
+  app.post(
+    '/api/v1/highlights/comment/:highlightId',
+    Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    validateUserInputs.validateCreateComment,
+    HighlightController.createHighlightComment
+  );
+  app.get(
+    '/api/v1/highlights/:articleId',
+    Authorization.uuidV4Validator,
+    HighlightController.getHighlights
   );
 };
 
