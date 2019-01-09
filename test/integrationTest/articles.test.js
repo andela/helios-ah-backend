@@ -15,7 +15,10 @@ describe('Integration tests for the article controller', () => {
     userDetails = {
       email: 'yomizy@wizzy.com',
       password: 'password',
-    };
+    }
+    const response = await chai.request(app).post('/api/v1/auth/login')
+      .send(userDetails);
+    myToken = response.body.userDetails.token;
     userLoginResponse = await chai.request(app).post('/api/v1/auth/login')
       .send(userDetails);
     myToken = userLoginResponse.body.userDetails.token;
