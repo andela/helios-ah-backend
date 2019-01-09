@@ -54,6 +54,11 @@ const articleModel = (sequelize, DataTypes) => {
     isDraft: {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
+    },
+    viewStats: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+      allowNull: false
     }
   }, {
     validate: {
