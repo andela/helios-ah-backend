@@ -2,6 +2,14 @@ import sendGrid from '@sendgrid/mail';
 import dotenv from 'dotenv';
 
 dotenv.config();
+let baseUrl = '';
+
+if (process.env.NODE_ENV === 'production') {
+  baseUrl = process.env.SENDGRID_URL;
+} else {
+  baseUrl = 'http://localhost:4001/api/v1';
+}
+console.log('baseURl is ==> ', baseUrl);
 
 /**
  * @description utility to send mails
@@ -40,7 +48,7 @@ class SendEmail {
         <p>Next step is to verify this email
         address by clicking the link below.</p>
         <p> >>>
-        <a href=http://localhost:4001/api/v1/auth/complete_reg/?token=${token}>
+        <a href=${baseUrl}/auth/complete_reg/?token=${token}>
         Complete your registration </a><<< </p>`
     };
     return SendEmail.emailSender(details);
@@ -60,7 +68,7 @@ class SendEmail {
       emailBody: `<p>Your registration has been completed<p>
       <p>Thank you for registering with Authors Haven.</p>
        <p> >>>
-       <a href=http://localhost:4001/api/v1/>
+       <a href=${baseUrl}>
        Go to your profile </a> <<< </p>`
     };
     return SendEmail.emailSender(details);
