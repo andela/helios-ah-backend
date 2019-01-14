@@ -92,6 +92,7 @@ class UserController {
           + 'Please try again');
       }
     } catch (error) {
+      console.log('error.message is ==> ', error.message);
       console.log('error is ==> ', error);
       if (error.errors) {
         return helperMethods.sequelizeValidationError(res, error);
