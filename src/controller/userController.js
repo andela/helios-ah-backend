@@ -284,7 +284,7 @@ class UserController {
     if (process.env.NODE_ENV !== 'production') {
       resetLinkURL = process.env.LOCAL_BASE_URL;
     } else {
-      resetLinkURL = process.env.BASE_URL;
+      resetLinkURL = process.env.SENDGRID_URL;
     }
 
     try {
