@@ -45,6 +45,7 @@ class UserController {
  */
   static async userSignup(req, res) {
     console.log('i entered signup controller');
+    console.log('node is in the ==> ', process.env.NODE_ENV, ' environment');
     const {
       username, password, email, firstName, lastName, bio
     } = req.body;
