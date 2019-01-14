@@ -9,7 +9,6 @@ if (process.env.NODE_ENV === 'production') {
 } else {
   baseUrl = 'http://localhost:4001/api/v1';
 }
-console.log('baseURl is ==> ', baseUrl);
 
 /**
  * @description utility to send mails

@@ -44,8 +44,6 @@ class UserController {
   * @memberof UserController
  */
   static async userSignup(req, res) {
-    console.log('i entered signup controller');
-    console.log('node is in the ==> ', process.env.NODE_ENV, ' environment');
     const {
       username, password, email, firstName, lastName, bio
     } = req.body;
@@ -94,8 +92,6 @@ class UserController {
           + 'Please try again');
       }
     } catch (error) {
-      console.log('error.message is ==> ', error.message);
-      console.log('error is ==> ', error);
       if (error.errors) {
         return helperMethods.sequelizeValidationError(res, error);
       }

@@ -11,12 +11,11 @@ if (process.env.NODE_ENV === 'production') {
   configEnv = process.env.NODE_ENV === 'test' ? databaseConfig.test
     : databaseConfig.development;
 }
-console.log('config env is => ', configEnv);
+
 const db = {};
 
 let sequelize;
 if (configEnv.use_env_variable) {
-  console.log('am in 1st if');
   sequelize = new Sequelize(process.env[configEnv.use_env_variable], configEnv);
 } else {
   sequelize = new Sequelize(
