@@ -44,6 +44,7 @@ class UserController {
   * @memberof UserController
  */
   static async userSignup(req, res) {
+    console.log('i entered signup controller');
     const {
       username, password, email, firstName, lastName, bio
     } = req.body;
