@@ -218,6 +218,22 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
   );
+
+  app.put(
+    '/api/v1/users',
+    Authorization.checkToken,
+    validateUserInputs.validateUserUpdate,
+    UserController.updateUserDetails
+  );
+  app.get(
+    '/api/v1/users/:userId',
+    UserController.getUserDetails
+  );
+  app.get(
+    '/api/v1/users/:userId/follow',
+    UserController.getFollowingDetails
+  );
+
   app.get(
     '/api/v1/auth/social_fb',
     passport.authenticate('facebook', { session: false }),
