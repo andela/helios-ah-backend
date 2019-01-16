@@ -265,11 +265,15 @@ class Validate {
       image,
       bio
     } = req.body;
-    if (firstName || lastName || image || bio) {
+    if (
+      firstName || lastName || image || bio
+    ) {
       next();
     } else {
-      allFieldsRequired(res,
-        'firstname, lastname, image, or bio is required for update');
+      allFieldsRequired(
+        res,
+        'firstname,lastname, image, or bio is required for update'
+      );
     }
   }
 }

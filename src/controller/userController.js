@@ -481,9 +481,7 @@ class UserController {
           'bio'
         ]
       };
-      const userDetails = await Users.findByPk(
-        req.params.userId, options
-      );
+      const userDetails = await Users.findByPk(req.params.userId, options);
       if (userDetails) {
         return res.status(200).json({
           success: true,
