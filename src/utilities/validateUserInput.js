@@ -1,3 +1,5 @@
+import isIdValid from './isValidId';
+
 /**
  * Trims input values from user
  * @param {object} objectWithValuesToTrim - request body to trim
@@ -90,9 +92,8 @@ class Validate {
       title,
       body,
       description,
-      image,
     } = req.body;
-    if (title && body && description && image) {
+    if (title && body && description) {
       next();
     } else {
       allFieldsRequired(res);
@@ -220,6 +221,60 @@ class Validate {
   static validateLikeStatus(req, res, next) {
     return (req.body.like === 'true' || req.body.like === 'false') ? next()
       : allFieldsRequired(res, 'like is required and must be a boolean');
+  }
+
+  /**
+   * *
+   * @param {object} req - HTTP request object
+   * @param {object} res - HTTP response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - HTTP response object
+   * @memberof Validate
+   */
+  static async validateShareArticle(req, res, next) {
+    req.body = trimValues(req.body);
+    const {
+      articleId,
+      title,
+      author,
+      email
+    } = req.body;
+    if (articleId && title && author && email) {
+      const isArticleIdValid = await isIdValid(articleId, res);
+      if (isArticleIdValid === true) next();
+    } else {
+      allFieldsRequired(res);
+    }
+  }
+
+  /**
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - Response object when query is invalid
+   * @memberof Validate
+   */
+  static validateUserUpdate(req, res, next) {
+    req.body = trimValues(req.body);
+    const {
+      firstName,
+      lastName,
+      image,
+      bio
+    } = req.body;
+    if (
+      firstName || lastName || image || bio
+    ) {
+      next();
+    } else {
+      allFieldsRequired(
+        res,
+        'firstname,lastname, image, or bio is required for update'
+      );
+    }
   }
 }
 

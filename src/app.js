@@ -6,6 +6,7 @@ import logger from 'morgan';
 import passport from 'passport';
 import dotenv from 'dotenv';
 import socketIO from 'socket.io';
+import path from 'path';
 import session from 'express-session';
 import './utilities/socialAuthStrategies';
 import routes from './routes';
@@ -43,6 +44,7 @@ if (app.get('env') !== 'test') {
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(express.static(`${__dirname}/public`));
+app.use('/docs', express.static(path.resolve(`${__dirname}`, '../apiDocs')));
 app.use(session({
   secret: process.env.express_session_secrete,
   resave: false,

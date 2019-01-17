@@ -47,7 +47,7 @@ class SendEmail {
         <p>Next step is to verify this email
         address by clicking the link below.</p>
         <p> >>>
-        <a href=${baseUrl}/signup/verify?token=${token}>
+        <a href=${baseUrl}/auth/complete_reg/?token=${token}>
         Complete your registration </a><<< </p>`
     };
     return SendEmail.emailSender(details);

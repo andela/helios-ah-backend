@@ -5,7 +5,7 @@ import { UserController } from '../../src/controller';
 import { Authentication, sendEmail } from '../../src/utilities';
 import models from '../../src/models';
 
-const { Users } = models;
+const { Users, Follower } = models;
 const { expect } = chai;
 
 const req = {
@@ -151,6 +151,70 @@ describe('Unit test for user controller', () => {
       .equal('You had started the registration process already. '
       + 'Please check your email to complete your registration.');
       stubFindOne.restore();
+    });
+  });
+  describe('Test for updating a user\'s details', () => {
+    it('should send a message on successful update', async () => {
+      const foundUser = {
+        update: () => {
+          return {
+            id: 'dfddf',
+            firstName: 'erewer',
+            lastName: 'dfgfdf',
+            bio: 'sdfdsd',
+            image: 'sdfdsd',
+          }
+        }
+      }
+      const stubFindByPk = sinon.stub(Users, 'findByPk').returns(foundUser);
+      const stubUpdateMethod = sinon.stub(Users, 'update').returns([1]);
+      const response = await UserController.updateUserDetails(req, res);
+      expect(response.success).to.be.equal(true);
+      expect(response).to.have.property('message');
+      expect(response.message).to.equal('User details updated successfully');
+      expect(response).to.have.property('profileUpdated');
+      stubFindByPk.restore();
+      stubUpdateMethod.restore();
+    });
+  });
+  describe('Test for get a user\'s details', () => {
+    it('return the details of a user', async () => {
+      const userDetails = {
+        id: 'dfddf',
+        firstName: 'erewer',
+        lastName: 'dfgfdf',
+        bio: 'sdfdsd',
+        image: 'sdfdsd',
+      }
+      const stubFindByPk = sinon.stub(Users, 'findByPk').returns(userDetails);
+      const response = await UserController.getUserDetails(req, res);
+      expect(response.success).to.be.equal(true);
+      expect(response).to.have.property('userDetails');
+      stubFindByPk.restore();
+    });
+  });
+  describe('Test for get a user\'s follow details', () => {
+    it('return the details of a user', async () => {
+      const followersDetails = {
+        count: 1,
+        rows: [
+          {
+            id: "4a269ee1-de37-4a6e-af8d-c4f7ba395d4f",
+            followerId: "c667aa9b-e5a1-4552-960b-8cc2a9c09ccb",
+            userId: "dccd8ee7-bc98-4a8e-a832-ca116c5fff0a",
+            isActive: true,
+            createdAt: "2019-01-16T12:15:04.108Z",
+            updatedAt: "2019-01-16T12:15:04.108Z"
+          }
+        ]
+      };
+      const stubfindAndCountAll1 = sinon.stub(Follower, 'findAndCountAll').returns(followersDetails);
+      const response = await UserController.getFollowingDetails(req, res);
+      console.log(response)
+      expect(response.success).to.be.equal(true);
+      expect(response).to.have.property('followersDetails');
+      expect(response).to.have.property('followingDetails');
+      stubfindAndCountAll1.restore();
     });
   });
 });
