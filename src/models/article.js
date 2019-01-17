@@ -79,11 +79,6 @@ const articleModel = (sequelize, DataTypes) => {
       foreignKey: 'articleId',
       as: 'Likes'
     });
-    Article.belongsToMany(models.Users, {
-      as: 'article',
-      through: 'Bookmark',
-      foreignKey: 'articleId'
-    });
     Article.belongsToMany(models.Tags, {
       foreignKey: 'articleId',
       through: 'ArticleTags',
@@ -96,6 +91,10 @@ const articleModel = (sequelize, DataTypes) => {
     Article.hasMany(models.Comments, {
       foreignKey: 'articleId',
       as: 'Comments'
+    });
+    Article.hasMany(models.Bookmark, {
+      foreignKey: 'articleId',
+      as: 'bookmark',
     });
   };
   return Article;
