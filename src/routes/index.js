@@ -11,6 +11,7 @@ import {
   SocialLoginController,
   ReportController,
   NotificationController,
+  ShareArticleController,
 } from '../controller';
 
 import {
@@ -217,6 +218,27 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
   );
+
+  app.put(
+    '/api/v1/users',
+    Authorization.checkToken,
+    validateUserInputs.validateUserUpdate,
+    UserController.updateUserDetails
+  );
+  app.get(
+    '/api/v1/users/bookmarks',
+    Authorization.checkToken,
+    ArticleController.getBookmark
+  );
+  app.get(
+    '/api/v1/users/:userId',
+    UserController.getUserDetails
+  );
+  app.get(
+    '/api/v1/users/:userId/follow',
+    UserController.getFollowingDetails
+  );
+
   app.get(
     '/api/v1/auth/social_fb',
     passport.authenticate('facebook', { session: false }),
@@ -300,11 +322,6 @@ const routes = (app) => {
     validateBookmarkInput,
     ArticleController.bookmarkArticle
   );
-  app.get(
-    '/api/v1/users/bookmarks',
-    Authorization.checkToken,
-    ArticleController.getBookmark
-  );
   app.delete(
     '/api/v1/users/bookmarks/:bookmarkId',
     Authorization.checkToken,
@@ -320,6 +337,12 @@ const routes = (app) => {
     Authorization.checkToken,
     validateUserInputs.validateReport,
     ReportController.reportArticle
+  );
+  app.post(
+    '/api/v1/articles/share',
+    Authorization.checkToken,
+    validateUserInputs.validateShareArticle,
+    ShareArticleController.ShareArticleViaEmail,
   );
   app.post(
     '/api/v1/highlights/:articleId',

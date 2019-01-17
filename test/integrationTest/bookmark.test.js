@@ -42,6 +42,7 @@ describe('POST /api/v1/articles/:articleId/bookmark', () => {
       .set('x-access-token', userToken);
 
     articleId2 = postArticleResponse2.body.articleCreated.id;
+
   });
   describe('UnAuthenticated User', () => {
     it('should throw an Error if no token is provided', async () => {
@@ -137,19 +138,22 @@ describe('POST /api/v1/articles/:articleId/bookmark', () => {
       }
     });
   });
-  it('should get bookmarks', async () => {
-    try {
-      const bookmarkResponse = await chai.request(app)
-        .get(`/api/v1/users/bookmarks`)
-        .set('x-access-token', userToken);
-      expect(bookmarkResponse.status).to.equal(200);
-      expect(bookmarkResponse.body).to.have.property('success');
-      expect(bookmarkResponse.body.success).to.equal(true);
-      expect(bookmarkResponse.body).to.have.property('message');
-      expect(bookmarkResponse.body.message).to.equal('Bookmark was found');
-    } catch (err) {
-      throw err;
-    }
+  describe('Get Bookmarks', () => {
+    it('should get bookmarks', async () => {
+      try {
+        const bookmarkResponse = await chai.request(app)
+          .get('/api/v1/users/bookmarks')
+          .set('x-access-token', userToken);
+
+        expect(bookmarkResponse.status).to.equal(200);
+        expect(bookmarkResponse.body).to.have.property('success');
+        expect(bookmarkResponse.body.success).to.equal(true);
+        expect(bookmarkResponse.body).to.have.property('message');
+        expect(bookmarkResponse.body.message).to.equal('Bookmark was found');
+      } catch (err) {
+        throw err;
+      }
+    });
   });
   describe('Duplicate entry', () => {
     it('should throw an Error if the bookmark already exists', async () => {

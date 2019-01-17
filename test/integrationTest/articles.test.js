@@ -15,7 +15,10 @@ describe('Integration tests for the article controller', () => {
     userDetails = {
       email: 'yomizy@wizzy.com',
       password: 'password',
-    };
+    }
+    const response = await chai.request(app).post('/api/v1/auth/login')
+      .send(userDetails);
+    myToken = response.body.userDetails.token;
     userLoginResponse = await chai.request(app).post('/api/v1/auth/login')
       .send(userDetails);
     myToken = userLoginResponse.body.userDetails.token;
@@ -351,7 +354,6 @@ describe('Integration tests for the article controller', () => {
 
           const unauthorisedUserToken = await unauthorisedUserLoginResponse
             .body.userDetails.token;
-            
           const postArticleResponse = await chai.request(app)
             .post('/api/v1/articles')
             .send(articleDetails)
@@ -476,5 +478,58 @@ describe('Integration tests for the article controller', () => {
       expect(response.body).to.have.property('message');
       expect(response.body.message).to.equal('Invalid article Id');
     });
+  });
+  describe('Test for searching articles based on authors and tags', () => {
+    before('Create tags for article', async () => {
+      const articleDetails = {
+        title: 'The brow fox',
+        body: 'so i saw a dog',
+        description: 'narrative',
+        image: 'https://someimage.uplodersite.com',
+      };
+      const loginUser = await chai.request(app).post('/api/v1/auth/login')
+        .send({
+          email: 'yomizy@wizzy.com',
+          password: 'password',
+        });
+      const token = loginUser.body.userDetails.token;
+      const createdArticle = await chai.request(app).post('/api/v1/articles')
+        .set('x-access-token', token).send(articleDetails);
+      const tagDetails = {
+        tagName: ['myTag01', 'myTag02'],
+        createdArticle: createdArticle.body.articleCreated.id,
+        token
+      };
+      await chai.request(app)
+      .post(`/api/v1/articles/tag/${tagDetails.createdArticle}`)
+      .set('x-access-token', tagDetails.token).send({
+        tagName: tagDetails.tagName,
+      });
+    });
+    it('should return published articles tagged with the tag query parameter', async () => {
+      const response = await chai.request(app)
+        .get(`/api/v1/articles?tag=myTag01`);
+      expect(response.status).to.equal(200);
+      expect(response.body.article.length).to.equal(1);
+    })
+    it('should return not found message when no article is tagged the tag query parameter ', async () => {
+      const response = await chai.request(app)
+        .get(`/api/v1/articles?tag=invalidTag`);
+      expect(response.status).to.equal(404);
+      expect(response.body.message).to.equal('No article tagged invalidTag found.');
+    });
+    it('should return published articles tagged with the author query parameter', async () => {
+      const response = await chai.request(app)
+        .get(`/api/v1/articles?author=Jide`);
+      expect(response.body.articles).to.be.an('Array', 'invalid type')
+      expect(response.status).to.equal(200);
+    })
+    it('should return not found message when articles with author that have not published are queried', async () => {
+      const response = await chai.request(app)
+        .get(`/api/v1/articles?author=John`);
+      expect(response.body).to.have.property('message');
+      expect(response.body.message).to.equal('No article published by John')
+      expect(response.status).to.equal(200);
+    })
   });
 });

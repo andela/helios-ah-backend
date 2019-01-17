@@ -2,17 +2,42 @@ import sendGrid from '@sendgrid/mail';
 import dotenv from 'dotenv';
 
 dotenv.config();
+let baseUrl = '';
+
+if (process.env.NODE_ENV === 'production') {
+  baseUrl = process.env.SENDGRID_URL;
+} else {
+  baseUrl = 'http://localhost:4001/api/v1';
+}
 
 /**
  * @description utility to send mails
  */
 class SendEmail {
   /**
-   *
+   * @param {object} shareDetails - email address to send the message to
+   * @returns {boolean} specifies if the email was sent successfully
+   * after registration
+   */
+  static shareArticle(shareDetails) {
+    const details = {
+      email: shareDetails.email,
+      subject: `${shareDetails.title} - Authors Haven`,
+      emailBody: `<p>An article from Authors Haven was shared with you.</p>
+      <div>
+        Title: ${shareDetails.title}
+        Author: ${shareDetails.author}
+      </div>
+      <p>Click this <a href="${shareDetails.articleURL}">link</a> 
+      to view the article</p>`
+    };
+    return SendEmail.emailSender(details);
+  }
+
+  /**
    * @param {string} email - email address to send the message to
    * @param {string} token - Token generated during signup
-   * @returns {boolean} sends a verification email to user
-   * after registration
+   * @returns {boolean} specifies if the email was sent successfully
    */
   static verifyEmail(email, token) {
     const details = {
@@ -22,7 +47,7 @@ class SendEmail {
         <p>Next step is to verify this email
         address by clicking the link below.</p>
         <p> >>>
-        <a href=http://localhost:4001/api/v1/auth/complete_reg/?token=${token}>
+        <a href=${baseUrl}/auth/complete_reg/?token=${token}>
         Complete your registration </a><<< </p>`
     };
     return SendEmail.emailSender(details);
@@ -32,7 +57,7 @@ class SendEmail {
    * This function sends an email on verification of email address
    * @param {string} email - email address to send the message to
    * @param {string} token - Token generated during signup
-   * @returns {boolean} sends a verification email to user
+   * @returns {boolean} specifies if a verification email was sent to user
    * after registration
   */
   static confirmRegistrationComplete(email) {
@@ -42,7 +67,7 @@ class SendEmail {
       emailBody: `<p>Your registration has been completed<p>
       <p>Thank you for registering with Authors Haven.</p>
        <p> >>>
-       <a href=http://localhost:4001/api/v1/>
+       <a href=${baseUrl}>
        Go to your profile </a> <<< </p>`
     };
     return SendEmail.emailSender(details);
