@@ -1,6 +1,8 @@
 import models from '../models';
 import SendEmail from '../utilities/sendEmail';
 import NotificationController from '../utilities/Notification';
+import Error from '../utilities/Error';
+
 import {
   helperMethods,
   Authentication
@@ -455,6 +457,118 @@ class UserController {
         success: false,
         message: 'Email or password does not exist',
       });
+    } catch (error) {
+      return helperMethods.serverError(res);
+    }
+  }
+
+  /**
+  * Gets the details of a user
+  * Route: '/api/v1/users',
+  * @param {object} req -Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof UserController
+ */
+  static async getUserDetails(req, res) {
+    try {
+      const options = {
+        attributes: [
+          'id',
+          'firstName',
+          'lastName',
+          'image',
+          'bio'
+        ]
+      };
+      const userDetails = await Users.findByPk(req.params.userId, options);
+      if (userDetails) {
+        return res.status(200).json({
+          success: true,
+          userDetails
+        });
+      }
+      return helperMethods.serverError(res);
+    } catch (error) {
+      return Error.handleErrorResponse(res, error);
+    }
+  }
+
+  /**
+  * Updates the details of a user
+  * Route: '/api/v1/users',
+  * @param {object} req -Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof UserController
+ */
+  static async updateUserDetails(req, res) {
+    const {
+      firstName, lastName, bio, image
+    } = req.body;
+    try {
+      const foundUser = await Users.findByPk(req.decoded.id);
+      if (foundUser) {
+        const options = {
+          fields: ['firstName', 'lastName', 'bio', 'image'],
+          hooks: false,
+          returning: true
+        };
+        const values = {
+          firstName, lastName, bio, image
+        };
+        const profileUpdated = await foundUser.update(values, options);
+        if (profileUpdated) {
+          return res.status(200).json({
+            success: true,
+            message: 'User details updated successfully',
+            profileUpdated: {
+              id: profileUpdated.id,
+              firstName: profileUpdated.firstName,
+              lastName: profileUpdated.lastName,
+              bio: profileUpdated.bio,
+              image: profileUpdated.image
+            }
+          });
+        }
+      }
+    } catch (error) {
+      if (error.errors) {
+        return helperMethods.sequelizeValidationError(res, error);
+      }
+      return helperMethods.serverError(res);
+    }
+  }
+
+  /**
+  * Gets the follow details of a user
+  * Route: '/api/v1/users/follow',
+  * @param {object} req -Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof UserController
+ */
+  static async getFollowingDetails(req, res) {
+    try {
+      const { userId } = req.params;
+      const followersDetails = await Follower.findAndCountAll({
+        where: {
+          userId
+        }
+      });
+      const followingDetails = await Follower.findAndCountAll({
+        where: {
+          followerId: userId
+        }
+      });
+      if (followingDetails && followersDetails) {
+        return res.status(200).json({
+          success: true,
+          followingDetails,
+          followersDetails
+        });
+      }
+      return helperMethods.serverError(res);
     } catch (error) {
       return helperMethods.serverError(res);
     }
