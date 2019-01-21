@@ -92,9 +92,8 @@ class Validate {
       title,
       body,
       description,
-      image,
     } = req.body;
-    if (title && body && description && image) {
+    if (title && body && description) {
       next();
     } else {
       allFieldsRequired(res);
@@ -246,6 +245,35 @@ class Validate {
       if (isArticleIdValid === true) next();
     } else {
       allFieldsRequired(res);
+    }
+  }
+
+  /**
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @param {callback} next - The callback that passes the request
+   * to the next handler
+   * @returns {object} res - Response object when query is invalid
+   * @memberof Validate
+   */
+  static validateUserUpdate(req, res, next) {
+    req.body = trimValues(req.body);
+    const {
+      firstName,
+      lastName,
+      image,
+      bio
+    } = req.body;
+    if (
+      firstName || lastName || image || bio
+    ) {
+      next();
+    } else {
+      allFieldsRequired(
+        res,
+        'firstname,lastname, image, or bio is required for update'
+      );
     }
   }
 }
