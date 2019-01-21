@@ -4,10 +4,10 @@ import dotenv from 'dotenv';
 dotenv.config();
 let baseUrl = '';
 
-if (process.env.NODE_ENV === 'production') {
-  baseUrl = process.env.SENDGRID_URL;
-} else {
+if (process.env.NODE_ENV !== 'production') {
   baseUrl = 'http://localhost:4001/api/v1';
+} else {
+  baseUrl = process.env.SENDGRID_URL;
 }
 
 /**
@@ -47,7 +47,7 @@ class SendEmail {
         <p>Next step is to verify this email
         address by clicking the link below.</p>
         <p> >>>
-        <a href=${baseUrl}/auth/complete_reg/?token=${token}>
+        <a href=${baseUrl}/signup/verify?token=${token}>
         Complete your registration </a><<< </p>`
     };
     return SendEmail.emailSender(details);
