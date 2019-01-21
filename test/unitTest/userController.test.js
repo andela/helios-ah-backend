@@ -210,7 +210,6 @@ describe('Unit test for user controller', () => {
       };
       const stubfindAndCountAll1 = sinon.stub(Follower, 'findAndCountAll').returns(followersDetails);
       const response = await UserController.getFollowingDetails(req, res);
-      console.log(response)
       expect(response.success).to.be.equal(true);
       expect(response).to.have.property('followersDetails');
       expect(response).to.have.property('followingDetails');

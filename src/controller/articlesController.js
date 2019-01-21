@@ -324,8 +324,89 @@ class ArticleController {
         res.status(201).json({
           success: true,
           message: 'Article successfully bookmarked',
+          bookmark: createBookmark.dataValues,
         });
       }
+    } catch (error) {
+      helperMethods.serverError(res);
+    }
+  }
+
+  /**
+  * GET /api/v1/articles/bookmarks
+  * @description List Bookmarks
+  *
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  *
+  * @return {object} database response
+  * @memberof ArticleController
+ */
+  static async getBookmark(req, res) {
+    const userId = req.decoded.id;
+    try {
+      const bookmarks = await Bookmark.findAll({
+        where: { userId, isActive: true },
+        attributes: ['id'],
+        include: [{
+          model: Article,
+          as: 'bookmark',
+          attributes: ['title', 'body', 'readTime', 'image', 'createdAt'],
+          where: { isDeleted: false },
+          include: [{
+            model: Users,
+            attributes: ['firstName', 'lastName'],
+          }],
+        }],
+      });
+      if (bookmarks) {
+        return res.status(200).json({
+          success: true,
+          message: 'Bookmark was found',
+          bookmarks,
+        });
+      }
+      return res.status(200).json({
+        success: false,
+        message: 'Bookmark was not found',
+      });
+    } catch (error) {
+      helperMethods.serverError(res);
+    }
+  }
+
+  /**
+  * @description Delete a Bookmark
+  *
+  * @param {object} req - Request Object
+  * @param {object} res - Response Object
+  *
+  * @return {obejct} database response
+  * @memberof ArticleController
+  */
+  static async deleteBookmark(req, res) {
+    const options = {
+      where: {
+        id: req.params.bookmarkId,
+        userId: req.decoded.id,
+      },
+      returning: true,
+    };
+    try {
+      const bookmarkDeleted = await Bookmark.update({
+        isActive: false
+      }, options);
+      if (bookmarkDeleted[0]) {
+        return res.status(200).json({
+          success: true,
+          message: 'Bookmark deleted successfully',
+          bookmarkDeleted: bookmarkDeleted[1],
+        });
+      }
+      return res.status(404).json({
+        success: false,
+        message: 'Bookmark was not found',
+      });
     } catch (error) {
       helperMethods.serverError(res);
     }

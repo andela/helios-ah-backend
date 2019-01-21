@@ -226,6 +226,11 @@ const routes = (app) => {
     UserController.updateUserDetails
   );
   app.get(
+    '/api/v1/users/bookmarks',
+    Authorization.checkToken,
+    ArticleController.getBookmark
+  );
+  app.get(
     '/api/v1/users/:userId',
     UserController.getUserDetails
   );
@@ -316,6 +321,12 @@ const routes = (app) => {
     Authorization.checkToken,
     validateBookmarkInput,
     ArticleController.bookmarkArticle
+  );
+  app.delete(
+    '/api/v1/users/bookmarks/:bookmarkId',
+    Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    ArticleController.deleteBookmark
   );
   app.get(
     '/api/v1/articles',
