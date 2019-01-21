@@ -28,7 +28,7 @@ class UserController {
   static async createTokenAndSendEmail(userExist) {
     const tokenCreated = await
     Authentication
-      .getToken(userExist.dataValues, process.env.reg_token_expiry);
+      .getToken(userExist.dataValues);
 
     if (tokenCreated) {
       const isEmailSent = await

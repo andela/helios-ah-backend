@@ -241,7 +241,7 @@ const routes = (app) => {
 
   app.get(
     '/api/v1/auth/social_fb',
-    passport.authenticate('facebook', { session: false }),
+    passport.authenticate('facebook', { session: false, scope: ['email'] }),
   );
   app.get(
     '/api/v1/auth/social_fb/callback',
@@ -253,7 +253,7 @@ const routes = (app) => {
   );
   app.get(
     '/api/v1/auth/social_tw',
-    passport.authenticate('twitter', { session: false }),
+    passport.authenticate('twitter', { session: false, scope: ['email'] }),
   );
   app.get(
     '/api/v1/auth/social_tw/callback',
