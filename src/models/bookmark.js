@@ -28,6 +28,13 @@ const BookmarkModel = (sequelize, DataTypes) => {
       allowNull: false
     }
   });
+
+  Bookmark.associate = (models) => {
+    Bookmark.belongsTo(models.Article, {
+      foreignKey: 'articleId',
+      as: 'bookmark',
+    });
+  };
   return Bookmark;
 };
 export default BookmarkModel;

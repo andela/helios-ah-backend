@@ -218,9 +218,30 @@ const routes = (app) => {
     validateUserInputs.validateUserRoleBody,
     UserController.userRole
   );
+
+  app.put(
+    '/api/v1/users',
+    Authorization.checkToken,
+    validateUserInputs.validateUserUpdate,
+    UserController.updateUserDetails
+  );
+  app.get(
+    '/api/v1/users/bookmarks',
+    Authorization.checkToken,
+    ArticleController.getBookmark
+  );
+  app.get(
+    '/api/v1/users/:userId',
+    UserController.getUserDetails
+  );
+  app.get(
+    '/api/v1/users/:userId/follow',
+    UserController.getFollowingDetails
+  );
+
   app.get(
     '/api/v1/auth/social_fb',
-    passport.authenticate('facebook', { session: false }),
+    passport.authenticate('facebook', { session: false, scope: ['email'] }),
   );
   app.get(
     '/api/v1/auth/social_fb/callback',
@@ -232,7 +253,7 @@ const routes = (app) => {
   );
   app.get(
     '/api/v1/auth/social_tw',
-    passport.authenticate('twitter', { session: false }),
+    passport.authenticate('twitter', { session: false, scope: ['email'] }),
   );
   app.get(
     '/api/v1/auth/social_tw/callback',
@@ -302,6 +323,12 @@ const routes = (app) => {
     Authorization.checkToken,
     validateBookmarkInput,
     ArticleController.bookmarkArticle
+  );
+  app.delete(
+    '/api/v1/users/bookmarks/:bookmarkId',
+    Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    ArticleController.deleteBookmark
   );
   app.get(
     '/api/v1/articles',
