@@ -302,6 +302,7 @@ const routes = (app) => {
   app.post(
     '/api/v1/articles/:articleId/ratings',
     Authorization.checkToken,
+    findDatabaseField.UserInToken,
     checkArticleExists,
     ValidateArticle.checkArticleNotDraft,
     checkFeedback.checkRatingExist,
@@ -311,6 +312,7 @@ const routes = (app) => {
   app.put(
     '/api/v1/articles/:articleId/ratings',
     Authorization.checkToken,
+    findDatabaseField.UserInToken,
     checkArticleExists,
     checkFeedback.checkRatingNotExist,
     validateUserInputs.validateRating,

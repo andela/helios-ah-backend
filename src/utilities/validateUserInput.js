@@ -170,8 +170,9 @@ class Validate {
    * @returns {object} - server responce
    */
   static validateRating(req, res, next) {
-    const rating = parseInt(req.body.rating, 10);
-    if ((rating > 5) || (rating < 1)) {
+    const ratingValue = parseInt(req.body.rating, 10);
+    if ((ratingValue > 5) || (ratingValue < 1) || (ratingValue === null)
+    || (ratingValue === undefined) || (Number.isNaN(ratingValue))) {
       return res.status(400).json({
         success: false,
         message: 'Bad request, Rating should be within the range of 1 to 5',
@@ -197,7 +198,7 @@ class Validate {
     } = req.body;
     if (!(type === 'plagiarism' || type === 'agreementViolation')) {
       message = 'type is required and must be \'plagiarism\' '
-       + 'or \'agreementViolation\'';
+        + 'or \'agreementViolation\'';
     }
     if (!reportComment) {
       message = 'reportComment field is required';
