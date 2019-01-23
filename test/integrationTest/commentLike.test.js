@@ -9,8 +9,8 @@ describe('Integration tests for like comment and update comment like status', ()
     let userToken;
     const unlikedCommentId = '09808443-8e79-49e5-acca-5a42ff6b425d',
         likedCommentId = '4157aa5d-d145-4f5e-8bc0-58000333bb2c',
-        nonExistingCommentId = 'c08a03ae-e9c4-4ce6-83a3-cfc5756c05d9',
-        updateCommentId = '781063b9-92be-4d9a-8699-fdac9227f32c'
+        nonExistingCommentId = '18f98792-c41d-4567-b92a-5b2e048cbdb8',
+        updateCommentId = '4157aa5d-d145-4f5e-8bc0-58000333bb2c'
     const userDetails = {
         email: 'yomizy@wizzy.com',
         password: 'password'
