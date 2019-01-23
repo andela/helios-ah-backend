@@ -18,15 +18,7 @@ export default {
   },
   {
     id: '253b8279-a431-4693-a0ca-2079b90dd56b',
-    userId: 'dccd8ee7-bc98-4a8e-a832-ca116c5fff0a',
-    childCommentId: '781063b9-92be-4d9a-8699-fdac9227f32c',
-    isLiked: true,
-    createdAt: new Date(Date.now()),
-    updatedAt: new Date(Date.now())
-  },
-  {
-    id: '50f37d0e-7a57-4e32-b24f-7614c527b36b',
-    userId: 'dccd8ee7-bc98-4a8e-a832-ca116c5fff0a',
+    userId: 'c08a03ae-e9c4-4ce6-83a3-cfc5756c05d9',
     childCommentId: '781063b9-92be-4d9a-8699-fdac9227f32c',
     isLiked: true,
     createdAt: new Date(Date.now()),

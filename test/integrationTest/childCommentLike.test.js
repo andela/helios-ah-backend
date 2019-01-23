@@ -8,7 +8,7 @@ const { expect } = chai;
 describe('Integration tests for like childcomment and update childcomment like status', () => {
   let userToken;
   const unlikedCommentId = '09808443-8e79-49e5-acca-5a42ff6b425d',
-    likedCommentId = '4157aa5d-d145-4f5e-8bc0-58000333bb2c',
+    likedCommentId = '781063b9-92be-4d9a-8699-fdac9227f32c',
     nonExistingCommentId = 'c08a03ae-e9c4-4ce6-83a3-cfc5756c05d9',
     updateCommentId = '781063b9-92be-4d9a-8699-fdac9227f32c';
   const userDetails = {
