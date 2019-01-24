@@ -298,15 +298,17 @@ class ArticleController {
           article.title
         );
         const tags = await ArticleTag.findAll({
+          attributes: [],
           where: {
             articleId: article.id
           },
           include: [{
             model: Tags,
-          }]
+            attributes: ['tagName']
+          }],
+          raw: true
         });
-        article.dataValues.tags = tags.map(item => item
-          .dataValues.Tag.dataValues.tagName);
+        article.dataValues.tags = tags;
         res.status(200).json({
           success: true,
           article,
