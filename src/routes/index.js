@@ -207,8 +207,6 @@ const routes = (app) => {
   );
   app.put(
     '/api/v1/change/password',
-    Authorization.checkToken,
-    userMiddleware.getUserByMail,
     UserController.resetPassword
   );
   app.put(

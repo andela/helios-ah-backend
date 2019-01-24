@@ -340,32 +340,26 @@ class UserController {
    * @memberof UserController
    */
   static async resetPassword(req, res) {
-    if (req.foundUser) {
-      const payload = await Authentication.verifyToken(req.query.token);
-      if (payload.success) {
-        const user = await Users.findByPk(payload.id);
-        if (!req.body.password) {
-          return res.status(400).send({
-            success: 'false',
-            error: 'password field is required'
-          });
-        }
-        await user.update({
-          password: req.body.password
-        });
-        return res.status(200).send({
-          success: true,
-          message: 'password reset successful'
+    const payload = await Authentication.verifyToken(req.query.token);
+    if (payload.success) {
+      const user = await Users.findByPk(payload.id);
+      if (!req.body.password) {
+        return res.status(400).send({
+          success: 'false',
+          message: 'Password field is required'
         });
       }
-      return res.status(401).send({
-        success: false,
-        error: 'invalid token'
+      await user.update({
+        password: req.body.password
+      });
+      return res.status(200).send({
+        success: true,
+        message: 'Password reset was successful'
       });
     }
-    return res.status(404).send({
-      status: 'error',
-      error: 'email not found'
+    return res.status(401).send({
+      success: false,
+      message: 'Invalid Token'
     });
   }
 
