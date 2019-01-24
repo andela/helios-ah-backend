@@ -297,7 +297,7 @@ class ArticleController {
           article.viewStats,
           article.title
         );
-        const getTags = await ArticleTag.findAll({
+        const tags = await ArticleTag.findAll({
           where: {
             articleId: article.id
           },
@@ -305,10 +305,8 @@ class ArticleController {
             model: Tags,
           }]
         });
-        const getTagNames = getTags
-          .map(item => item.dataValues.Tag.dataValues.tagName);
-        article.dataValues.tags = getTagNames;
-
+        article.dataValues.tags = tags.map(item => item
+          .dataValues.Tag.dataValues.tagName);
         res.status(200).json({
           success: true,
           article,
