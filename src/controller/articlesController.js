@@ -259,14 +259,6 @@ class ArticleController {
             attributes: ['firstName', 'lastName', 'image']
           },
           {
-            model: Tags,
-            as: 'Tags',
-            attributes: ['tagName'],
-            through: {
-              attributes: [],
-            }
-          },
-          {
             model: Comments,
             as: 'Comments',
             include: [
@@ -305,6 +297,18 @@ class ArticleController {
           article.viewStats,
           article.title
         );
+        const getTags = await ArticleTag.findAll({
+          where: {
+            articleId: article.id
+          },
+          include: [{
+            model: Tags,
+          }]
+        });
+        const getTagNames = getTags
+          .map(item => item.dataValues.Tag.dataValues.tagName);
+        article.dataValues.tags = getTagNames;
+
         res.status(200).json({
           success: true,
           article,
