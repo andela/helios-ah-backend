@@ -447,7 +447,7 @@ good behaviors easier and the bad behaviors harder.
     isDraft: false,
     image: 'https://placeimg.com/640/480/animals',
     readTime: '1 mins',
-    userId: uuidv4(),
+    userId: '315cdb56-fad1-4712-81c8-d82ccdbc8b5a',
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   },
@@ -489,7 +489,7 @@ good behaviors easier and the bad behaviors harder.
     isDraft: false,
     image: 'https://placeimg.com/640/480/architecture',
     readTime: '1 mins',
-    userId: uuidv4(),
+    userId: '315cdb56-fad1-4712-81c8-d82ccdbc8b5a',
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }, {
@@ -523,7 +523,7 @@ good behaviors easier and the bad behaviors harder.
     isDraft: false,
     image: 'https://placeimg.com/640/480/grayscale',
     readTime: '1 mins',
-    userId: uuidv4(),
+    userId: '315cdb56-fad1-4712-81c8-d82ccdbc8b5a',
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }, {
@@ -689,7 +689,7 @@ good behaviors easier and the bad behaviors harder.
     isDraft: false,
     image: 'https://placeimg.com/640/480/sepia',
     readTime: '1 mins',
-    userId: uuidv4(),
+    userId: '315cdb56-fad1-4712-81c8-d82ccdbc8b5a',
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }, {
@@ -855,7 +855,7 @@ good behaviors easier and the bad behaviors harder.
     isDraft: false,
     image: 'https://placeimg.com/640/480/any',
     readTime: '1 mins',
-    userId: uuidv4(),
+    userId: '315cdb56-fad1-4712-81c8-d82ccdbc8b5a',
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }, {
@@ -1021,7 +1021,7 @@ good behaviors easier and the bad behaviors harder.
     isDraft: false,
     image: 'https://placeimg.com/640/480/any',
     readTime: '1 mins',
-    userId: uuidv4(),
+    userId: '315cdb56-fad1-4712-81c8-d82ccdbc8b5a',
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }, {
@@ -1187,7 +1187,7 @@ good behaviors easier and the bad behaviors harder.
     isDraft: false,
     image: 'https://placeimg.com/640/480/any',
     readTime: '1 mins',
-    userId: uuidv4(),
+    userId: '315cdb56-fad1-4712-81c8-d82ccdbc8b5a',
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }, {
@@ -1353,7 +1353,7 @@ good behaviors easier and the bad behaviors harder.
     isDraft: false,
     image: 'https://placeimg.com/640/480/any',
     readTime: '1 mins',
-    userId: uuidv4(),
+    userId: '315cdb56-fad1-4712-81c8-d82ccdbc8b5a',
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }, {
@@ -1519,7 +1519,7 @@ good behaviors easier and the bad behaviors harder.
     isDraft: false,
     image: 'https://placeimg.com/640/480/any',
     readTime: '1 mins',
-    userId: uuidv4(),
+    userId: '315cdb56-fad1-4712-81c8-d82ccdbc8b5a',
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }, {
@@ -1685,7 +1685,7 @@ good behaviors easier and the bad behaviors harder.
     isDraft: false,
     image: 'https://placeimg.com/640/480/any',
     readTime: '1 mins',
-    userId: uuidv4(),
+    userId: '315cdb56-fad1-4712-81c8-d82ccdbc8b5a',
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }, {
@@ -1851,7 +1851,7 @@ good behaviors easier and the bad behaviors harder.
     isDraft: false,
     image: 'https://placeimg.com/640/480/any',
     readTime: '1 mins',
-    userId: uuidv4(),
+    userId: '315cdb56-fad1-4712-81c8-d82ccdbc8b5a',
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
   }]),

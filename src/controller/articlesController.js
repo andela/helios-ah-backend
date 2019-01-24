@@ -147,10 +147,17 @@ class ArticleController {
         'body',
         'description',
         'image',
+        'readTime'
       ],
       limit: paginate.limit,
       offset,
     };
+    options.include = [
+      {
+        model: Users,
+        attributes: ['firstName', 'lastName']
+      }
+    ];
     if (req.query.author) {
       options.include = [
         {
@@ -247,6 +254,18 @@ class ArticleController {
     try {
       const article = await Article.findOne({
         include: [
+          {
+            model: Users,
+            attributes: ['firstName', 'lastName', 'image']
+          },
+          {
+            model: Tags,
+            as: 'Tags',
+            attributes: ['tagName'],
+            through: {
+              attributes: [],
+            }
+          },
           {
             model: Comments,
             as: 'Comments',
