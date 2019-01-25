@@ -128,6 +128,12 @@ const routes = (app) => {
     validateUserInputs.validateCreateArticle,
     ArticleController.updateArticle
   );
+  app.put(
+    '/api/v1/articles/:articleId/status/:status',
+    Authorization.checkToken,
+    Authorization.hasWriteAccess,
+    ArticleController.publishArticle
+  );
   app.get(
     '/api/v1/authors',
     Authorization.checkToken,

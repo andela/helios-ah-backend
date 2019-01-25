@@ -241,6 +241,22 @@ describe('Integration tests for the article controller', () => {
       expect(response.body).to.have.property('articleUpdated');
       expect(response.body.success).to.equal(true);
     });
+    it('should publish an article with the articles Id', async () => {
+      const response = await chai.request(app).put(`/api/v1/articles/${articleId}/status/publish`)
+        .set('x-access-token', myToken);
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('articlePublished');
+      expect(response.body.articlePublished[0].isDraft).to.equal(false);
+      expect(response.body.success).to.equal(true);
+    });
+    it('should draft an article with the articles Id', async () => {
+      const response = await chai.request(app).put(`/api/v1/articles/${articleId}/status/draft`)
+        .set('x-access-token', myToken);
+      expect(response.status).to.equal(200);
+      expect(response.body).to.have.property('articlePublished');
+      expect(response.body.articlePublished[0].isDraft).to.equal(true);
+      expect(response.body.success).to.equal(true);
+    });
     it('should reject update on article with wrong article Id', async () => {
       const response = await chai.request(app).put('/api/v1/articles/773be5c1-1aa5-40d4-bee9-6c47ea903741')
         .set('x-access-token', myToken).send(articleDetails);

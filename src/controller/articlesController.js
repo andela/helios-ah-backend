@@ -127,6 +127,44 @@ class ArticleController {
   }
 
   /**
+  * Publish an Article
+  * Route: PUT: /articles
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof ArticlesController
+ */
+  static async publishArticle(req, res) {
+    const { status, articleId } = req.params;
+    const options = {
+      where: {
+        id: articleId
+      },
+      returning: true,
+    };
+
+    try {
+      const articlePublished = await Article.update({
+        isDraft: status !== 'publish'
+      }, options);
+      if (articlePublished[0] === 1) {
+        res.status(200).json({
+          success: true,
+          message: 'Article updated successfully',
+          articlePublished: articlePublished[1],
+        });
+      } else {
+        res.status(400).json({
+          success: false,
+          message: 'Provide a valid article Id'
+        });
+      }
+    } catch (error) {
+      errorResponse.handleErrorResponse(res, error);
+    }
+  }
+
+  /**
   * Get Article
   * Route: GET: /articles
   * @param {object} req - Request object
