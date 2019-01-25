@@ -125,12 +125,14 @@ const routes = (app) => {
   app.put(
     '/api/v1/articles/:articleId',
     Authorization.checkToken,
+    checkArticleExists,
     validateUserInputs.validateCreateArticle,
     ArticleController.updateArticle
   );
   app.put(
     '/api/v1/articles/:articleId/status/:status',
     Authorization.checkToken,
+    checkArticleExists,
     Authorization.hasWriteAccess,
     ArticleController.publishArticle
   );

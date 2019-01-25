@@ -109,18 +109,11 @@ class ArticleController {
         image,
         isDraft: isDraft || 'true'
       }, options);
-      if (articleUpdated[0] === 1) {
-        res.status(200).json({
-          success: true,
-          message: 'Article updated successfully',
-          articleUpdated: articleUpdated[1],
-        });
-      } else {
-        res.status(400).json({
-          success: false,
-          message: 'Provide a valid article Id'
-        });
-      }
+      res.status(200).json({
+        success: true,
+        message: 'Article updated successfully',
+        articleUpdated: articleUpdated[1],
+      });
     } catch (error) {
       errorResponse.handleErrorResponse(res, error);
     }
@@ -147,18 +140,11 @@ class ArticleController {
       const articlePublished = await Article.update({
         isDraft: status !== 'publish'
       }, options);
-      if (articlePublished[0] === 1) {
-        res.status(200).json({
-          success: true,
-          message: 'Article updated successfully',
-          articlePublished: articlePublished[1],
-        });
-      } else {
-        res.status(400).json({
-          success: false,
-          message: 'Provide a valid article Id'
-        });
-      }
+      res.status(200).json({
+        success: true,
+        message: 'Article updated successfully',
+        articlePublished: articlePublished[1],
+      });
     } catch (error) {
       errorResponse.handleErrorResponse(res, error);
     }
@@ -253,10 +239,12 @@ class ArticleController {
       options.where = {
         isDraft: false,
         userId: req.decoded.id,
+        isDeleted: false
       };
     } else {
       options.where = {
         isDraft: false,
+        isDeleted: false
       };
     }
 

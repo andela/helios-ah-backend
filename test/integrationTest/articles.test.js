@@ -260,9 +260,9 @@ describe('Integration tests for the article controller', () => {
     it('should reject update on article with wrong article Id', async () => {
       const response = await chai.request(app).put('/api/v1/articles/773be5c1-1aa5-40d4-bee9-6c47ea903741')
         .set('x-access-token', myToken).send(articleDetails);
-      expect(response.status).to.equal(400);
+      expect(response.status).to.equal(404);
       expect(response.body).to.have.property('message');
-      expect(response.body.message).to.equal('Provide a valid article Id');
+      expect(response.body.message).to.equal('Article does not exist');
       expect(response.body.success).to.equal(false);
     });
   });
