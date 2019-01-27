@@ -492,7 +492,7 @@ describe('Integration tests for the article controller', () => {
       expect(response.status).to.equal(404);
       expect(response.body.success).to.equal(false);
       expect(response.body).to.have.property('message');
-      expect(response.body.message).to.equal('Invalid article Id');
+      expect(response.body.message).to.equal('Article not found');
     });
   });
   describe('Test for searching articles based on authors and tags', () => {

@@ -270,7 +270,7 @@ class ArticleController {
 
   /**
   * Get a specific Article
-  * Route: POST: /articles
+  * Route: GET: /articles/:articleId
   * @param {object} req - Request object
   * @param {object} res - Response object
   * @return {res} res - Response object
@@ -315,6 +315,7 @@ class ArticleController {
         ],
         where: {
           id: req.params.articleId,
+          isDeleted: false
         }
       });
       if (article) {
@@ -342,7 +343,7 @@ class ArticleController {
       } else {
         res.status(404).json({
           success: false,
-          message: 'Invalid article Id',
+          message: 'Article not found',
         });
       }
     } catch (error) {
