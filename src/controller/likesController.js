@@ -89,16 +89,17 @@ class LikesController {
 
     const user = req.decoded;
     try {
-      const liked = await Likes.update({
-        isLiked: isLiked || false
-      },
-      {
-        where:
-      {
-        userId: user.id,
-        articleId
-      }
-      });
+      const liked = await Likes.update(
+        {
+          isLiked: isLiked || false
+        },
+        {
+          where:
+          {
+            userId: user.id,
+            articleId
+          }
+        });
       if (liked) {
         req.io.emit('inAppNotifications', `${notificationText}`);
 
