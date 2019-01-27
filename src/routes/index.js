@@ -29,7 +29,8 @@ import {
   checkForSelfFollow,
   validateBookmarkInput,
   validateFollowUserInput,
-  validateUnfollowUserInput
+  validateUnfollowUserInput,
+  validateLikeValue
 } from '../middleware';
 
 /**
@@ -294,6 +295,7 @@ const routes = (app) => {
     Authorization.checkToken,
     findDatabaseField.UserInToken,
     checkArticleExists,
+    validateLikeValue,
     checkFeedback.checkLikesNotExist,
     LikesController.updateLikes
   );
