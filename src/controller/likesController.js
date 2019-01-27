@@ -34,7 +34,7 @@ class LikesController {
       const isLiked = await Likes.create({
         userId: user.id,
         articleId,
-        isLiked: 'true'
+        isLiked: true
       });
 
       if (isLiked) {
@@ -58,7 +58,7 @@ class LikesController {
           success: true,
           message: 'Article liked successfully',
           articleId,
-          isliked: 'true',
+          isliked: true,
           userId: user.id
         });
       }
@@ -84,13 +84,13 @@ class LikesController {
 
     const {
       articleId,
-      liked
     } = req.params;
+    const { isLiked } = req.body;
 
     const user = req.decoded;
     try {
-      const isLiked = await Likes.update({
-        isLiked: liked || 'false'
+      const liked = await Likes.update({
+        isLiked: isLiked || false
       },
       {
         where:
@@ -99,7 +99,7 @@ class LikesController {
         articleId
       }
       });
-      if (isLiked) {
+      if (liked) {
         req.io.emit('inAppNotifications', `${notificationText}`);
 
         await NotificationUtil
@@ -118,9 +118,9 @@ class LikesController {
 
         return res.status(200).json({
           success: true,
-          message: 'Article unliked successfully',
+          message: 'Like status modified successfully',
           articleId,
-          isliked: 'false',
+          isLiked: isLiked || false,
           userId: user.id
         });
       }
