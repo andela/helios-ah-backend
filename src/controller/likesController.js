@@ -99,7 +99,8 @@ class LikesController {
             userId: user.id,
             articleId
           }
-        });
+        }
+      );
       if (liked) {
         req.io.emit('inAppNotifications', `${notificationText}`);
 
