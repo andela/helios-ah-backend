@@ -8,7 +8,9 @@ import isIdValid from './isValidId';
 const trimValues = (objectWithValuesToTrim) => {
   const trimmedValues = objectWithValuesToTrim;
   Object.keys(trimmedValues).forEach((key) => {
-    trimmedValues[key] = trimmedValues[key].trim();
+    if (key !== 'image') {
+      trimmedValues[key] = trimmedValues[key].trim();
+    }
   });
   return trimmedValues;
 };
