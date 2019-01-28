@@ -6,10 +6,12 @@ export default {
       defaultValue: Sequelize.UUIDV4
     },
     firstName: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false
     },
     lastName: {
-      type: Sequelize.STRING
+      type: Sequelize.STRING,
+      allowNull: false
     },
     email: {
       type: Sequelize.STRING,

@@ -84,10 +84,10 @@ describe('Unit tests for the articles', () => {
       });
     describe('Unit test for checkArticleExists Utility function', () => {
       it(
-        'it should call article.findByPk method',
+        'it should call article.findOne method',
         async () => {
           try {
-            const mySpy = sinon.spy(Article, 'findByPk');
+            const mySpy = sinon.spy(Article, 'findOne');
             await checkArticleExists(articleId, res);
             expect(mySpy.calledOnce).to.equal(true);
           } catch (error) {

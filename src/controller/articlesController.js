@@ -109,18 +109,42 @@ class ArticleController {
         image,
         isDraft: isDraft || 'true'
       }, options);
-      if (articleUpdated[0] === 1) {
-        res.status(200).json({
-          success: true,
-          message: 'Article updated successfully',
-          articleUpdated: articleUpdated[1],
-        });
-      } else {
-        res.status(400).json({
-          success: false,
-          message: 'Provide a valid article Id'
-        });
-      }
+      res.status(200).json({
+        success: true,
+        message: 'Article updated successfully',
+        articleUpdated: articleUpdated[1],
+      });
+    } catch (error) {
+      errorResponse.handleErrorResponse(res, error);
+    }
+  }
+
+  /**
+  * Publish an Article
+  * Route: PUT: /articles
+  * @param {object} req - Request object
+  * @param {object} res - Response object
+  * @return {res} res - Response object
+  * @memberof ArticlesController
+ */
+  static async publishArticle(req, res) {
+    const { status, articleId } = req.params;
+    const options = {
+      where: {
+        id: articleId
+      },
+      returning: true,
+    };
+
+    try {
+      const articlePublished = await Article.update({
+        isDraft: status !== 'publish'
+      }, options);
+      res.status(200).json({
+        success: true,
+        message: 'Article updated successfully',
+        articlePublished: articlePublished[1],
+      });
     } catch (error) {
       errorResponse.handleErrorResponse(res, error);
     }
@@ -215,10 +239,12 @@ class ArticleController {
       options.where = {
         isDraft: false,
         userId: req.decoded.id,
+        isDeleted: false
       };
     } else {
       options.where = {
         isDraft: false,
+        isDeleted: false
       };
     }
 
@@ -244,7 +270,7 @@ class ArticleController {
 
   /**
   * Get a specific Article
-  * Route: POST: /articles
+  * Route: GET: /articles/:articleId
   * @param {object} req - Request object
   * @param {object} res - Response object
   * @return {res} res - Response object
@@ -257,14 +283,6 @@ class ArticleController {
           {
             model: Users,
             attributes: ['firstName', 'lastName', 'image']
-          },
-          {
-            model: Tags,
-            as: 'Tags',
-            attributes: ['tagName'],
-            through: {
-              attributes: [],
-            }
           },
           {
             model: Comments,
@@ -297,6 +315,7 @@ class ArticleController {
         ],
         where: {
           id: req.params.articleId,
+          isDeleted: false
         }
       });
       if (article) {
@@ -305,6 +324,18 @@ class ArticleController {
           article.viewStats,
           article.title
         );
+        const tags = await ArticleTag.findAll({
+          attributes: [],
+          where: {
+            articleId: article.id
+          },
+          include: [{
+            model: Tags,
+            attributes: ['tagName']
+          }],
+          raw: true
+        });
+        article.dataValues.tags = tags;
         res.status(200).json({
           success: true,
           article,
@@ -312,7 +343,7 @@ class ArticleController {
       } else {
         res.status(404).json({
           success: false,
-          message: 'Invalid article Id',
+          message: 'Article not found',
         });
       }
     } catch (error) {

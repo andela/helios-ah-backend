@@ -93,11 +93,11 @@ describe('Notifications functions', () => {
       sendEmail.emailSender.restore();
     });
     it('it should send an email notification', async () => {
-      await notificationUtil.setSingleEmailNotification(user1, details);
+      notificationUtil.setSingleEmailNotification(user1, details);
       sinon.assert.calledOnce(myEmailSpy);
     });
     it('it should send multiple email notifications', async () => {
-      await notificationUtil.setMultipleEmailNotifications(userArray, details);
+      notificationUtil.setMultipleEmailNotifications(userArray, details);
       sinon.assert.calledThrice(myEmailSpy);
     });
   });
