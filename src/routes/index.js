@@ -126,8 +126,18 @@ const routes = (app) => {
   app.put(
     '/api/v1/articles/:articleId',
     Authorization.checkToken,
+    Authorization.uuidV4Validator,
+    checkArticleExists,
+    Authorization.hasWriteAccess,
     validateUserInputs.validateCreateArticle,
     ArticleController.updateArticle
+  );
+  app.put(
+    '/api/v1/articles/:articleId/status/:status',
+    Authorization.checkToken,
+    checkArticleExists,
+    Authorization.hasWriteAccess,
+    ArticleController.publishArticle
   );
   app.get(
     '/api/v1/authors',
@@ -303,6 +313,7 @@ const routes = (app) => {
     '/api/v1/articles/:articleId/ratings',
     Authorization.checkToken,
     findDatabaseField.UserInToken,
+    Authorization.uuidV4Validator,
     checkArticleExists,
     ValidateArticle.checkArticleNotDraft,
     checkFeedback.checkRatingExist,
@@ -313,6 +324,7 @@ const routes = (app) => {
     '/api/v1/articles/:articleId/ratings',
     Authorization.checkToken,
     findDatabaseField.UserInToken,
+    Authorization.uuidV4Validator,
     checkArticleExists,
     checkFeedback.checkRatingNotExist,
     validateUserInputs.validateRating,

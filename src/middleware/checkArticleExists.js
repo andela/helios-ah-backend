@@ -20,16 +20,17 @@ const checkArticleExists = async (req, res, next) => {
   try {
     const { articleId } = await req.params;
     const article = await Article
-      .findByPk(
-        articleId,
-        {
-          include:
+      .findOne({
+        where: {
+          id: articleId,
+          isDeleted: false,
+        },
+        include:
           {
             model: Users,
             attributes: ['email']
           }
-        }
-      );
+      });
 
     if (article) {
       req.article = article;
