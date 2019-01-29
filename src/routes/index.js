@@ -291,6 +291,14 @@ const routes = (app) => {
     'api/v1/social_login/failed',
     SocialLoginController.socialLoginFailed
   );
+  app.get(
+    '/api/v1/articles/:articleId/likes',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    checkArticleExists,
+    ValidateArticle.checkArticleNotDraft,
+    LikesController.getArticleLikes
+  );
   app.post(
     '/api/v1/articles/:articleId/likes',
     Authorization.checkToken,

@@ -78,4 +78,14 @@ describe('Integration tests for the Like controller', () => {
       expect(isLiked.body.isLiked).to.equal(false);
     });
   });
+  describe('get article likes', () => {
+    it('it should get details successfully', async () => {
+      const isLiked = await chai.request(app).get(`/api/v1/articles/${newArticle.body.articleCreated.id}/likes`)
+        .set('x-access-token', token);
+      expect(isLiked.status).to.equal(200);
+      expect(isLiked.body.success).to.equal(true);
+      expect(isLiked.body.message).to.equal('Like status retrieved successfully');
+      expect(isLiked.body.isLiked).to.equal(false);
+    });
+  });
 });
