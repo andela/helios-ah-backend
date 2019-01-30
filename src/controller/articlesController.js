@@ -171,7 +171,8 @@ class ArticleController {
         'body',
         'description',
         'image',
-        'readTime'
+        'readTime',
+        'isDraft'
       ],
       limit: paginate.limit,
       offset,
@@ -237,7 +238,6 @@ class ArticleController {
 
     if (req.originalUrl === '/api/v1/articles/user') {
       options.where = {
-        isDraft: false,
         userId: req.decoded.id,
         isDeleted: false
       };
