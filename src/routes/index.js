@@ -29,7 +29,8 @@ import {
   checkForSelfFollow,
   validateBookmarkInput,
   validateFollowUserInput,
-  validateUnfollowUserInput
+  validateUnfollowUserInput,
+  validateLikeValue
 } from '../middleware';
 
 /**
@@ -290,6 +291,14 @@ const routes = (app) => {
     'api/v1/social_login/failed',
     SocialLoginController.socialLoginFailed
   );
+  app.get(
+    '/api/v1/articles/:articleId/likes',
+    Authorization.checkToken,
+    findDatabaseField.UserInToken,
+    checkArticleExists,
+    ValidateArticle.checkArticleNotDraft,
+    LikesController.getArticleLikes
+  );
   app.post(
     '/api/v1/articles/:articleId/likes',
     Authorization.checkToken,
@@ -304,6 +313,7 @@ const routes = (app) => {
     Authorization.checkToken,
     findDatabaseField.UserInToken,
     checkArticleExists,
+    validateLikeValue,
     checkFeedback.checkLikesNotExist,
     LikesController.updateLikes
   );

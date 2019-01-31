@@ -34,7 +34,7 @@ class LikesController {
       const isLiked = await Likes.create({
         userId: user.id,
         articleId,
-        isLiked: 'true'
+        isLiked: true
       });
 
       if (isLiked) {
@@ -58,7 +58,7 @@ class LikesController {
           success: true,
           message: 'Article liked successfully',
           articleId,
-          isliked: 'true',
+          isliked: true,
           userId: user.id
         });
       }
@@ -84,22 +84,24 @@ class LikesController {
 
     const {
       articleId,
-      liked
     } = req.params;
+    const { isLiked } = req.body;
 
     const user = req.decoded;
     try {
-      const isLiked = await Likes.update({
-        isLiked: liked || 'false'
-      },
-      {
-        where:
-      {
-        userId: user.id,
-        articleId
-      }
-      });
-      if (isLiked) {
+      const liked = await Likes.update(
+        {
+          isLiked: isLiked || false
+        },
+        {
+          where:
+          {
+            userId: user.id,
+            articleId
+          }
+        }
+      );
+      if (liked) {
         req.io.emit('inAppNotifications', `${notificationText}`);
 
         await NotificationUtil
@@ -118,9 +120,9 @@ class LikesController {
 
         return res.status(200).json({
           success: true,
-          message: 'Article unliked successfully',
+          message: 'Like status modified successfully',
           articleId,
-          isliked: 'false',
+          isLiked: isLiked || false,
           userId: user.id
         });
       }
@@ -189,6 +191,44 @@ class LikesController {
           isLiked: req.body.like
         });
       }
+    } catch (error) {
+      return (error.errors) ? helperMethods.sequelizeValidationError(res, error)
+        : helperMethods.serverError(res);
+    }
+  }
+
+  /**
+    * Get like details
+    * Route: PUT: /api/v1/articles/:articleId/likes
+    * @param {object} req - Request object
+    * @param {object} res - Response object
+    * @return {res} res - Response object
+    */
+  static async getArticleLikes(req, res) {
+    const { articleId } = req.params;
+    const user = req.decoded;
+    try {
+      const getLikedetail = await Likes.findAll({
+        where: {
+          articleId,
+          isLiked: true,
+        }
+      });
+      const getUserLikedetail = await Likes.findOne({
+        where: {
+          userId: user.id,
+          articleId,
+          isLiked: true,
+        }
+      });
+      return res.status(200).json({
+        success: true,
+        message: 'Like status retrieved successfully',
+        isLiked: getUserLikedetail !== null,
+        totalLikes: getLikedetail === null ? '0' : getLikedetail.length,
+        articleId,
+        userId: user.id
+      });
     } catch (error) {
       return (error.errors) ? helperMethods.sequelizeValidationError(res, error)
         : helperMethods.serverError(res);

@@ -10,6 +10,7 @@ import checkForSelfFollow from './checkForSelfFollow';
 import validateBookmarkInput from './validateBookmarkInput';
 import validateFollowUserInput from './validateFollowUserInput';
 import validateUnfollowUserInput from './validateUnfollowUserInput';
+import validateLikeValue from './validateArticleLikeInput';
 
 export {
   userMiddleware,
@@ -23,5 +24,6 @@ export {
   checkForSelfFollow,
   validateBookmarkInput,
   validateFollowUserInput,
-  validateUnfollowUserInput
+  validateUnfollowUserInput,
+  validateLikeValue
 };
