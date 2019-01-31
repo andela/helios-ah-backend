@@ -3,7 +3,7 @@ export default {
   up: queryInterface => queryInterface.bulkInsert('Likes', [{
     id: '4d3ad3ef-5565-499d-bb39-96dcafc5729f',
     userId: '781063b9-92be-4d9a-8699-fdac9227f32c',
-    articleId: '4d3ad3ef-5565-499d-bb39-96dcafc5729f',
+    articleId: '7d99b14c-628b-41f1-80cd-1f2699a759e8',
     isLiked: true,
     createdAt: new Date(Date.now()),
     updatedAt: new Date(Date.now())
