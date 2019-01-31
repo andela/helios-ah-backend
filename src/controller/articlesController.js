@@ -270,7 +270,7 @@ class ArticleController {
 
   /**
   * Get a specific Article
-  * Route: POST: /articles
+  * Route: GET: /articles
   * @param {object} req - Request object
   * @param {object} res - Response object
   * @return {res} res - Response object
