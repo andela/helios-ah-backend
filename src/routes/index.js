@@ -345,7 +345,7 @@ const routes = (app) => {
     ArticleController.bookmarkArticle
   );
   app.delete(
-    '/api/v1/users/bookmarks/:bookmarkId',
+    '/api/v1/users/bookmarks/:articleId',
     Authorization.checkToken,
     Authorization.uuidV4Validator,
     ArticleController.deleteBookmark

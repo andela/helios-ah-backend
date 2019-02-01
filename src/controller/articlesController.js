@@ -367,15 +367,30 @@ class ArticleController {
     try {
       const name = req.body.name || req.article.title;
 
-      const createBookmark = await Bookmark.create({
-        name, userId, articleId
+      const createBookmark = await Bookmark.findOrCreate({
+        where: { name, userId, articleId },
+        returning: true,
+        raw: true,
       });
-      if (createBookmark) {
+      if (createBookmark[0].isActive) {
         res.status(201).json({
           success: true,
           message: 'Article successfully bookmarked',
-          bookmark: createBookmark.dataValues,
+          bookmark: createBookmark[0],
         });
+      } else {
+        const updateBookmark = await Bookmark.update({ isActive: true }, {
+          where: { name, userId, articleId },
+          returning: true,
+          raw: true,
+        });
+        if (updateBookmark) {
+          res.status(201).json({
+            success: true,
+            message: 'Article successfully bookmarked',
+            bookmark: updateBookmark[1][0],
+          });
+        }
       }
     } catch (error) {
       helperMethods.serverError(res);
@@ -401,7 +416,7 @@ class ArticleController {
         include: [{
           model: Article,
           as: 'bookmark',
-          attributes: ['title', 'body', 'readTime', 'image', 'createdAt'],
+          attributes: ['id', 'title', 'body', 'readTime', 'image', 'createdAt'],
           where: { isDeleted: false },
           include: [{
             model: Users,
@@ -437,7 +452,7 @@ class ArticleController {
   static async deleteBookmark(req, res) {
     const options = {
       where: {
-        id: req.params.bookmarkId,
+        articleId: req.params.articleId,
         userId: req.decoded.id,
       },
       returning: true,
