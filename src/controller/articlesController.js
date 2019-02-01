@@ -102,7 +102,7 @@ class ArticleController {
       returning: true,
     };
     try {
-      const articleUpdated = await Article.update({
+      const [, articleUpdated] = await Article.update({
         title,
         body,
         description,
@@ -112,7 +112,7 @@ class ArticleController {
       res.status(200).json({
         success: true,
         message: 'Article updated successfully',
-        articleUpdated: articleUpdated[1],
+        articleUpdated: articleUpdated[0],
       });
     } catch (error) {
       errorResponse.handleErrorResponse(res, error);
@@ -137,13 +137,13 @@ class ArticleController {
     };
 
     try {
-      const articlePublished = await Article.update({
+      const [, articlePublished] = await Article.update({
         isDraft: status !== 'publish'
       }, options);
       res.status(200).json({
         success: true,
         message: 'Article updated successfully',
-        articlePublished: articlePublished[1],
+        articlePublished: articlePublished[0],
       });
     } catch (error) {
       errorResponse.handleErrorResponse(res, error);
@@ -270,7 +270,7 @@ class ArticleController {
 
   /**
   * Get a specific Article
-  * Route: GET: /articles/:articleId
+  * Route: GET: /articles
   * @param {object} req - Request object
   * @param {object} res - Response object
   * @return {res} res - Response object
@@ -315,7 +315,6 @@ class ArticleController {
         ],
         where: {
           id: req.params.articleId,
-          isDeleted: false
         }
       });
       if (article) {
@@ -343,7 +342,7 @@ class ArticleController {
       } else {
         res.status(404).json({
           success: false,
-          message: 'Article not found',
+          message: 'Invalid article Id',
         });
       }
     } catch (error) {

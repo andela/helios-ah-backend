@@ -67,8 +67,8 @@ class SendEmail {
       emailBody: `<p>Your registration has been completed<p>
       <p>Thank you for registering with Authors Haven.</p>
        <p> >>>
-       <a href=${baseUrl}/home>
-       Go to your profile </a> <<< </p>`
+       <a href=${baseUrl}/login>
+       Visit Authors Haven </a> <<< </p>`
     };
     return SendEmail.emailSender(details);
   }

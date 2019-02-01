@@ -246,7 +246,7 @@ describe('Integration tests for the article controller', () => {
         .set('x-access-token', myToken);
       expect(response.status).to.equal(200);
       expect(response.body).to.have.property('articlePublished');
-      expect(response.body.articlePublished[0].isDraft).to.equal(false);
+      expect(response.body.articlePublished.isDraft).to.equal(false);
       expect(response.body.success).to.equal(true);
     });
     it('should draft an article with the articles Id', async () => {
@@ -254,7 +254,7 @@ describe('Integration tests for the article controller', () => {
         .set('x-access-token', myToken);
       expect(response.status).to.equal(200);
       expect(response.body).to.have.property('articlePublished');
-      expect(response.body.articlePublished[0].isDraft).to.equal(true);
+      expect(response.body.articlePublished.isDraft).to.equal(true);
       expect(response.body.success).to.equal(true);
     });
     it('should reject update on article with wrong article Id', async () => {
@@ -492,7 +492,7 @@ describe('Integration tests for the article controller', () => {
       expect(response.status).to.equal(404);
       expect(response.body.success).to.equal(false);
       expect(response.body).to.have.property('message');
-      expect(response.body.message).to.equal('Article not found');
+      expect(response.body.message).to.equal('Invalid article Id');
     });
   });
   describe('Test for searching articles based on authors and tags', () => {
