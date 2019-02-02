@@ -207,7 +207,7 @@ describe('POST /api/v1/articles/:articleId/bookmark', () => {
           .set('x-access-token', userToken);
 
       const delBookmark = await chai.request(app)
-        .delete(`/api/v1/users/bookmarks/${bookmarkResponse.body.bookmark.id}`)
+        .delete(`/api/v1/users/bookmarks/${bookmarkResponse.body.bookmark.articleId}`)
         .set('x-access-token', userToken);
       expect(delBookmark.status).to.equal(200);
       expect(delBookmark.body).to.have.property('message');
