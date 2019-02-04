@@ -102,7 +102,7 @@ class ArticleController {
       returning: true,
     };
     try {
-      const articleUpdated = await Article.update({
+      const [, articleUpdated] = await Article.update({
         title,
         body,
         description,
@@ -112,7 +112,7 @@ class ArticleController {
       res.status(200).json({
         success: true,
         message: 'Article updated successfully',
-        articleUpdated: articleUpdated[1],
+        articleUpdated: articleUpdated[0],
       });
     } catch (error) {
       errorResponse.handleErrorResponse(res, error);
@@ -137,13 +137,13 @@ class ArticleController {
     };
 
     try {
-      const articlePublished = await Article.update({
+      const [, articlePublished] = await Article.update({
         isDraft: status !== 'publish'
       }, options);
       res.status(200).json({
         success: true,
         message: 'Article updated successfully',
-        articlePublished: articlePublished[1],
+        articlePublished: articlePublished[0],
       });
     } catch (error) {
       errorResponse.handleErrorResponse(res, error);
@@ -171,7 +171,8 @@ class ArticleController {
         'body',
         'description',
         'image',
-        'readTime'
+        'readTime',
+        'isDraft'
       ],
       limit: paginate.limit,
       offset,
@@ -236,11 +237,12 @@ class ArticleController {
     }
 
     if (req.originalUrl === '/api/v1/articles/user') {
-      options.where = {
-        isDraft: false,
-        userId: req.decoded.id,
-        isDeleted: false
-      };
+      options.where = { isDeleted: false };
+      if (req.query) {
+        options.where = req.query.isDraft
+          ? { ...options.where, isDraft: true }
+          : { ...options.where, isDraft: false };
+      }
     } else {
       options.where = {
         isDraft: false,
@@ -270,7 +272,7 @@ class ArticleController {
 
   /**
   * Get a specific Article
-  * Route: GET: /articles/:articleId
+  * Route: GET: /articles
   * @param {object} req - Request object
   * @param {object} res - Response object
   * @return {res} res - Response object
@@ -315,7 +317,6 @@ class ArticleController {
         ],
         where: {
           id: req.params.articleId,
-          isDeleted: false
         }
       });
       if (article) {
@@ -343,7 +344,7 @@ class ArticleController {
       } else {
         res.status(404).json({
           success: false,
-          message: 'Article not found',
+          message: 'Invalid article Id',
         });
       }
     } catch (error) {
@@ -367,15 +368,30 @@ class ArticleController {
     try {
       const name = req.body.name || req.article.title;
 
-      const createBookmark = await Bookmark.create({
-        name, userId, articleId
+      const createBookmark = await Bookmark.findOrCreate({
+        where: { name, userId, articleId },
+        returning: true,
+        raw: true,
       });
-      if (createBookmark) {
+      if (createBookmark[0].isActive) {
         res.status(201).json({
           success: true,
           message: 'Article successfully bookmarked',
-          bookmark: createBookmark.dataValues,
+          bookmark: createBookmark[0],
         });
+      } else {
+        const updateBookmark = await Bookmark.update({ isActive: true }, {
+          where: { name, userId, articleId },
+          returning: true,
+          raw: true,
+        });
+        if (updateBookmark) {
+          res.status(201).json({
+            success: true,
+            message: 'Article successfully bookmarked',
+            bookmark: updateBookmark[1][0],
+          });
+        }
       }
     } catch (error) {
       helperMethods.serverError(res);
@@ -401,7 +417,7 @@ class ArticleController {
         include: [{
           model: Article,
           as: 'bookmark',
-          attributes: ['title', 'body', 'readTime', 'image', 'createdAt'],
+          attributes: ['id', 'title', 'body', 'readTime', 'image', 'createdAt'],
           where: { isDeleted: false },
           include: [{
             model: Users,
@@ -437,7 +453,7 @@ class ArticleController {
   static async deleteBookmark(req, res) {
     const options = {
       where: {
-        id: req.params.bookmarkId,
+        articleId: req.params.articleId,
         userId: req.decoded.id,
       },
       returning: true,
