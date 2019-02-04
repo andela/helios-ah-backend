@@ -237,11 +237,10 @@ class ArticleController {
     }
 
     if (req.originalUrl === '/api/v1/articles/user') {
-      options.where = { isDeleted: false };
       if (req.query) {
         options.where = req.query.isDraft
-          ? { ...options.where, isDraft: true }
-          : { ...options.where, isDraft: false };
+          ? { isDeleted: false, isDraft: true }
+          : { isDeleted: false, isDraft: false };
       }
     } else {
       options.where = {
