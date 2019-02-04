@@ -2,11 +2,7 @@ import { Op } from 'sequelize';
 import models from '../models';
 import errorResponse from '../utilities/Error';
 import helperMethod from '../utilities/helperMethods';
-import {
-  follower,
-  NotificationUtil,
-  helperMethods,
-} from '../utilities';
+import { follower, NotificationUtil, helperMethods } from '../utilities';
 
 const {
   Article,
@@ -17,9 +13,8 @@ const {
   Tags,
   ArticleTag,
   ChildComments,
-  ChildCommentHistory,
+  ChildCommentHistory
 } = models;
-
 
 /**
  * Class representing the Article controller
@@ -28,13 +23,13 @@ const {
  */
 class ArticleController {
   /**
-  * Create an Article
-  * Route: POST: /articles
-  * @param {object} req - Request object
-  * @param {object} res - Response object
-  * @return {res} res - Response object
-  * @memberof ArticleController
- */
+   * Create an Article
+   * Route: POST: /articles
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @return {res} res - Response object
+   * @memberof ArticleController
+   */
   static async createArticle(req, res) {
     const {
       title, body, description, image, isDraft
@@ -46,8 +41,10 @@ class ArticleController {
         title,
         body,
         description,
-        readTime: (body.split(' ').length < 200) ? 'less than 1min'
-          : `about ${Math.round(body.split(' ').length / 200)}min`,
+        readTime:
+          body.split(' ').length < 200
+            ? 'less than 1min'
+            : `about ${Math.round(body.split(' ').length / 200)}min`,
         image,
         userId: req.decoded.id,
         isDraft: isDraft || 'true'
@@ -58,24 +55,22 @@ class ArticleController {
 
         req.io.emit('inAppNotifications', { notificationText });
 
-        await NotificationUtil
-          .setMultipleAppNotifications(
-            followers[0].followers,
-            notificationText,
-            res
-          );
+        await NotificationUtil.setMultipleAppNotifications(
+          followers[0].followers,
+          notificationText,
+          res
+        );
 
-        await NotificationUtil
-          .setMultipleEmailNotifications(
-            followers[0].followers,
-            notificationText,
-            res
-          );
+        await NotificationUtil.setMultipleEmailNotifications(
+          followers[0].followers,
+          notificationText,
+          res
+        );
 
         res.status(201).json({
           success: true,
           message: 'Article created successfully',
-          articleCreated,
+          articleCreated
         });
       }
     } catch (error) {
@@ -84,13 +79,13 @@ class ArticleController {
   }
 
   /**
-  * Update an Article
-  * Route: PUT: /articles
-  * @param {object} req - Request object
-  * @param {object} res - Response object
-  * @return {res} res - Response object
-  * @memberof ArticlesController
- */
+   * Update an Article
+   * Route: PUT: /articles
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @return {res} res - Response object
+   * @memberof ArticlesController
+   */
   static async updateArticle(req, res) {
     const {
       title, body, description, image, isDraft
@@ -99,20 +94,23 @@ class ArticleController {
       where: {
         id: req.params.articleId
       },
-      returning: true,
+      returning: true
     };
     try {
-      const [, articleUpdated] = await Article.update({
-        title,
-        body,
-        description,
-        image,
-        isDraft: isDraft || 'true'
-      }, options);
+      const [, articleUpdated] = await Article.update(
+        {
+          title,
+          body,
+          description,
+          image,
+          isDraft: isDraft || 'true'
+        },
+        options
+      );
       res.status(200).json({
         success: true,
         message: 'Article updated successfully',
-        articleUpdated: articleUpdated[0],
+        articleUpdated: articleUpdated[0]
       });
     } catch (error) {
       errorResponse.handleErrorResponse(res, error);
@@ -120,30 +118,33 @@ class ArticleController {
   }
 
   /**
-  * Publish an Article
-  * Route: PUT: /articles
-  * @param {object} req - Request object
-  * @param {object} res - Response object
-  * @return {res} res - Response object
-  * @memberof ArticlesController
- */
+   * Publish an Article
+   * Route: PUT: /articles
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @return {res} res - Response object
+   * @memberof ArticlesController
+   */
   static async publishArticle(req, res) {
     const { status, articleId } = req.params;
     const options = {
       where: {
         id: articleId
       },
-      returning: true,
+      returning: true
     };
 
     try {
-      const [, articlePublished] = await Article.update({
-        isDraft: status !== 'publish'
-      }, options);
+      const [, articlePublished] = await Article.update(
+        {
+          isDraft: status !== 'publish'
+        },
+        options
+      );
       res.status(200).json({
         success: true,
         message: 'Article updated successfully',
-        articlePublished: articlePublished[0],
+        articlePublished: articlePublished[0]
       });
     } catch (error) {
       errorResponse.handleErrorResponse(res, error);
@@ -151,19 +152,19 @@ class ArticleController {
   }
 
   /**
-  * Get Article
-  * Route: GET: /articles
-  * @param {object} req - Request object
-  * @param {object} res - Response object
-  * @return {res} res - Response object
-  * @memberof ArticlesController
- */
+   * Get Article
+   * Route: GET: /articles
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @return {res} res - Response object
+   * @memberof ArticlesController
+   */
   static async getArticles(req, res) {
     const paginate = {
       page: parseInt(req.query.page, 10) || 1,
-      limit: parseInt(req.query.limit, 10) || 100,
+      limit: parseInt(req.query.limit, 10) || 100
     };
-    const offset = (paginate.page * paginate.limit) - paginate.limit;
+    const offset = paginate.page * paginate.limit - paginate.limit;
     const options = {
       attributes: [
         'id',
@@ -175,7 +176,7 @@ class ArticleController {
         'isDraft'
       ],
       limit: paginate.limit,
-      offset,
+      offset
     };
     options.include = [
       {
@@ -223,11 +224,11 @@ class ArticleController {
         attributes: [],
         include: [
           {
-            model: Article,
+            model: Article
           }
         ],
         where: {
-          tagId,
+          tagId
         }
       });
       return res.status(200).json({
@@ -239,8 +240,13 @@ class ArticleController {
     if (req.originalUrl === '/api/v1/articles/user') {
       if (req.query) {
         options.where = req.query.isDraft
-          ? { isDeleted: false, isDraft: true }
-          : { isDeleted: false, isDraft: false };
+          ? { isDeleted: false, isDraft: true, userId: req.decoded.id }
+          : { isDeleted: false, isDraft: false, userId: req.decoded.id };
+      } else {
+        options.where = {
+          userId: req.decoded.id,
+          isDeleted: false
+        };
       }
     } else {
       options.where = {
@@ -259,24 +265,24 @@ class ArticleController {
       }
       res.status(200).json({
         success: true,
-        articles,
+        articles
       });
     } catch (error) {
       res.status(500).json({
         success: false,
-        message: 'Internal server error',
+        message: 'Internal server error'
       });
     }
   }
 
   /**
-  * Get a specific Article
-  * Route: GET: /articles
-  * @param {object} req - Request object
-  * @param {object} res - Response object
-  * @return {res} res - Response object
-  * @memberof ArticleController
- */
+   * Get a specific Article
+   * Route: GET: /articles
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   * @return {res} res - Response object
+   * @memberof ArticleController
+   */
   static async getArticle(req, res) {
     try {
       const article = await Article.findOne({
@@ -291,17 +297,18 @@ class ArticleController {
             include: [
               {
                 model: Users,
-                attributes: ['firstName', 'lastName', 'username'],
+                attributes: ['firstName', 'lastName', 'username']
               },
               {
                 model: CommentHistory,
                 attributes: { exclude: ['userId', 'commentId'] }
-              }, {
+              },
+              {
                 model: ChildComments,
                 include: [
                   {
                     model: Users,
-                    attributes: ['firstName', 'lastName', 'username'],
+                    attributes: ['firstName', 'lastName', 'username']
                   },
                   {
                     model: ChildCommentHistory,
@@ -315,7 +322,7 @@ class ArticleController {
           }
         ],
         where: {
-          id: req.params.articleId,
+          id: req.params.articleId
         }
       });
       if (article) {
@@ -329,21 +336,23 @@ class ArticleController {
           where: {
             articleId: article.id
           },
-          include: [{
-            model: Tags,
-            attributes: ['tagName']
-          }],
+          include: [
+            {
+              model: Tags,
+              attributes: ['tagName']
+            }
+          ],
           raw: true
         });
         article.dataValues.tags = tags;
         res.status(200).json({
           success: true,
-          article,
+          article
         });
       } else {
         res.status(404).json({
           success: false,
-          message: 'Invalid article Id',
+          message: 'Invalid article Id'
         });
       }
     } catch (error) {
@@ -352,14 +361,14 @@ class ArticleController {
   }
 
   /**
-  * @description Bookmark an Article
-  *
-  * @param {object} req - Request object
-  * @param {object} res - Response object
-  *
-  * @return {object} database response
-  * @memberof ArticleController
- */
+   * @description Bookmark an Article
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   *
+   * @return {object} database response
+   * @memberof ArticleController
+   */
   static async bookmarkArticle(req, res) {
     const userId = req.decoded.id;
     const { articleId } = req.params;
@@ -370,25 +379,28 @@ class ArticleController {
       const createBookmark = await Bookmark.findOrCreate({
         where: { name, userId, articleId },
         returning: true,
-        raw: true,
+        raw: true
       });
       if (createBookmark[0].isActive) {
         res.status(201).json({
           success: true,
           message: 'Article successfully bookmarked',
-          bookmark: createBookmark[0],
+          bookmark: createBookmark[0]
         });
       } else {
-        const updateBookmark = await Bookmark.update({ isActive: true }, {
-          where: { name, userId, articleId },
-          returning: true,
-          raw: true,
-        });
+        const updateBookmark = await Bookmark.update(
+          { isActive: true },
+          {
+            where: { name, userId, articleId },
+            returning: true,
+            raw: true
+          }
+        );
         if (updateBookmark) {
           res.status(201).json({
             success: true,
             message: 'Article successfully bookmarked',
-            bookmark: updateBookmark[1][0],
+            bookmark: updateBookmark[1][0]
           });
         }
       }
@@ -398,42 +410,53 @@ class ArticleController {
   }
 
   /**
-  * GET /api/v1/articles/bookmarks
-  * @description List Bookmarks
-  *
-  * @param {object} req - Request object
-  * @param {object} res - Response object
-  *
-  * @return {object} database response
-  * @memberof ArticleController
- */
+   * GET /api/v1/articles/bookmarks
+   * @description List Bookmarks
+   *
+   * @param {object} req - Request object
+   * @param {object} res - Response object
+   *
+   * @return {object} database response
+   * @memberof ArticleController
+   */
   static async getBookmark(req, res) {
     const userId = req.decoded.id;
     try {
       const bookmarks = await Bookmark.findAll({
         where: { userId, isActive: true },
         attributes: ['id'],
-        include: [{
-          model: Article,
-          as: 'bookmark',
-          attributes: ['id', 'title', 'body', 'readTime', 'image', 'createdAt'],
-          where: { isDeleted: false },
-          include: [{
-            model: Users,
-            attributes: ['firstName', 'lastName'],
-          }],
-        }],
+        include: [
+          {
+            model: Article,
+            as: 'bookmark',
+            attributes: [
+              'id',
+              'title',
+              'body',
+              'readTime',
+              'image',
+              'createdAt'
+            ],
+            where: { isDeleted: false },
+            include: [
+              {
+                model: Users,
+                attributes: ['firstName', 'lastName']
+              }
+            ]
+          }
+        ]
       });
       if (bookmarks) {
         return res.status(200).json({
           success: true,
           message: 'Bookmark was found',
-          bookmarks,
+          bookmarks
         });
       }
       return res.status(200).json({
         success: false,
-        message: 'Bookmark was not found',
+        message: 'Bookmark was not found'
       });
     } catch (error) {
       helperMethods.serverError(res);
@@ -441,36 +464,39 @@ class ArticleController {
   }
 
   /**
-  * @description Delete a Bookmark
-  *
-  * @param {object} req - Request Object
-  * @param {object} res - Response Object
-  *
-  * @return {obejct} database response
-  * @memberof ArticleController
-  */
+   * @description Delete a Bookmark
+   *
+   * @param {object} req - Request Object
+   * @param {object} res - Response Object
+   *
+   * @return {obejct} database response
+   * @memberof ArticleController
+   */
   static async deleteBookmark(req, res) {
     const options = {
       where: {
         articleId: req.params.articleId,
-        userId: req.decoded.id,
+        userId: req.decoded.id
       },
-      returning: true,
+      returning: true
     };
     try {
-      const bookmarkDeleted = await Bookmark.update({
-        isActive: false
-      }, options);
+      const bookmarkDeleted = await Bookmark.update(
+        {
+          isActive: false
+        },
+        options
+      );
       if (bookmarkDeleted[0]) {
         return res.status(200).json({
           success: true,
           message: 'Bookmark deleted successfully',
-          bookmarkDeleted: bookmarkDeleted[1],
+          bookmarkDeleted: bookmarkDeleted[1]
         });
       }
       return res.status(404).json({
         success: false,
-        message: 'Bookmark was not found',
+        message: 'Bookmark was not found'
       });
     } catch (error) {
       helperMethods.serverError(res);
@@ -478,29 +504,32 @@ class ArticleController {
   }
 
   /**
-  * @description Delete an Article
-  *
-  * @param {object} req - Request Object
-  * @param {object} res - Response Object
-  *
-  * @return {obejct} database response
-  * @memberof ArticleController
-  */
+   * @description Delete an Article
+   *
+   * @param {object} req - Request Object
+   * @param {object} res - Response Object
+   *
+   * @return {obejct} database response
+   * @memberof ArticleController
+   */
   static async deleteArticle(req, res) {
     const options = {
       where: {
         id: req.params.articleId
       },
-      returning: true,
+      returning: true
     };
     try {
-      const articleDeleted = await Article.update({
-        isDeleted: true
-      }, options);
+      const articleDeleted = await Article.update(
+        {
+          isDeleted: true
+        },
+        options
+      );
       res.status(200).json({
         success: true,
         message: 'Article deleted successfully',
-        articleDeleted: articleDeleted[1],
+        articleDeleted: articleDeleted[1]
       });
     } catch (error) {
       helperMethods.serverError(res);
