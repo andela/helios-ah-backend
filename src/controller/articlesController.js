@@ -164,7 +164,7 @@ class ArticleController {
       page: parseInt(req.query.page, 10) || 1,
       limit: parseInt(req.query.limit, 10) || 100
     };
-    const offset = paginate.page * paginate.limit - paginate.limit;
+    const offset = (paginate.page * paginate.limit) - paginate.limit;
     const options = {
       attributes: [
         'id',
